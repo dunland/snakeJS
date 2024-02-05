@@ -1,0 +1,29 @@
+{
+  "name": "snakejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon main.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/dunland/snakeJS.git"
+  },
+  "keywords": [
+    "heizungsauslegungsgenerator"
+  ],
+  "author": "dunland",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/dunland/snakeJS/issues"
+  },
+  "homepage": "https://github.com/dunland/snakeJS#readme",
+  "dependencies": {
+    "@tarikjabiri/dxf": "^2.8.9",
+    "express": "^4.18.2",
+    "nodemon": "^3.0.3",
+    "p5": "^1.9.0"
+  }
+}
