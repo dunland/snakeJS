@@ -53,7 +53,7 @@ export class Raster {
                     this.liniensegmente = []; // clear
                     for (let x = 0; x < width; x += this.punktAbstand_x * this.scale_x) {
                         for (let y = 0; y < width; y += this.punktAbstand_y * this.scale_x) {
-                            this.gitterpunkte.push(new GitterPunkt(x, y));
+                            this.gitterpunkte.push(new GitterPunkt(x, y, this));
                         }
                     }
 
@@ -87,7 +87,8 @@ export class Raster {
                             // TODO : gp.linie = zuletzterstelle Linie
                         }
                     } else {
-                        this.activeGridPoints.remove(gp);
+                        console.log("removal of points not yet implemented!")
+                        // this.activeGridPoints.remove(gp);
                         // entferne Liniensegment:
                         // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
                         // diese linie
@@ -110,9 +111,11 @@ export class Raster {
 /////////////////////////////////////////// /////////////////////////////
 export class GitterPunkt {
 
-    constructor(x_, y_) {
+    constructor(x_, y_, raster) {
         this.x = x_;
         this.y = y_;
+        this.raster = raster;
+        
         this.x_toleranz = 10;
         this.y_toleranz = 10;
         this.underMouse = false;
@@ -129,13 +132,13 @@ export class GitterPunkt {
         if (this.underMouse) {
             noStroke();
             fill(185, 185, 185, 80);
-            ellipse(this.x, this.y, this.rasterMass / 3, this.rasterMass / 3);
+            ellipse(this.x, this.y, this.raster.rasterMass / 3, this.raster.rasterMass / 3);
         }
 
         // weißen Kreis malen, wenn aktiv:
         if (this.active) {
             fill(255);
-            ellipse(this.x, this.y, this.rasterMass / 3, this.rasterMass / 3);
+            ellipse(this.x, this.y, this.raster.rasterMass / 3, this.raster.rasterMass / 3);
         }
         //else {
         //  fill(255);

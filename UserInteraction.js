@@ -1,45 +1,60 @@
+import { raster } from "./snake.js";
+
 export var record = false;
+export var mouseGridX, mouseGridY;
 
 // Tastaturbefehle:
 export function keyPressed() {
-    println(key);
+    console.log(key);
     // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
         record = true;
     }
     if (key == 'W' || key == 'w')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_OBEN");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_OBEN");
     if (key == 'A' || key == 'a')
-        liniensegmente.at(liniensegmente.length - 1).typ = "KURVE_LINKS";
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_LINKS";
     if (key == 'S' || key == 's')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_UNTEN");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_UNTEN");
     if (key == 'D' || key == 'd')
-        liniensegmente.at(liniensegmente.length - 1).typ = "KURVE_RECHTS";
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_RECHTS";
     if (key == 'Q' || key == 'q')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_OBENLINKS");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_OBENLINKS");
     if (key == 'E' || key == 'e')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_OBENRECHTS");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_OBENRECHTS");
     if (key == 'Y' || key == 'y')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_UNTENLINKS");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_UNTENLINKS");
     if (key == 'X' || key == 'x')
-        liniensegmente.at(liniensegmente.length - 1).set_type("KURVE_UNTENRECHTS");
+        raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_UNTENRECHTS");
     if (key == ' ') {
-        if (liniensegmente.at(liniensegmente.length - 1).typ == "HORIZONTALE")
-            liniensegmente.at(liniensegmente.length - 1).typ = "VERTIKALE";
-        else if (liniensegmente.at(liniensegmente.length - 1).typ == "VERTIKALE")
-            liniensegmente.at(liniensegmente.length - 1).typ = "HORIZONTALE";
+        if (raster.liniensegmente.at(raster.liniensegmente.length - 1).typ == "HORIZONTALE")
+            raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "VERTIKALE";
+        else if (raster.liniensegmente.at(raster.liniensegmente.length - 1).typ == "VERTIKALE")
+            raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "HORIZONTALE";
         else
-            liniensegmente.at(liniensegmente.length - 1).typ = "HORIZONTALE";
+            raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "HORIZONTALE";
     }
     if (key == '+' || key == 'ȉ') {
         globalVerboseLevel++;
-        println("globalVerboseLevel = ", globalVerboseLevel);
+        console.log("globalVerboseLevel = ", globalVerboseLevel);
     }
     if (key == '-') {
         globalVerboseLevel--;
-        println("globalVerboseLevel = ", globalVerboseLevel);
+        console.log("globalVerboseLevel = ", globalVerboseLevel);
     }
     if (key == 'n' || key == 'N') {
         raster.enable_scaling_mode();
     }
 }
+
+export function mouseMoved(){
+
+    let maxW = 1000; // TODO: must be backgroundImage.width
+    let maxH = 667; // TODO: must be backgroundImage.height
+
+    mouseGridX = clamp(step(mouseX, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
+    mouseGridY = clamp(step(mouseY, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
+}
+
+function clamp (v, min, max) { return v < min ? min : v > max ? max : v }
+function step (v, s) { return Math.round(v / s) * s }

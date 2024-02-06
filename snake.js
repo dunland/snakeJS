@@ -1,31 +1,6 @@
 /*
-   Heizungsauslegungsgenerator v.0.1.03a
-   dunland, März 2022
-
-   TODO:
-   - [x] Raster bewegen per drag&drop
-   - [ ] Raster zerschneiden??
-   - [ ] Interaktion:
-       - [ ] Liniensegmente rückgängig machen
-       - [ ] Liniensegmente an Gitterpunkte binden
-       - [ ] Liniensegmente exportieren/speichern
-   - [ ] Raster:
-       - [ ] Erkennung vertikale vs horizontale Verläufe
-       - [ ] Liniensegmente bei Entfernen eines Punkts löschen
-       - [ ] Punkte entfernen ‒ ohne Fehler
-       - [ ] Benennung Maßeinheiten Wand
-       - [x] Einfügen eines technischen Bildes
-           - [ ] neu setzen der Rasterpunkte bei Laden des Bildes
-           - [ ] Fehler, wenn kein Bild geladen → Popup File Panel
-   - [ ] Export
-       - [ ] Segmentierung des dxf-Exportes
-   - [ ] UI:
-       - [ ] Liste aller Punkte, draggable
-       - [ ] Buttons:
-           - [ ] SVG Export
-           - [ ] DXF Export
-           - [ ] Bild laden
-           - [ ] Rastermaß bestimmen
+   Heizungsauslegungsgenerator v.0.2
+   dunland, Februar 2024
  */
 
 /*
@@ -35,16 +10,12 @@
  */
 
 // import { DxfWriter, point3d } from "@tarikjabiri/dxf";
-import { mode_run, mode_setup } from "./modes.js";
+import { renderScene } from "./modes.js";
 import { GitterPunkt, Raster } from "./Raster.js";
-// import { Liniensegment } from "./Liniensegmente.js";
-import  imageSettings from "./settings.json" assert { type: 'json' };
+import imageSettings from "./settings.json" assert { type: 'json' };
+import { mouseMoved, keyPressed } from "./UserInteraction.js";
 
 console.log(imageSettings)
-
-// fetch('./settings.json')
-//     .then((response) => response.json())
-//     .then((json) => console.log(json));
 
 var backgroundImage;
 var imagePath;
@@ -59,25 +30,18 @@ var globalVerboseLevel = 0;
 var MODE; // can be "RUNNING" or "SETUP"
 
 // Punktlisten:
-var raster = new Raster();
+export var raster = new Raster();
 
 const FLAG_GET_IMAGE_DIALOG = false;
 
-function setup() {
-    //Grafikeinstellungen:
-    createCanvas(800, 500);
-    console.log(settings_datei);
-
-    //ellipseMode(CENTER);
-
-
+function preload() {
     // try loading data, otherwise go to SETUP:
     try {
         imagePath = imageSettings.bild_pfad;
         if (imagePath) {
             backgroundImage = loadImage(imagePath);
             console.log(imagePath);
-            console.log(backgroundImage);
+            console.log(backgroundImage.width);
             MODE = "RUNNING";
         }
         else {
@@ -92,27 +56,35 @@ function setup() {
         FLAG_GET_IMAGE_DIALOG = true;
     }
     console.log("Entering mode ", MODE);
+}
+
+function setup() {
+    //Grafikeinstellungen:
+    createCanvas(1600, 1000);
+    console.log(settings_datei);
+
+    ellipseMode(CENTER);
 
     // Gitterpunkte erstellen:
-    for (let x = 0; x < width; x += raster.punktAbstand_x * raster.scale_x) {
-        for (let y = 0; y < width; y += raster.punktAbstand_y * raster.scale_x) {
-            raster.gitterpunkte.push(new GitterPunkt(x, y));
+    console.log(backgroundImage.width, backgroundImage.height);
+    for (let x = 0; x < Math.min(width, backgroundImage.width); x += raster.punktAbstand_x * raster.scale_x) {
+        for (let y = 0; y < Math.min(height, backgroundImage.height); y += raster.punktAbstand_y * raster.scale_x) {
+            raster.gitterpunkte.push(new GitterPunkt(x, y, raster));
         }
     }
     console.log(raster.gitterpunkte.length, " Gitterpunkte erstellt.");
+    console.log(window.width, window.height, backgroundImage.width, backgroundImage.height);
 }
 
 function draw() {
-    background(255,0,0);
+    background(255, 0, 0);
 
-    if (MODE == "RUNNING") {
-        mode_run(raster, backgroundImage);
-    }
-    else if (MODE == "SETUP") {
-        mode_setup();
-    }
+    renderScene(MODE, raster, backgroundImage);
 }
 
 // using p5js as a module, the functions have to be called manually:
+window.preload = preload;
 window.setup = setup;
 window.draw = draw;
+window.keyPressed = keyPressed;
+window.mouseMoved = mouseMoved;
