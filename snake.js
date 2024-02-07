@@ -13,7 +13,7 @@
 import { renderScene } from "./modes.js";
 import { GitterPunkt, Raster } from "./Raster.js";
 import imageSettings from "./settings.json" assert { type: 'json' };
-import { mouseMoved, keyPressed } from "./UserInteraction.js";
+import { mousePressed, mouseMoved, keyPressed } from "./UserInteraction.js";
 
 console.log(imageSettings)
 
