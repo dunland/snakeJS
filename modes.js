@@ -1,5 +1,7 @@
-import { record } from "./UserInteraction.js";
+import { globalVerboseLevel } from "./Devtools.js";
+import { font, record } from "./snake.js";
 import { mouseGridX, mouseGridY } from "./UserInteraction.js";
+// import { DxfWriter, point3d } from "@tarikjabiri/dxf";
 
 const output_datei = "output.dxf";
 
@@ -9,6 +11,7 @@ export function renderScene(MODE, raster, backgroundImage) {
 
     case "RUNNING":
 
+      let now = millis();
       background(0);
 
       if (backgroundImage) {
@@ -58,8 +61,9 @@ export function renderScene(MODE, raster, backgroundImage) {
 
         // Linie und Länge einblenden:
         if (raster.choose_point_index > 0) {
-          line(raster.scale_line[0].x, raster.scale_line[0].y, mouseX,
-            raster.scale_line[0].y);
+          line(raster.scale_line[0].x, raster.scale_line[0].y, mouseX, raster.scale_line[0].y);
+          textFont(font);
+          textSize(14);
           text(int(raster.scale_line[0].dist(
             new PVector(mouseX, raster.scale_line[0].y))) +
             " px",
@@ -72,6 +76,16 @@ export function renderScene(MODE, raster, backgroundImage) {
       stroke(255);
       ellipse(mouseGridX, mouseGridY, 10);
 
+      if (globalVerboseLevel) {
+        fill(255);
+        noStroke();
+        let fps = frameRate();
+        let cycleDuration = millis() - now;
+        textFont(font);
+        textSize(14);
+        text("FPS: " + fps.toFixed(2), 10, height - 10);
+        text("cycle duration: " + cycleDuration.toFixed(2), 10, height - 20);
+      }
 
       break;
 

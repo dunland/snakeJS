@@ -56,6 +56,11 @@ function preload() {
         FLAG_GET_IMAGE_DIALOG = true;
     }
     console.log("Entering mode ", MODE);
+
+    // load font:
+    font = loadFont("./fonts/Arial.otf", function success() {
+        console.log('successfully loaded font');
+    });
 }
 
 function setup() {
