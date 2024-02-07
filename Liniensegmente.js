@@ -2,13 +2,13 @@ import { globalVerboseLevel } from "./Devtools.js";
 
 export class Liniensegment {
 
-    constructor(input_start, input_end, raster) {
-        this.start = input_start; // Gitterpunkte
-        this.end = input_end;
-        this.x1 = input_start.x;
-        this.y1 = input_start.y;
-        this.x2 = input_end.x;
-        this.y2 = input_end.y;
+    constructor(gp_start, gp_end, raster) {
+        // this.start = gp_start; // Gitterpunkte
+        // this.end = gp_end;
+        this.x1 = gp_start.x;
+        this.y1 = gp_start.y;
+        this.x2 = gp_end.x;
+        this.y2 = gp_end.y;
         this.raster = raster;
         this.typ = ""; // mögliche Typen: "HORIZONTALE", "VERTIKALE", "KURVE_UNTEN","KURVE_OBEN", "KURVE_LINKS", "KURVE_RECHTS"
 
@@ -252,7 +252,7 @@ export class Liniensegment {
             case "KURVE_UNTENLINKS":
                 // unten links, von unten kommend:
                 if (x2 > x1 && y2 > y1) {
-                    typ = "KURVE_UNTENLINKS";
+                   this.typ = "KURVE_UNTENLINKS";
                     console.log("unten links von unten kommend");
 
                     this.angle = 90;
@@ -268,7 +268,7 @@ export class Liniensegment {
 
                 // unten links, von oben kommend:
                 else if (x2 < x1 && y2 < y1) {
-                    typ = "KURVE_UNTENLINKS";
+                    this.typ = "KURVE_UNTENLINKS";
                     console.log("unten links von oben kommend");
 
                     this.angle = 90;
@@ -297,7 +297,7 @@ export class Liniensegment {
                     this.ctrl2 = createVector(x2 + (radius * length), y2);
                     this.end = createVector(x2, y2);
                 } else if (x1 < x2 && y1 > y2) {
-                    typ = "KURVE_UNTENRECHTS";
+                   this.typ = "KURVE_UNTENRECHTS";
                     console.log("unten rechts von oben kommend");
 
                     this.angle = 90;

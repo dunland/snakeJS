@@ -60,9 +60,8 @@ function preload() {
 
 function setup() {
     //Grafikeinstellungen:
-    createCanvas(1600, 1000);
-    console.log(settings_datei);
-
+    createCanvas(1600, 800);
+    // frameRate(15);
     ellipseMode(CENTER);
 
     // Gitterpunkte erstellen:
@@ -87,4 +86,5 @@ window.preload = preload;
 window.setup = setup;
 window.draw = draw;
 window.keyPressed = keyPressed;
+window.mousePressed = mousePressed;
 window.mouseMoved = mouseMoved;

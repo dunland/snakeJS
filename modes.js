@@ -66,11 +66,12 @@ export function renderScene(MODE, raster, backgroundImage) {
             raster.scale_line[0].x, raster.scale_line[0].y - 10);
         }
       }
-      raster.mouseClick();
-      // console.log(mouseX, mouseY);
 
+      // draw cursor:
       noFill();
+      stroke(255);
       ellipse(mouseGridX, mouseGridY, 10);
+
 
       break;
 

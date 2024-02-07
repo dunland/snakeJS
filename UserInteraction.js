@@ -1,4 +1,6 @@
 import { raster } from "./snake.js";
+import { globalVerboseLevel } from "./Devtools.js";
+import { Liniensegment } from "./Liniensegmente.js";
 
 export var record = false;
 export var mouseGridX, mouseGridY;
@@ -47,7 +49,40 @@ export function keyPressed() {
     }
 }
 
-export function mouseMoved(){
+export function mousePressed() {
+    for (let i = 0; i < raster.gitterpunkte.length; i++) {
+        var gp = raster.gitterpunkte[i];
+        if (mouseGridX == gp.x && mouseGridY == gp.y) {
+            gp.active = !gp.active;
+            if (gp.active) {
+                raster.activeGridPoints.push(gp);
+                // neues Liniensegment:
+                if (raster.activeGridPoints.length > 1) {
+                    var gp_vorher =
+                        raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
+                    raster.liniensegmente.push(
+                        new Liniensegment(gp, gp_vorher, raster));
+                    // TODO : gp.linie = zuletzt erstelle Linie
+                }
+            } else {
+                console.log("removal of points not yet implemented!")
+                // this.activeGridPoints.remove(gp);
+                // entferne Liniensegment:
+                // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
+                // diese linie
+            }
+        }
+    }
+
+    if (this.scaling_mode_is_on) {
+        if (this.choose_point_index < 1)
+            this.set_scaling_point(mouseX, mouseY);
+        else
+            this.set_scaling_point(mouseX, int(this.scale_line[0].y));
+    }
+}
+
+export function mouseMoved() {
 
     let maxW = 1000; // TODO: must be backgroundImage.width
     let maxH = 667; // TODO: must be backgroundImage.height
@@ -56,5 +91,5 @@ export function mouseMoved(){
     mouseGridY = clamp(step(mouseY, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
 }
 
-function clamp (v, min, max) { return v < min ? min : v > max ? max : v }
-function step (v, s) { return Math.round(v / s) * s }
+function clamp(v, min, max) { return v < min ? min : v > max ? max : v }
+function step(v, s) { return Math.round(v / s) * s }

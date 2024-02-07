@@ -7,15 +7,12 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
 - `npm start` (führt `nodemon main.js` aus)
 - läuft derzeit nur in Chrome, da Firefox: *snake.js:16:46 import assertions are not currently supported*
 
-
 ## To do
 
 - [x] Keyboard Interaction
 - [ ] Upload Images
 - [ ] Export dxf
 
-- [ ] Raster bewegen per drag&drop
-- [ ] Raster zerschneiden??
 - [ ] Liniensegmente:
     - [ ] Liste Sidepanel
     - [ ] Liniensegmente rückgängig machen
@@ -23,7 +20,9 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
     - [ ] Liniensegmente exportieren/speichern
 - [ ] Raster:
     - [ ] Aussparungen markieren
+    - [ ] Raster zerschneiden??
     - [ ] Erkennung vertikale vs horizontale Verläufe
+    - [ ] Raster bewegen per drag&drop
     - [ ] Liniensegmente bei Entfernen eines Punkts löschen
     - [ ] Punkte entfernen ‒ ohne Fehler
     - [ ] Benennung Maßeinheiten Wand
@@ -42,8 +41,13 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
 
 ## log
 
+07.02.2024
+- [p5js Performance issues](https://github.com/processing/p5.js/wiki/Optimizing-p5.js-Code-for-Performance)
+    - frameRate(15)... immernoch langsam
+    - noL
+
 06.02.2024
-- **checkMouseOverlap frisst viele Ressourcen!!!**... Dotgrid hat das auf jeden Fall besser gelöst via:
+- Dotgrid cursor:
   ``` javascript
   function isEqual (a, b) { return a.x === b.x && a.y === b.y }
   function clamp (v, min, max) { return v < min ? min : v > max ? max : v }
@@ -51,8 +55,13 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
   ```
 - **Upload images** 
     - [using nodeJS+Multer+Express](https://www.digitalocean.com/community/tutorials/nodejs-uploading-files-multer-express) / https://www.golinuxcloud.com/node-js-upload-file/
-    - workaround: Dateien in Ordner ablegen und auswählbar machen
-
+    - ChatGPT:
+    - [ ] *Use noLoop() and redraw(): If your dots don't need to be updated continuously, you can use the noLoop() function to stop the draw loop and only redraw when needed using the redraw() function.*    
+    - [ ] *Offscreen Buffer: Instead of drawing directly to the canvas, you can draw to an offscreen buffer using createGraphics() and then draw the buffer to the canvas. This can improve performance, especially if you're doing complex calculations or drawing operations.*    
+    - [ ] *Batch Rendering: Instead of drawing each dot individually, you can batch render them using shapes like circles or rectangles. This can significantly reduce the number of draw calls and improve performance.*
+    - [x] *Use WebGL Renderer: If your browser supports it, switching to the WebGL renderer (createCanvas(width, height, WEBGL)) can sometimes provide better performance for complex drawings.* **WEBGL ist auf jeden Fall viel schneller** aber braucht besondere Grafikeinstellungen: https://github.com/processing/p5.js/wiki/Getting-started-with-WebGL-in-p5
+    - [ ] *Optimize Drawing Operations: Make sure you're only performing necessary drawing operations inside the draw loop. Avoid unnecessary calculations or operations that don't contribute to the final result.*
+    - [ ] *Profile and Optimize: Use browser developer tools to profile your code and identify performance bottlenecks. Once you identify them, you can optimize those parts of your code to improve performance.*
 05.02.2024
 - [ ] **read JSON in nodeJS**:
     - nodeJS: https://blog.logrocket.com/reading-writing-json-files-node-js-complete-tutorial/

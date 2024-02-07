@@ -20,23 +20,23 @@ export class Raster {
         //   PVector[] scale_line = new PVector[2]; // TODO: vectors in JS?
 
         this.scale_x = 1;
-        this._color = (255, 255, 255); // TODO: must be color
+        this._color = (255, 255, 255);
     }
 
     ////////////////////////////// FUNCTIONS /////////////////////////////
     // --------------------------------------------
     enable_scaling_mode() {
-        scaling_mode_is_on = true;
-        choose_point_index = 0;
+        this.scaling_mode_is_on = true;
+        this.choose_point_index = 0;
     }
 
     // --------------------------------------------
     set_scaling_point(point_x, point_y) {
-        if (scaling_mode_is_on) {
-            raster.scale_line[raster.choose_point_index] =
+        if (this.scaling_mode_is_on) {
+            this.scale_line[this.choose_point_index] =
                 new PVector(point_x, point_y);
-            if (choose_point_index < 1) {
-                choose_point_index++;
+            if (this.choose_point_index < 1) {
+                this.choose_point_index++;
             } else {
                 try {
                     let input = float(ui.showTextInputDialog(
@@ -61,54 +61,15 @@ export class Raster {
                     println("keine Länge eingegeben oder Länge mit falschem Format ",
                         "(Dezimalstellen-Punkt statt Komma verwenden!)");
                 }
-                scaling_mode_is_on = false;
-            }
-        }
-    }
-
-    mouseClick() {
-        if (mouseIsPressed === true) {
-
-            console.log("click!");
-            // Gitterpunkt an Stelle der Maus auswählen:
-            for (let i = 0; i < this.gitterpunkte.length; i++) {
-                var gp = this.gitterpunkte[i];
-                if ((mouseX > gp.x - gp.x_toleranz && mouseX < gp.x + gp.x_toleranz) &&
-                    mouseY > gp.y - gp.y_toleranz && mouseY < gp.y + gp.y_toleranz) {
-                    gp.active = !gp.active;
-                    if (gp.active) {
-                        this.activeGridPoints.push(gp);
-                        // neues Liniensegment:
-                        if (this.activeGridPoints.length > 1) {
-                            var gp_vorher =
-                                this.activeGridPoints.at(this.activeGridPoints.length - 2);
-                            this.liniensegmente.push(
-                                new Liniensegment(gp, gp_vorher, this));
-                            // TODO : gp.linie = zuletzterstelle Linie
-                        }
-                    } else {
-                        console.log("removal of points not yet implemented!")
-                        // this.activeGridPoints.remove(gp);
-                        // entferne Liniensegment:
-                        // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
-                        // diese linie
-                    }
+                this.scaling_mode_is_on = false;
                 }
             }
         }
-
-        if (this.scaling_mode_is_on) {
-            if (this.choose_point_index < 1)
-                this.set_scaling_point(mouseX, mouseY);
-            else
-                this.set_scaling_point(mouseX, int(this.scale_line[0].y));
-        }
-    }
 }
 
-/////////////////////////////////////////// /////////////////////////////
-////////////////////////////// GITTERPUNKTE /////////////////////////////
-/////////////////////////////////////////// /////////////////////////////
+////////////////////////////////////////////////////////////
+//////////////////////// GITTERPUNKTE //////////////////////
+////////////////////////////////////////////////////////////
 export class GitterPunkt {
 
     constructor(x_, y_, raster) {
@@ -118,41 +79,20 @@ export class GitterPunkt {
         
         this.x_toleranz = 10;
         this.y_toleranz = 10;
-        this.underMouse = false;
         this.active = false;
     }
 
     render() {
-        // weißen Gitterpunkt malen:
-        // console.log(this.x, this.y);
-        stroke(255);
-        point(this.x, this.y);
-
-        // grauen Kreis malen, wenn Maus in der Nähe:
-        if (this.underMouse) {
-            noStroke();
-            fill(185, 185, 185, 80);
-            ellipse(this.x, this.y, this.raster.rasterMass / 3, this.raster.rasterMass / 3);
-        }
-
         // weißen Kreis malen, wenn aktiv:
         if (this.active) {
             fill(255);
             ellipse(this.x, this.y, this.raster.rasterMass / 3, this.raster.rasterMass / 3);
         }
-        //else {
-        //  fill(255);
-        //  ellipse(this.x, this.y, this.rasterMass / 6, this.rasterMass / 6);
-        //}
-    }
+        else {
+            // weißen Gitterpunkt malen:
+            stroke(255);
+            point(this.x, this.y);
 
-    // schauen, ob die Maus in der Nähe ist:
-    checkMouseOverlap() {
-        if ((mouseX > this.x - this.x_toleranz && mouseX < this.x + this.x_toleranz) &&
-            mouseY > this.y - this.y_toleranz && mouseY < this.y + this.y_toleranz) {
-            this.underMouse = true;
-        } else {
-            this.underMouse = false;
         }
     }
 }
