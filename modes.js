@@ -19,13 +19,7 @@ export function renderScene(MODE, raster, backgroundImage) {
       }
 
       // Gitter zeichnen:
-      for (var i = 0; i < raster.gitterpunkte.length; i++) {
-        var gp = raster.gitterpunkte[i];
-        // gp.checkMouseOverlap();
-        if (!record) {
-          gp.render();
-        }
-      }
+      raster.render(backgroundImage);
 
       // DXFAufnahme starten:
       if (record) {

@@ -9,7 +9,6 @@
    - welcher Dateityp? SVG oder DXF?
  */
 
-// import { DxfWriter, point3d } from "@tarikjabiri/dxf";
 import { renderScene } from "./modes.js";
 import { GitterPunkt, Raster } from "./Raster.js";
 import imageSettings from "./settings.json" assert { type: 'json' };
@@ -22,15 +21,15 @@ var imagePath;
 var output_datei = "output.dxf";
 var settings_datei = "settings.json";
 
-var record;
+export var font;
 // const rastermass = 13; // in cm
 // const punktAbstand_x = rastermass, punktAbstand_y = rastermass;
 var globalVerboseLevel = 0;
 
 var MODE; // can be "RUNNING" or "SETUP"
 
-// Punktlisten:
-export var raster = new Raster();
+export var raster;
+var rasterMass = 13;
 
 const FLAG_GET_IMAGE_DIALOG = false;
 
@@ -69,15 +68,17 @@ function setup() {
     // frameRate(15);
     ellipseMode(CENTER);
 
+    raster = new Raster(Math.min(width, backgroundImage.width), Math.min(height, backgroundImage.height), rasterMass);
     // Gitterpunkte erstellen:
-    console.log(backgroundImage.width, backgroundImage.height);
-    for (let x = 0; x < Math.min(width, backgroundImage.width); x += raster.punktAbstand_x * raster.scale_x) {
-        for (let y = 0; y < Math.min(height, backgroundImage.height); y += raster.punktAbstand_y * raster.scale_x) {
-            raster.gitterpunkte.push(new GitterPunkt(x, y, raster));
-        }
-    }
+    // for (let x = 0; x < Math.floor(Math.min(width, backgroundImage.width) / raster.rasterMass * raster.scale_x); x++) {
+    //     for (let y = 0; y < Math.floor(Math.min(height, backgroundImage.height) / raster.rasterMass * raster.scale_x); y++) {
+    //         console.log(x,y);
+    //         raster.activePoints[x][y] = false;
+    //     }
+    // }
     console.log(raster.gitterpunkte.length, " Gitterpunkte erstellt.");
-    console.log(window.width, window.height, backgroundImage.width, backgroundImage.height);
+    // console.log(raster.activePoints.length, " Gitterpunkte erstellt.");
+
 }
 
 function draw() {

@@ -49,29 +49,13 @@ export function keyPressed() {
 }
 
 export function mousePressed() {
-    for (let i = 0; i < raster.gitterpunkte.length; i++) {
-        var gp = raster.gitterpunkte[i];
-        if (mouseGridX == gp.x && mouseGridY == gp.y) {
-            gp.active = !gp.active;
-            if (gp.active) {
-                raster.activeGridPoints.push(gp);
-                // neues Liniensegment:
-                if (raster.activeGridPoints.length > 1) {
-                    var gp_vorher =
-                        raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
-                    raster.liniensegmente.push(
-                        new Liniensegment(gp, gp_vorher, raster));
-                    // TODO : gp.linie = zuletzt erstelle Linie
-                }
-            } else {
-                console.log("removal of points not yet implemented!")
-                // this.activeGridPoints.remove(gp);
-                // entferne Liniensegment:
-                // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
-                // diese linie
-            }
-        }
-    }
+    console.log("click!");
+    let x = Math.floor(mouseGridX / raster.rasterMass);
+    let y = Math.floor(mouseGridY / raster.rasterMass);
+    console.log(x, y);
+    raster.activePoints[x][y] = !raster.activePoints[x][y];
+    console.log(raster.activePoints[x][y]);
+    console.log(raster.activePoints);
 
     if (this.scaling_mode_is_on) {
         if (this.choose_point_index < 1)
