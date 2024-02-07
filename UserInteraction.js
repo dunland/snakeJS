@@ -1,5 +1,6 @@
 import { raster } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
+import { Liniensegment } from "./Liniensegmente.js";
 
 export var record = false;
 export var mouseGridX, mouseGridY;

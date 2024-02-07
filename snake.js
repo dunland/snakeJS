@@ -31,6 +31,8 @@ var MODE; // can be "RUNNING" or "SETUP"
 
 // Punktlisten:
 export var raster = new Raster();
+export var font;
+export var record;
 
 const FLAG_GET_IMAGE_DIALOG = false;
 
