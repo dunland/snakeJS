@@ -1,8 +1,7 @@
-import { raster } from "./snake.js";
+import { changeMode, raster } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
 
-export var record = false;
 export var mouseGridX, mouseGridY;
 
 // Tastaturbefehle:
@@ -10,7 +9,7 @@ export function keyPressed() {
     console.log(key);
     // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
-        record = true;
+        changeMode("DXF_EXPORT");
     }
     if (key == 'W' || key == 'w')
         raster.liniensegmente.at(raster.liniensegmente.length - 1).set_type("KURVE_OBEN");
