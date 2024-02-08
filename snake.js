@@ -3,13 +3,6 @@
    dunland, Februar 2024
  */
 
-/*
-   Fragen:
-   - was für ein Output für FreeCAD benötigt? Eine Linie? zwei? drei?
-   - welcher Dateityp? SVG oder DXF?
- */
-
-// import { DxfWriter, point3d } from "@tarikjabiri/dxf";
 import { GitterPunkt, Raster } from "./Raster.js";
 import imageSettings from "./settings.json" assert { type: 'json' };
 import { mousePressed, mouseMoved, keyPressed, mouseGridX, mouseGridY } from "./UserInteraction.js";
@@ -177,6 +170,29 @@ function draw() {
             //     // dxf.addLine(raster.liniensegmente[i].)
 
             // }
+            var line = { 
+                type: 'line', 
+                origin: [0, 0], 
+                end: [50, 50] 
+            };
+
+            const dataToSend = {fileName: "export/line.svg", fileContent: JSON.stringify(line)}
+
+            fetch('http://localhost:3000/api/sendData', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(dataToSend)
+            })
+                .then(response => response.text())
+                .then(message => {
+                    console.log('Antwort vom Server:', message);
+                })
+                .catch(error => {
+                    console.error('Fehler beim Senden der Daten:', error);
+                });
+
 
             changeMode("RUNNING");
             break;

@@ -38,3 +38,8 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
         - [ ] DXF Export
         - [ ] Bild laden
         - [ ] Rastermaß bestimmen
+
+**Fragen:**
+
+- was für ein Output für FreeCAD benötigt? Eine Linie? zwei? drei?
+- welcher Dateityp? SVG oder DXF?
