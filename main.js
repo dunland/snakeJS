@@ -26,12 +26,25 @@ app.post('/api/sendData', (req, res) => {
     if (!fileName || !fileContent) {
       return res.status(400).send('Ungültige Anfrage: Dateiname und Dateiinhalt sind erforderlich.');
   }
+  
+  const incomingData = JSON.parse(fileContent);
 
-  var line = JSON.parse(fileContent);
-  var svg = makerjs.exporter.toSVG(line);
+  var points = incomingData.models.c1.points;
+  var curve1 = new makerjs.models.BezierCurve(points);
+
+  var model = {
+    models: {
+      c1: curve1
+    }
+  };
+
+  model = makerjs.model.mirror(model, false, true);
+
+  var dxf = makerjs.exporter.toDXF(model);
+  console.log(dxf);
 
   // Schreiben der Datei mit dem fs-Modul
-  fs.writeFile(fileName, svg, err => {
+  fs.writeFile(fileName, dxf, err => {
       if (err) {
           console.error('Fehler beim Schreiben der Datei:', err);
           return res.status(500).send('Interner Serverfehler beim Schreiben der Datei.');

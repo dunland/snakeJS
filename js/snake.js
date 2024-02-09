@@ -168,15 +168,11 @@ function draw() {
         case "DXF_EXPORT":
             console.log("begin dxf export");
 
-            exportLines();
+            const exportedModel = exportLines();
+            console.log(exportedModel);
 
-            var line = { 
-                type: 'line', 
-                origin: [0, 0], 
-                end: [50, 50] 
-            };
-
-            const dataToSend = {fileName: "export/line.svg", fileContent: JSON.stringify(line)}
+            const dataToSend = {fileName: `export/${imagePath}.dxf`, fileContent: JSON.stringify(exportedModel)};
+            console.log(dataToSend);
 
             fetch('http://localhost:3000/api/sendData', {
                 method: 'POST',

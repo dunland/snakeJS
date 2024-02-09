@@ -9,6 +9,8 @@ export class Liniensegment {
         this.y1 = gp_start.y;
         this.x2 = gp_end.x;
         this.y2 = gp_end.y;
+        this.ctrl1 = createVector(0,0,0);
+        this.ctrl2 = createVector(0,0,0);
         this.raster = raster;
         this.typ = ""; // mögliche Typen: "HORIZONTALE", "VERTIKALE", "KURVE_UNTEN","KURVE_OBEN", "KURVE_LINKS", "KURVE_RECHTS"
 
@@ -24,290 +26,279 @@ export class Liniensegment {
 
     //////////////////////// Zuordnung des Kurventyps ////////////////////////////
     typ_zuordnung() {
-        const x1 = this.x1;
-        const y1 = this.y1;
-        const x2 = this.x2;
-        const y2 = this.y2;
-        const rastermass = this.raster.rasterMass;
         // --------------------------- gerade Linien: --------------------------
-        if (y1 == y2)
+        if (this.y1 == this.y2)
             this.typ = "HORIZONTALE";
-        else if (x1 == x2)
+        else if (this.x1 == this.x2)
             this.typ = "VERTIKALE";
 
         // ------------------------------ Kurven: ------------------------------
         // KURVE OBEN LINKS; nach oben:
-        else if (x1 > x2 && y1 < y2) {
+        else if (this.x1 > this.x2 && this.y1 < this.y2) {
             this.typ = "KURVE_OBENLINKS";
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1 - (radius * length), y1);
-            this.ctrl2 = createVector(x2, y2 - (radius * length));
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1 - (radius * length), this.y1);
+            this.ctrl2 = createVector(this.x2, this.y2 - (radius * length));
+            this.end = createVector(this.x2, this.y2);
         }
 
         // KURVE OBEN LINKS; nach unten:
-        else if (x1 < x2 && y1 > y2) {
+        else if (this.x1 < this.x2 && this.y1 > this.y2) {
             this.typ = "KURVE_OBENLINKS";
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1, y1 - (radius * length));
-            this.ctrl2 = createVector(x2 - (radius * length), y2);
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1, this.y1 - (radius * length));
+            this.ctrl2 = createVector(this.x2 - (radius * length), this.y2);
+            this.end = createVector(this.x2, this.y2);
         }
 
         // oben rechts, von oben kommend:
-        else if (x2 < x1 && y2 < y1) {
+        else if (this.x2 < this.x1 && this.y2 < this.y1) {
             this.typ = "KURVE_OBENRECHTS";
             console.log("oben rechts von oben kommend");
 
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1, y1 - (radius * length));
-            this.ctrl2 = createVector(x2 + (radius * length), y2);
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1, this.y1 - (radius * length));
+            this.ctrl2 = createVector(this.x2 + (radius * length), this.y2);
+            this.end = createVector(this.x2, this.y2);
         }
 
         // oben rechts, von unten kommend:
-        else if (x2 > x1 && y2 > y1) {
+        else if (this.x2 > this.x1 && this.y2 > this.y1) {
             this.typ = "KURVE_OBENRECHTS";
             console.log("oben rechts von unten kommend");
 
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1 + (radius * length), y1);
-            this.ctrl2 = createVector(x2, y2 - (radius * length));
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1 + (radius * length), this.y1);
+            this.ctrl2 = createVector(this.x2, this.y2 - (radius * length));
+            this.end = createVector(this.x2, this.y2);
         }
 
         // unten links, von unten kommend:
-        else if (x2 > x1 && y2 > y1) {
+        else if (this.x2 > this.x1 && this.y2 > this.y1) {
             this.typ = "KURVE_UNTENLINKS";
             console.log("unten links von unten kommend");
 
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1, y1 + (radius * length));
-            this.ctrl2 = createVector(x2 - (radius * length), y2);
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1, this.y1 + (radius * length));
+            this.ctrl2 = createVector(this.x2 - (radius * length), this.y2);
+            this.end = createVector(this.x2, this.y2);
         }
 
         // unten links, von oben kommend:
-        else if (x2 < x1 && y2 < y1) {
+        else if (this.x2 < this.x1 && this.y2 < this.y1) {
             this.typ = "KURVE_UNTENLINKS";
             console.log("unten links von oben kommend");
 
             this.angle = 90;
             // mittlere Linie:
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1 - (radius * length), y1);
-            this.ctrl2 = createVector(x2, y2 + (radius * length));
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1 - (radius * length), this.y1);
+            this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+            this.end = createVector(this.x2, this.y2);
         }
 
         // unten rechts:
-        else if (x1 > x2 && y1 < y2) {
+        else if (this.x1 > this.x2 && this.y1 < this.y2) {
             this.typ = "KURVE_UNTENRECHTS";
             console.log("unten rechts von unten kommend");
 
             this.angle = 90;
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1 + (radius * length), y1);
-            this.ctrl2 = createVector(x2, y2 + (radius * length));
-            this.end = createVector(x2, y2);
-        } else if (x1 < x2 && y1 > y2) {
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1 + (radius * length), this.y1);
+            this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+            this.end = createVector(this.x2, this.y2);
+        } else if (this.x1 < this.x2 && this.y1 > this.y2) {
             this.typ = "KURVE_UNTENRECHTS";
             console.log("unten rechts von oben kommend");
 
             this.angle = 90;
-            let radius = rastermass;
+            let radius = this.raster.rasterMass;
             length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-            this.start = createVector(x1, y1);
-            this.ctrl1 = createVector(x1 + (radius * length), y1);
-            this.ctrl2 = createVector(x2, y2 + (radius * length));
-            this.end = createVector(x2, y2);
+            this.start = createVector(this.x1, this.y1);
+            this.ctrl1 = createVector(this.x1 + (radius * length), this.y1);
+            this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+            this.end = createVector(this.x2, this.y2);
         }
 
-        console.log("neue Linie des Typs " + this.typ + ":\n" + x1 + "|" + y1 + "\t" + x2 +
-            "|" + y2);
+        console.log(`neue Linie des Typs ${this.typ}:\n ${this.x1}|${this.y1} \t ${this.ctrl1.x}|${this.ctrl1.y} \t ${this.ctrl2.x}|${this.ctrl2.y} \t ${this.x2}|${this.y2}`);
     }
 
     set_type(type_) {
         this.typ = type_;
         let radius;
-        const rastermass = this.raster.rasterMass;
-        const x1 = this.x1;
-        const x2 = this.x2;
-        const y1 = this.y1;
-        const y2 = this.y2;
 
         switch (type_) {
             case "KURVE_OBEN":
-                radius = rastermass / 2;
+                radius = this.raster.rasterMass / 2;
                 length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                this.start = createVector(x1, y1);
-                this.ctrl1 = createVector(x1, y1 - (radius * length));
-                this.ctrl2 = createVector(x2, y2 - (radius * length));
-                this.end = createVector(x2, y2);
+                this.start = createVector(this.x1, this.y1);
+                this.ctrl1 = createVector(this.x1, this.y1 - (radius * length));
+                this.ctrl2 = createVector(this.x2, this.y2 - (radius * length));
+                this.end = createVector(this.x2, this.y2);
                 break;
 
             case "KURVE_UNTEN":
-                radius = rastermass / 2;
+                radius = this.raster.rasterMass / 2;
                 length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                this.start = createVector(x1, y1);
-                this.ctrl1 = createVector(x1, y1 + (radius * length));
-                this.ctrl2 = createVector(x2, y2 + (radius * length));
-                this.end = createVector(x2, y2);
+                this.start = createVector(this.x1, this.y1);
+                this.ctrl1 = createVector(this.x1, this.y1 + (radius * length));
+                this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+                this.end = createVector(this.x2, this.y2);
                 break;
 
             case "KURVE_OBENLINKS":
 
-                if (x1 > x2 && y1 < y2) {
+                if (this.x1 > this.x2 && this.y1 < this.y2) {
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1 - (radius * length), y1);
-                    this.ctrl2 = createVector(x2, y2 - (radius * length));
-                    this.end = createVector(x2, y2);
-                } else if (x1 < x2 && y1 > y2) {
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1 - (radius * length), this.y1);
+                    this.ctrl2 = createVector(this.x2, this.y2 - (radius * length));
+                    this.end = createVector(this.x2, this.y2);
+                } else if (this.x1 < this.x2 && this.y1 > this.y2) {
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1, y1 - (radius * length));
-                    this.ctrl2 = createVector(x2 - (radius * length), y2);
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1, this.y1 - (radius * length));
+                    this.ctrl2 = createVector(this.x2 - (radius * length), this.y2);
+                    this.end = createVector(this.x2, this.y2);
                 }
                 break;
 
             case "KURVE_OBENRECHTS":
                 // oben rechts, von oben kommend:
-                if (x2 < x1 && y2 < y1) {
+                if (this.x2 < this.x1 && this.y2 < this.y1) {
                     console.log("oben rechts von oben kommend");
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1, y1 - (radius * length));
-                    this.ctrl2 = createVector(x2 + (radius * length), y2);
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1, this.y1 - (radius * length));
+                    this.ctrl2 = createVector(this.x2 + (radius * length), this.y2);
+                    this.end = createVector(this.x2, this.y2);
                 }
 
                 // oben rechts, von unten kommend:
-                else if (x2 > x1 && y2 > y1) {
+                else if (this.x2 > this.x1 && this.y2 > this.y1) {
                     console.log("oben rechts von unten kommend");
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1 + (radius * length), y1);
-                    this.ctrl2 = createVector(x2, y2 - (radius * length));
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1 + (radius * length), this.y1);
+                    this.ctrl2 = createVector(this.x2, this.y2 - (radius * length));
+                    this.end = createVector(this.x2, this.y2);
                 }
 
                 break;
 
             case "KURVE_UNTENLINKS":
                 // unten links, von unten kommend:
-                if (x2 > x1 && y2 > y1) {
+                if (this.x2 > this.x1 && this.y2 > this.y1) {
                    this.typ = "KURVE_UNTENLINKS";
                     console.log("unten links von unten kommend");
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1, y1 + (radius * length));
-                    this.ctrl2 = createVector(x2 - (radius * length), y2);
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1, this.y1 + (radius * length));
+                    this.ctrl2 = createVector(this.x2 - (radius * length), this.y2);
+                    this.end = createVector(this.x2, this.y2);
                 }
 
                 // unten links, von oben kommend:
-                else if (x2 < x1 && y2 < y1) {
+                else if (this.x2 < this.x1 && this.y2 < this.y1) {
                     this.typ = "KURVE_UNTENLINKS";
                     console.log("unten links von oben kommend");
 
                     this.angle = 90;
                     // mittlere Linie:
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1 - (radius * length), y1);
-                    this.ctrl2 = createVector(x2, y2 + (radius * length));
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1 - (radius * length), this.y1);
+                    this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+                    this.end = createVector(this.x2, this.y2);
                 }
                 break;
 
             case "KURVE_UNTENRECHTS":
-                if (x1 > x2 && y1 < y2) {
+                if (this.x1 > this.x2 && this.y1 < this.y2) {
                     this.typ = "KURVE_UNTENRECHTS";
                     console.log("unten rechts von unten kommend");
 
                     this.angle = 90;
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1, y1 + (radius * length));
-                    this.ctrl2 = createVector(x2 + (radius * length), y2);
-                    this.end = createVector(x2, y2);
-                } else if (x1 < x2 && y1 > y2) {
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1, this.y1 + (radius * length));
+                    this.ctrl2 = createVector(this.x2 + (radius * length), this.y2);
+                    this.end = createVector(this.x2, this.y2);
+                } else if (this.x1 < this.x2 && this.y1 > this.y2) {
                    this.typ = "KURVE_UNTENRECHTS";
                     console.log("unten rechts von oben kommend");
 
                     this.angle = 90;
-                    radius = rastermass;
+                    radius = this.raster.rasterMass;
                     length = 4 * tan(radians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-                    this.start = createVector(x1, y1);
-                    this.ctrl1 = createVector(x1 + (radius * length), y1);
-                    this.ctrl2 = createVector(x2, y2 + (radius * length));
-                    this.end = createVector(x2, y2);
+                    this.start = createVector(this.x1, this.y1);
+                    this.ctrl1 = createVector(this.x1 + (radius * length), this.y1);
+                    this.ctrl2 = createVector(this.x2, this.y2 + (radius * length));
+                    this.end = createVector(this.x2, this.y2);
                 }
 
                 break;
