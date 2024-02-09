@@ -4,10 +4,11 @@
  */
 
 import { GitterPunkt, Raster } from "./Raster.js";
-import imageSettings from "./settings.json" assert { type: 'json' };
+import imageSettings from "../settings.json" assert { type: 'json' };
 import { mousePressed, mouseMoved, keyPressed, mouseGridX, mouseGridY } from "./UserInteraction.js";
 import { globalVerboseLevel } from "./Devtools.js";
-import { Bezier } from "./js/bezierjs/src/bezier.js";
+import { Bezier } from "./bezierjs/src/bezier.js";
+import { exportLines } from "./lineExport.js";
 
 var backgroundImage;
 var imagePath;
@@ -166,10 +167,9 @@ function draw() {
 
         case "DXF_EXPORT":
             console.log("begin dxf export");
-            // for (let i = 0; raster.liniensegmente.length; i++) {
-            //     // dxf.addLine(raster.liniensegmente[i].)
 
-            // }
+            exportLines();
+
             var line = { 
                 type: 'line', 
                 origin: [0, 0], 
