@@ -92,7 +92,6 @@ export class GitterPunkt {
             // weißen Gitterpunkt malen:
             stroke(255);
             point(this.x, this.y);
-
         }
     }
 }

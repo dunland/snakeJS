@@ -8,11 +8,11 @@ var line = {
 };
 
 // dxf example:
-var points = [[0, 100], [0, 0], [100, 0]];
-var curve1 = new makerjs.models.BezierCurve(points);
-curve1.origin = [20, 20];
+// var points = [[0, 100], [0, 0], [100, 0]];
+// var curve1 = new makerjs.models.BezierCurve(points);
+// curve1.origin = [20, 20];
 // more accurate
-var curve2 = new makerjs.models.BezierCurve(points, 0.01);
+// var curve2 = new makerjs.models.BezierCurve(points, 0.01);
 
 // var model = {
 //     models: {
