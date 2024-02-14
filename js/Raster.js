@@ -23,7 +23,18 @@ export class Raster {
         this._color = (255, 255, 255);
     }
 
-    ////////////////////////////// FUNCTIONS /////////////////////////////
+    ////////////////// FUNCTIONS ///////////////////
+
+    createPoints(dimX, dimY) {
+        for (let x = 0; x < dimX; x += this.punktAbstand_x * this.scale_x) {
+            for (let y = 0; y < dimY; y += this.punktAbstand_y * this.scale_x) {
+                this.gitterpunkte.push(new GitterPunkt(x, y, this));
+            }
+        }
+        console.log(this.gitterpunkte.length, " Gitterpunkte erstellt.");
+
+    }
+
     // --------------------------------------------
     enable_scaling_mode() {
         this.scaling_mode_is_on = true;
@@ -62,9 +73,9 @@ export class Raster {
                         "(Dezimalstellen-Punkt statt Komma verwenden!)");
                 }
                 this.scaling_mode_is_on = false;
-                }
             }
         }
+    }
 }
 
 ////////////////////////////////////////////////////////////
@@ -76,7 +87,7 @@ export class GitterPunkt {
         this.x = x_;
         this.y = y_;
         this.raster = raster;
-        
+
         this.x_toleranz = 10;
         this.y_toleranz = 10;
         this.active = false;

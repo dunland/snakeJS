@@ -29,6 +29,7 @@ app.post('/api/sendData', (req, res) => {
   
   const incomingData = JSON.parse(fileContent);
 
+  // TODO: automatisieren
   var points = incomingData.models.c1.points;
   var curve1 = new makerjs.models.BezierCurve(points);
 

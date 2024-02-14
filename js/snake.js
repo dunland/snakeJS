@@ -5,7 +5,7 @@
 
 import { GitterPunkt, Raster } from "./Raster.js";
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { mousePressed, mouseMoved, keyPressed, mouseGridX, mouseGridY } from "./UserInteraction.js";
+// import { mousePressed, mouseMoved, keyPressed, mouseGridX, mouseGridY } from "./UserInteraction.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Bezier } from "./bezierjs/src/bezier.js";
 import { exportLines } from "./lineExport.js";
@@ -24,11 +24,9 @@ const FLAG_GET_IMAGE_DIALOG = false;
 function preload() {
     // try loading data, otherwise go to SETUP:
     try {
-        imagePath = imageSettings.bild_pfad;
+        imagePath = imageSettings.imagePath;
         if (imagePath) {
             backgroundImage = loadImage(imagePath);
-            console.log(imagePath);
-            console.log(backgroundImage.width);
             MODE = "RUNNING";
         }
         else {
@@ -38,11 +36,10 @@ function preload() {
         }
 
     } catch (e) {
-        print(e, "Bitte Eintellungen eigenhändig vornehmen.");
+        console.log(e, "Bitte Eintellungen eigenhändig vornehmen.");
         MODE = "SETUP";
         FLAG_GET_IMAGE_DIALOG = true;
     }
-    console.log("Entering mode ", MODE);
 
     // load font:
     font = loadFont("./fonts/Arial.otf", function success() {
@@ -53,17 +50,16 @@ function preload() {
 function setup() {
     //Grafikeinstellungen:
     createCanvas(1600, 800);
+    console.log("using renderer", webglVersion);
+
     // frameRate(15);
     ellipseMode(CENTER);
 
-    // Gitterpunkte erstellen:
     console.log(backgroundImage.width, backgroundImage.height);
-    for (let x = 0; x < Math.min(width, backgroundImage.width); x += raster.punktAbstand_x * raster.scale_x) {
-        for (let y = 0; y < Math.min(height, backgroundImage.height); y += raster.punktAbstand_y * raster.scale_x) {
-            raster.gitterpunkte.push(new GitterPunkt(x, y, raster));
-        }
-    }
-    console.log(raster.gitterpunkte.length, " Gitterpunkte erstellt.");
+    
+    // Gitterpunkte erstellen:
+    raster.createPoints(Math.min(width, backgroundImage.width), Math.min(height, backgroundImage.height));
+
     console.log(window.width, window.height, backgroundImage.width, backgroundImage.height);
 }
 
@@ -85,12 +81,11 @@ function draw() {
                 // raster.gitterpunkte[i].render();
             }
 
-
             // Formen zeichnen:
             // zeichne Linie durch alle aktiven raster.gitterpunkte:
             // if (liniensegmente.length > 1)
             for (let i = 0; i < raster.liniensegmente.length; i++) {
-                raster.liniensegmente[i].render();
+                // raster.liniensegmente[i].render();
             }
 
             if (raster.scaling_mode_is_on) {
@@ -198,11 +193,3 @@ function draw() {
             break;
     }
 }
-
-// using p5js as a module, the functions have to be called manually:
-window.preload = preload;
-window.setup = setup;
-window.draw = draw;
-window.keyPressed = keyPressed;
-window.mousePressed = mousePressed;
-window.mouseMoved = mouseMoved;
