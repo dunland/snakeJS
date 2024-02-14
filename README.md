@@ -33,6 +33,7 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
     - [ ] Segmentierung des dxf-Exportes
 - [ ] UI:
     - [ ] Liste aller Punkte, draggable
+    - [ ] gestrichelte Linie wenn Linien malen möglich
     - [ ] Buttons:
         - [ ] SVG Export
         - [ ] DXF Export

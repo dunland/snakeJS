@@ -1,5 +1,7 @@
 # exports
 export
+js/bezierjs
+fonts
 
 # Logs
 logs

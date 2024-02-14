@@ -1,6 +1,7 @@
 import { changeMode, raster } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
+import { gridDots } from "./paperSnake.js";
 
 export var mouseGridX, mouseGridY;
 
@@ -46,5 +47,12 @@ export function keyPressed(keyEvent) {
     }
     if (key == 'n' || key == 'N') {
         raster.enable_scaling_mode();
+    }
+    if (key == 'g' || key == 'G') {
+        let buttonShowGrid = document.getElementById("buttonShowGrid");
+        gridDots.forEach((dot) => {
+            dot.visible = !dot.visible;
+        });
+        buttonShowGrid.classList.toggle("active");
     }
 }

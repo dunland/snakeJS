@@ -2,11 +2,12 @@ import imageSettings from "../settings.json" assert { type: 'json' };
 import { raster } from "./snake.js";
 import { Liniensegment } from "./Liniensegmente.js";
 import { keyPressed } from "./UserInteraction.js";
+import { setRadius } from "./paperUtils.js";
 
 var cursor, mouseGridX, mouseGridY;
 var image;
-var circles = [];
-var liniensegmente = []; // TODO: use raster.liniensegmente ?
+export var gridDots = [];
+export var liniensegmente = []; // TODO: use raster.liniensegmente ?
 
 // Only executed our code once the DOM is ready.
 window.onload = function () {
@@ -14,7 +15,7 @@ window.onload = function () {
     // Get a reference to the canvas object
     var canvas = document.getElementById('snakeCanvas');
     // Create an empty project and a view for the canvas:
-    
+
     const imageDimensions = loadImage(imageSettings.imageName);
 
     paper.setup(canvas);
@@ -25,15 +26,20 @@ window.onload = function () {
     for (var i = 0; i < raster.gitterpunkte.length; i++) {
         const pt = new paper.Point(raster.gitterpunkte[i].x, raster.gitterpunkte[i].y);
 
-        circles[i] = new paper.Path.Circle(pt, 1);
-        circles[i].fillColor = 'white';
+        gridDots[i] = new paper.Path.Circle({
+            center: pt,
+            radius: 1,
+            fillColor: 'white',
+            visible: false
+        });
     }
 
     // mouse cursor:
     cursor = new paper.Path.Circle({
-        center: new paper.Point(0,0),
+        center: new paper.Point(0, 0),
         radius: raster.rasterMass / 2,
-        strokeColor: 'white'});
+        strokeColor: 'white'
+    });
 
     // addEventListener("mousemove", mouseMoved);
     var cursorTool = new paper.Tool();
@@ -46,7 +52,7 @@ window.onload = function () {
     paper.view.draw();
 }
 
-function loadImage(imageName){
+function loadImage(imageName) {
 
     image = new Image();
     image.src = "../" + imageName;
@@ -55,9 +61,9 @@ function loadImage(imageName){
     // set canvas background image:
     const canvasElement = document.getElementById('snakeCanvas');
     canvasElement.style.backgroundImage = `url(${imageName})`;
-    
-    // set canvas size:
-    // canvasElement.width = '70px';
+
+    // TODO: set canvas size:
+    // canvasElement.width = image.width + 'px';
     // canvasElement.height = image.height + "px";
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
 
@@ -83,19 +89,23 @@ function mousePressed() {
     console.log("click!", mouseGridX, mouseGridY);
 
     const gpIdx = raster.gitterpunkte.findIndex((el) => (el.x == mouseGridX && el.y == mouseGridY));
-    const gp = circles[gpIdx];
-    
+    const gp = gridDots[gpIdx];
+
     if (!gp) return;
-    
+
     gp.selected = !gp.selected;
+    let scaling = gp.selected ? raster.rasterMass / 3 : 1;
+    setRadius(gp, scaling);
+    
     if (gp.selected) {
-        circles[gpIdx].replaceWith(
-            new paper.Path.Circle({
-                center: new paper.Point(mouseGridX, mouseGridY), 
-                radius: raster.rasterMass / 3,
-            fillColor: 'white'}));
+        // gp.replaceWith(
+        //     new paper.Path.Circle({
+        //         center: new paper.Point(mouseGridX, mouseGridY),
+        //         radius: raster.rasterMass / 3,
+        //         fillColor: 'white'
+        //     }));
         raster.activeGridPoints.push(gp);
-        
+
         // neues Liniensegment:
         if (raster.activeGridPoints.length > 1) {
             var gp_vorher =
