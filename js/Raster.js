@@ -8,11 +8,14 @@ export class Raster {
     constructor() {
 
         this.gitterpunkte = []; // list of grid points
+        this.gridPointHistory = [];
+        this.gridDots = []; // list of paper.Path.Circles
         this.activeGridPoints = []; // list of active grid points
-        this.liniensegmente = [];
+        this.liniensegmente = []; // TODO: replace with segmentHistory
         this.rasterMass = 13;
         this.punktAbstand_x = this.rasterMass;
         this.punktAbstand_y = this.rasterMass;
+        this.path; // must be initialized after paper.setup()
 
         this.scaling_mode_is_on = false;
         this.choose_point_index = 0;
@@ -32,6 +35,24 @@ export class Raster {
         }
         console.log(this.gitterpunkte.length, " Gitterpunkte erstellt.");
 
+    }
+
+    replaceCurve(type) {
+
+        if (this.liniensegmente.length < 1) {
+            console.log("no active points left to change curve")
+            return;
+        }
+
+        console.log(`replace ${this.liniensegmente[this.liniensegmente.length - 1].type} (${this.liniensegmente[this.liniensegmente.length - 1].segment}) with type ${type}`);
+
+        this.path.lastChild.remove(); // remove last segment
+        this.liniensegmente.pop(); // remove last linesegment helper
+
+        const ls = new Liniensegment(this.activeGridPoints[this.activeGridPoints.length - 1], this.activeGridPoints[this.activeGridPoints.length - 2], this, type);
+        this.liniensegmente.push(ls);
+
+        this.path.addChild(ls.segment); // add new segment
     }
 
     // --------------------------------------------
@@ -85,8 +106,17 @@ export class GitterPunkt {
     constructor(x_, y_, raster) {
         this.x = x_;
         this.y = y_;
-        this.raster = raster;
+        this.direction; // up or down, relative to last gp
 
         this.active = false;
+    }
+
+    updateDirection(gpPrior) {
+        if (gpPrior.position.y > this.y)
+            this.direction = "UP";
+        else
+            this.direction = "DOWN";
+        console.log(this.direction)
+
     }
 }

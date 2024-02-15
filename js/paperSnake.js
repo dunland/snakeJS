@@ -7,8 +7,6 @@ import { Raster } from "./Raster.js";
 var cursor, mouseGridX, mouseGridY;
 var image;
 export var raster = new Raster();
-export var gridDots = [];
-export var liniensegmente = []; // TODO: use raster.liniensegmente ?
 
 // Only executed our code once the DOM is ready.
 window.onload = function () {
@@ -30,7 +28,7 @@ window.onload = function () {
     for (var i = 0; i < raster.gitterpunkte.length; i++) {
         const pt = new paper.Point(raster.gitterpunkte[i].x, raster.gitterpunkte[i].y);
         
-        gridDots[i] = new paper.Path.Circle({
+        raster.gridDots[i] = new paper.Path.Circle({
             center: pt,
             radius: 1,
             fillColor: 'white',
@@ -93,42 +91,39 @@ function mousePressed() {
     console.log("click!", mouseGridX, mouseGridY);
 
     const gpIdx = raster.gitterpunkte.findIndex((el) => (el.x == mouseGridX && el.y == mouseGridY));
-    const gp = gridDots[gpIdx];
+    const gp = raster.gridDots[gpIdx];
 
     if (!gp) return;
 
     raster.gitterpunkte[gpIdx].active = !raster.gitterpunkte[gpIdx].active;
     let scaling = raster.gitterpunkte[gpIdx].active ? raster.rasterMass / 3 : 1;
     setRadius(gp, scaling);
-
+    
     if (raster.gitterpunkte[gpIdx].active) {
         raster.activeGridPoints.push(gp);
-
+        raster.gridPointHistory.push(raster.gitterpunkte[gpIdx]);
+        
         // neues Liniensegment:
         if (raster.activeGridPoints.length > 1) {
             var gp_vorher =
-                raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
+            raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
+            raster.gitterpunkte[gpIdx].updateDirection(gp_vorher);
             // raster.liniensegmente.push(
             //     new Liniensegment(gp, gp_vorher, raster, liniensegmente));
             // TODO : gp.linie = zuletzt erstelle Linie
-            var ls = new Liniensegment(gp, gp_vorher, raster, liniensegmente);
+            var ls = new Liniensegment(gp, gp_vorher, raster);
+            raster.liniensegmente.push(ls);
+            console.log(raster.liniensegmente);
 
-            raster.path.addChild(liniensegmente[liniensegmente.length - 1]);
+            raster.path.addChild(ls.segment);
             console.log(raster.path);
         }
     } else {
         // entferne Liniensegment:
-        liniensegmente[liniensegmente.length - 1].remove();
-        raster.gitterpunkte[gpIdx].active = false;
+        // ls.remove();
+        // raster.gitterpunkte[gpIdx].active = false;
         // raster.activeGridPoints.remove(gp);
         // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
         // diese linie
-    }
-
-    if (raster.scaling_mode_is_on) {
-        if (raster.choose_point_index < 1)
-            raster.set_scaling_point(mouseX, mouseY);
-        else
-            raster.set_scaling_point(mouseX, int(raster.scale_line[0].y));
     }
 }

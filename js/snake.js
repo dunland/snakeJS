@@ -3,7 +3,6 @@
    dunland, Februar 2024
  */
 
-import { GitterPunkt, Raster } from "./Raster.js";
 import imageSettings from "../settings.json" assert { type: 'json' };
 // import { mousePressed, mouseMoved, keyPressed, mouseGridX, mouseGridY } from "./UserInteraction.js";
 import { globalVerboseLevel } from "./Devtools.js";

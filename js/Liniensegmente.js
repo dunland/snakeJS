@@ -2,7 +2,7 @@ import { globalVerboseLevel } from "./Devtools.js";
 
 export class Liniensegment {
 
-    constructor(gp_end, gp_start, raster, liniensegmente) {
+    constructor(gp_end, gp_start, raster, type) {
         this.x1 = gp_start.position.x;
         this.y1 = gp_start.position.y;
         this.x2 = gp_end.position.x;
@@ -10,237 +10,176 @@ export class Liniensegment {
         this.ctrl1 = new paper.Point(0, 0);
         this.ctrl2 = new paper.Point(0, 0);
         this.raster = raster;
-        this.liniensegmente = liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
-        this.typ = ""; // mögliche Typen: "HORIZONTALE", "VERTIKALE", "KURVE_UNTEN","KURVE_OBEN", "KURVE_LINKS", "KURVE_RECHTS"
+        this.liniensegmente = raster.liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
 
-        this.angle = 180;
+        this.radius = this.raster.rasterMass;
+        this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
 
-        if (raster.activeGridPoints) // do not allocate first activePoint
-            this.setType();
-        else
-            console.log(
-                "Liniensegment konnte nicht erzeugt werden, da es zu wenig aktive Gitterpunkte gibt.");
+        if (raster.activeGridPoints) { // do not allocate first activePoint
+            this.type = type == undefined ? this.getType() : type;
+            this.createCurveOfType(this.type);
+            console.log(this.getType());
+        }
+        // else
+        //     console.log(
+        //         "Liniensegment konnte nicht erzeugt werden, da es zu wenig aktive Gitterpunkte gibt.");
     }
 
     //////////////////////// Zuordnung des Kurventyps ////////////////////////////
-    setType() {
-        let radius;
-        // --------------------------- gerade Linien: --------------------------
-        if (this.y1 == this.y2) {
-            this.typ = "HORIZONTALE";
+    getType() {
+        if (this.y1 == this.y2)
+            return "HORIZONTALE";
 
-            this.liniensegmente.push(new paper.Path.Line({
-                from: [this.x1, this.y1],
-                to: [this.x2, this.y2],
-                strokeWidth: 2,
-                strokeColor: 'white'
-            }));
-            return;
-        }
+        else if (this.x1 == this.x2)
+            return "VERTIKALE";
 
-        else if (this.x1 == this.x2) {
-            this.typ = "VERTIKALE";
+        else if (this.x1 > this.x2 && this.y1 < this.y2)
+            return "KURVE_OBENLINKS_DOWN";
 
-            this.liniensegmente.push(new paper.Path.Line({
-                from: [this.x1, this.y1],
-                to: [this.x2, this.y2],
-                strokeWidth: 2,
-                strokeColor: 'white'
-            }));
-            return;
-        }
+        else if (this.x1 < this.x2 && this.y1 > this.y2)
+            return "KURVE_OBENLINKS_UP"
 
-        // ---------------------- Kurven: ------------------------
-        // KURVE OBEN LINKS; nach oben:
-        else if (this.x1 > this.x2 && this.y1 < this.y2) {
-            this.typ = "KURVE_OBENLINKS";
-            this.angle = 90;
-            // mittlere Linie:
-            radius = this.raster.rasterMass;
-            const length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
+        else if (this.x2 > this.x1 && this.y2 > this.y1)
+            return "KURVE_OBENRECHTS_DOWN";
 
-            this.end = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1 - (radius * length), this.y1);
-            this.ctrl2 = new paper.Point(this.x2, this.y2 - (radius * length));
-            this.start = new paper.Point(this.x2, this.y2);
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
+        else if (this.x2 < this.x1 && this.y2 < this.y1)
+            return "KURVE_OBENRECHTS_UP";
 
-        // KURVE OBEN LINKS; nach unten:
-        else if (this.x1 < this.x2 && this.y1 > this.y2) {
-            this.typ = "KURVE_OBENLINKS";
-            this.angle = 90;
-            // mittlere Linie:
-            radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x; // TODO: * (relativeDiffX);
+        else if (this.x2 < this.x1 && this.y2 < this.y1)
+            return "KURVE_UNTENLINKS_UP";
 
-            this.start = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1, this.y1 - (radius * length));
-            this.ctrl2 = new paper.Point(this.x2 - (radius * length), this.y2);
-            this.end = new paper.Point(this.x2, this.y2);
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
+        else if (this.x2 > this.x1 && this.y2 > this.y1)
+            return "KURVE_UNTENLINKS_DOWN";
 
+        else if (this.x1 > this.x2 && this.y1 < this.y2)
+            this.type = "KURVE_UNTENRECHTS_DOWN";
 
-        // oben rechts, von unten kommend:
-        else if (this.x2 < this.x1 && this.y2 < this.y1) {
-            this.typ = "KURVE_OBENRECHTS";
-            console.log("oben rechts von unten kommend");
-
-            this.angle = 90;
-            // mittlere Linie:
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.start = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1, this.y1 - (radius * length));
-            this.ctrl2 = new paper.Point(this.x2 + (radius * length), this.y2);
-            this.end = new paper.Point(this.x2, this.y2);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
-
-        // oben rechts, von oben kommend:
-        else if (this.x2 > this.x1 && this.y2 > this.y1) {
-            this.typ = "KURVE_OBENRECHTS";
-            console.log("oben rechts von oben kommend");
-
-            this.angle = 90;
-            // mittlere Linie:
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.start = new paper.Point(this.x2, this.y2);
-            this.ctrl1 = new paper.Point(this.x1 + (radius * length), this.y1);
-            this.ctrl2 = new paper.Point(this.x2, this.y2 - (radius * length));
-            this.end = new paper.Point(this.x1, this.y1);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-
-        }
-
-        // unten links, von oben kommend:
-        else if (this.x2 > this.x1 && this.y2 > this.y1) {
-            this.typ = "KURVE_UNTENLINKS";
-            console.log("unten links von oben kommend");
-
-            this.angle = 90;
-            // mittlere Linie:
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.start = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1, this.y1 + (radius * length));
-            this.ctrl2 = new paper.Point(this.x2 - (radius * length), this.y2);
-            this.end = new paper.Point(this.x2, this.y2);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
-
-        // unten links, von unten kommend:
-        else if (this.x2 < this.x1 && this.y2 < this.y1) {
-            this.typ = "KURVE_UNTENLINKS";
-            console.log("unten links von unten kommend");
-
-            this.angle = 90;
-            // mittlere Linie:
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.end = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1 - (radius * length), this.y1);
-            this.ctrl2 = new paper.Point(this.x2, this.y2 + (radius * length));
-            this.start = new paper.Point(this.x2, this.y2);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
-
-        // unten rechts:
-        else if (this.x1 > this.x2 && this.y1 < this.y2) {
-            this.typ = "KURVE_UNTENRECHTS";
-            console.log("unten rechts von unten kommend");
-
-            this.angle = 90;
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.start = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1 + (radius * length), this.y1);
-            this.ctrl2 = new paper.Point(this.x2, this.y2 + (radius * length));
-            this.end = new paper.Point(this.x2, this.y2);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-
-        } else if (this.x1 < this.x2 && this.y1 > this.y2) {
-            this.typ = "KURVE_UNTENRECHTS";
-            console.log("unten rechts von oben kommend");
-
-            this.angle = 90;
-            let radius = this.raster.rasterMass;
-            length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
-
-            this.end = new paper.Point(this.x1, this.y1);
-            this.ctrl1 = new paper.Point(this.x1 + (radius * length), this.y1);
-            this.ctrl2 = new paper.Point(this.x2, this.y2 + (radius * length));
-            this.start = new paper.Point(this.x2, this.y2);
-
-            this.liniensegmente.push(this.createCurveOfType(this.typ));
-            return;
-        }
+        else if (this.x1 < this.x2 && this.y1 > this.y2)
+            return "KURVE_UNTENRECHTS_UP";
     }
 
     createCurveOfType(type) {
-        // create curve:
-        var radius = this.raster.rasterMass;
+        var handleIn, handleOut;
+
         switch (type) {
 
-            case "KURVE_OBENLINKS":
 
-                var handleIn = new paper.Point(-radius * length, 0);
-                var handleOut = new paper.Point(0, -radius * length);
+            case "HORIZONTALE":
+                this.segment = new paper.Path.Line({
+                    from: [this.x1, this.y1],
+                    to: [this.x2, this.y2],
+                    strokeWidth: 2,
+                    strokeColor: 'white'
+                });
 
-                case "KURVE_OBENRECHTS":
+                console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
 
-                var handleIn = new paper.Point(radius * length, 0);
-                var handleOut = new paper.Point(0, -radius * length);
+                return;
 
-            case "KURVE_UNTENLINKS":
+            case "VERTIKALE":
+                this.segment = new paper.Path.Line({
+                    from: [this.x1, this.y1],
+                    to: [this.x2, this.y2],
+                    strokeWidth: 2,
+                    strokeColor: 'white'
+                });
 
-                var handleIn = new paper.Point(0, radius * length);
-                var handleOut = new paper.Point(-radius * length, 0);
+                console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
 
-            case "KURVE_UNTENRECHTS":
+                return;
 
-                var handleIn = new paper.Point(0, radius * length);
-                var handleOut = new paper.Point(radius * length, 0);
+            case "KURVE_OBENLINKS_UP":
 
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(-this.radius * this.length, 0);
+                handleOut = new paper.Point(0, -this.radius * this.length);
+
+                break;
+
+            case "KURVE_OBENLINKS_DOWN":
+
+                this.end = new paper.Point(this.x1, this.y1);
+                this.start = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(-this.radius * this.length, 0);
+                handleOut = new paper.Point(0, -this.radius * this.length);
+
+                break;
+
+            case "KURVE_OBENRECHTS_UP":
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(this.radius * this.length, 0);
+                handleOut = new paper.Point(0, -this.radius * this.length);
+
+                break;
+
+            case "KURVE_OBENRECHTS_DOWN":
+
+                this.end = new paper.Point(this.x1, this.y1);
+                this.start = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(this.radius * this.length, 0);
+                handleOut = new paper.Point(0, -this.radius * this.length);
+
+                break;
+
+            case "KURVE_UNTENLINKS_UP":
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(0, this.radius * this.length);
+                handleOut = new paper.Point(-this.radius * this.length, 0);
+
+                break;
+
+            case "KURVE_UNTENLINKS_DOWN":
+                this.end = new paper.Point(this.x1, this.y1);
+                this.start = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(0, this.radius * this.length);
+                handleOut = new paper.Point(-this.radius * this.length, 0);
+
+                break;
+
+            case "KURVE_UNTENRECHTS_UP":
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(0, this.radius * this.length);
+                handleOut = new paper.Point(this.radius * this.length, 0);
+
+                break;
+
+            case "KURVE_UNTENRECHTS_DOWN":
+
+                this.end = new paper.Point(this.x1, this.y1);
+                this.start = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(0, this.radius * this.length);
+                handleOut = new paper.Point(this.radius * this.length, 0);
+
+                break;
         }
 
-        console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.ctrl1.x}|${this.ctrl1.y} \t ${this.ctrl2.x}|${this.ctrl2.y} \t ${this.x2}|${this.y2}`);
+        console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${handleIn} \t ${handleOut} \t ${this.x2}|${this.y2}`);
 
         var firstSegment = new paper.Segment(this.start, null, handleOut);
         var secondSegment = new paper.Segment(this.end, handleIn, null);
 
-        return new paper.Path({
-            segments: [firstSegment, secondSegment]
-            // strokeColor: 'white',
-            // strokeWidth: 2
+        console.log(handleIn, handleOut);
+
+        this.segment = new paper.Path({
+            segments: [firstSegment, secondSegment],
         });
 
-    }
-
-    replaceCurve(type) {
-        console.log(`replace ${this.liniensegmente[this.liniensegmente.length - 1]} with type ${type}`);
-        
-        this.liniensegmente[this.liniensegmente.length - 1].replaceWith(this.createCurveOfType(type));
     }
 
 }

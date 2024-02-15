@@ -1,7 +1,7 @@
 import { changeMode } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { raster, gridDots } from "./paperSnake.js";
+import { raster } from "./paperSnake.js";
 
 export var mouseGridX, mouseGridY;
 
@@ -14,21 +14,21 @@ export function keyPressed(keyEvent) {
         changeMode("DXF_EXPORT");
     }
     if (key == 'W' || key == 'w')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_OBEN");
+        raster.replaceCurve("KURVE_OBEN");
     if (key == 'A' || key == 'a')
         raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_LINKS";
     if (key == 'S' || key == 's')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_UNTEN");
+        raster.replaceCurve("KURVE_UNTEN");
     if (key == 'D' || key == 'd')
         raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_RECHTS";
     if (key == 'Q' || key == 'q')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_OBENLINKS");
+        raster.replaceCurve("KURVE_OBENLINKS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
     if (key == 'E' || key == 'e')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_OBENRECHTS");
+        raster.replaceCurve("KURVE_OBENRECHTS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
     if (key == 'Y' || key == 'y')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_UNTENLINKS");
+        raster.replaceCurve("KURVE_UNTENLINKS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
     if (key == 'X' || key == 'x')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).replaceCurve("KURVE_UNTENRECHTS");
+        raster.replaceCurve("KURVE_UNTENRECHTS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
     if (key == ' ') {
         if (raster.liniensegmente[raster.liniensegmente.length - 1].typ == "HORIZONTALE")
             raster.liniensegmente[raster.liniensegmente.length - 1].typ = "VERTIKALE";
@@ -50,7 +50,7 @@ export function keyPressed(keyEvent) {
     }
     if (key == 'g' || key == 'G') {
         let buttonShowGrid = document.getElementById("buttonShowGrid");
-        gridDots.forEach((dot) => {
+        raster.gridDots.forEach((dot) => {
             dot.visible = !dot.visible;
         });
         buttonShowGrid.classList.toggle("active");
