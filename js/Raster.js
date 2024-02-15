@@ -14,7 +14,6 @@ export class Raster {
         this.punktAbstand_x = this.rasterMass;
         this.punktAbstand_y = this.rasterMass;
 
-
         this.scaling_mode_is_on = false;
         this.choose_point_index = 0;
         //   PVector[] scale_line = new PVector[2]; // TODO: vectors in JS?
@@ -88,21 +87,6 @@ export class GitterPunkt {
         this.y = y_;
         this.raster = raster;
 
-        this.x_toleranz = 10;
-        this.y_toleranz = 10;
         this.active = false;
-    }
-
-    render() {
-        // weißen Kreis malen, wenn aktiv:
-        if (this.active) {
-            fill(255);
-            ellipse(this.x, this.y, this.raster.rasterMass / 3, this.raster.rasterMass / 3);
-        }
-        else {
-            // weißen Gitterpunkt malen:
-            stroke(255);
-            point(this.x, this.y);
-        }
     }
 }

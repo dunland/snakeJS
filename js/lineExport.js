@@ -1,4 +1,4 @@
-import { raster } from "./snake.js";
+import { raster } from "./paperSnake.js";
 
 // line example:
 var line = {

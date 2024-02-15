@@ -1,7 +1,7 @@
-import { changeMode, raster } from "./snake.js";
+import { changeMode } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { gridDots } from "./paperSnake.js";
+import { raster, gridDots } from "./paperSnake.js";
 
 export var mouseGridX, mouseGridY;
 
