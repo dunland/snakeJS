@@ -10,7 +10,7 @@ import { Bezier } from "./bezierjs/src/bezier.js";
 import { exportLines } from "./lineExport.js";
 
 var backgroundImage;
-var imagePath;
+var imagePath = imageSettings.imageName;
 
 // Punktlisten:
 export var font;
@@ -157,28 +157,7 @@ function draw() {
             break;
 
         case "DXF_EXPORT":
-            console.log("begin dxf export");
 
-            const exportedModel = exportLines();
-            console.log(exportedModel);
-
-            const dataToSend = {fileName: `export/${imagePath}.dxf`, fileContent: JSON.stringify(exportedModel)};
-            console.log(dataToSend);
-
-            fetch('http://localhost:3000/api/sendData', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(dataToSend)
-            })
-                .then(response => response.text())
-                .then(message => {
-                    console.log('Antwort vom Server:', message);
-                })
-                .catch(error => {
-                    console.error('Fehler beim Senden der Daten:', error);
-                });
 
 
             changeMode("RUNNING");

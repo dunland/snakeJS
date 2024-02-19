@@ -24,3 +24,11 @@ button{
 button.active{
     background-color: green;
 }
+
+#buttonTool{
+    background-color: lightcoral;
+}
+
+#buttonTool.active{
+    background-color: white;
+}

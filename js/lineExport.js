@@ -26,7 +26,8 @@ var model = {
     models: {
         c1: {
             points: [[0, 100], [0, 0], [100, 0]], // ctrl, ctrl, end??
-            origin: [20, 20]}, // x1, y1
+            origin: [20, 20]
+        }, // x1, y1
         c2: {
             points: [[0, 100], [0, 0], [100, 0]],
             origin: [40, 40]
@@ -43,8 +44,19 @@ var model = {
 export function exportLines() {
 
     // TODO: 
-    // - [ ] Iteration durch alle Liniensegmente und Automatisierung des jsonObject
-    // - [ ] Diskriminierung zwischen unterschiedlichen Geometrien (Line / Bezier)
+    // function svgPathToDXF(svgPathData) {
+    //   const model = makerjs.importer.fromSVGPathData(svgPathData);
+    //   return makerjs.exporter.toDXF(model);
+    // }
+
+    // https://github.com/microsoft/maker.js/issues/579#issuecomment-1786083802
+
+    // Use d3.path to convert Canvas comands to SVG path data
+    // Use Maker.js to import the SVG path data as a model.
+    // Use Maker.js to export the model as DXF
+
+    // https://observablehq.com/@danmarshall/html-canvas-to-dxf
+
 
     const ls = raster.liniensegmente[0];
     const model = {
@@ -52,10 +64,11 @@ export function exportLines() {
             c1: {
                 points: [
                     [ls.x1, ls.y1],
-                    [ls.ctrl1.x, ls.ctrl1.y], 
-                    [ls.ctrl2.x, ls.ctrl2.y], 
+                    [ls.ctrl1.x, ls.ctrl1.y],
+                    [ls.ctrl2.x, ls.ctrl2.y],
                     [ls.x2, ls.y2]], // start, ctrl, [ctrl,...] end
-                origin: [ls.x1, ls.y1]}, // x1, y1
+                origin: [ls.x1, ls.y1]
+            }, // x1, y1
             c2: {
                 points: [[0, 100], [0, 0], [100, 0]],
                 origin: [40, 40]

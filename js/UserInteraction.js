@@ -1,21 +1,43 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { raster, image, cursor } from "./paperSnake.js";
+import { raster, platten, image, cursor } from "./paperSnake.js";
 import { setRadius } from "./paperUtils.js";
+import { exportLines } from "./lineExport.js"
+import imageSettings from "../settings.json" assert { type: 'json' };
 
 var mouseGridX, mouseGridY;
 export var drawMode = "line"; // draw "line" or "area"
 export function changeDrawMode(newMode) { drawMode = newMode; }
-// export var MODE = "SETUP"; // can be "RUNNING" or "SETUP"
-// function changeMode(newMode) { MODE = newMode; }
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
     let key = keyEvent.key;
     console.log(key);
+    let imageName = imageSettings.imageName;
     // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
-        changeMode("DXF_EXPORT");
+        console.log("begin dxf export");
+
+        const exportedModel = exportLines();
+        console.log(exportedModel);
+
+        const dataToSend = { fileName: `export/${imageName}.dxf`, fileContent: JSON.stringify(exportedModel) };
+        console.log(dataToSend);
+
+        fetch('http://localhost:3000/api/sendData', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dataToSend)
+        })
+            .then(response => response.text())
+            .then(message => {
+                console.log('Antwort vom Server:', message);
+            })
+            .catch(error => {
+                console.error('Fehler beim Senden der Daten:', error);
+            });
     }
     if (key == 'W' || key == 'w')
         raster.replaceCurve("KURVE_OBEN");
@@ -34,12 +56,8 @@ export function keyPressed(keyEvent) {
     if (key == 'X' || key == 'x')
         raster.replaceCurve("KURVE_UNTENRECHTS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
     if (key == ' ') {
-        if (raster.liniensegmente[raster.liniensegmente.length - 1].typ == "HORIZONTALE")
-            raster.liniensegmente[raster.liniensegmente.length - 1].typ = "VERTIKALE";
-        else if (raster.liniensegmente[raster.liniensegmente.length - 1].typ == "VERTIKALE")
-            raster.liniensegmente[raster.liniensegmente.length - 1].typ = "HORIZONTALE";
-        else
-            raster.liniensegmente[raster.liniensegmente.length - 1].typ = "HORIZONTALE";
+        changeDrawMode("moveSheet");
+        cursor.visible = false;
     }
     if (key == '+' || key == 'ȉ') {
         globalVerboseLevel++;
@@ -61,6 +79,14 @@ export function keyPressed(keyEvent) {
     }
 }
 
+export function keyReleased(keyEvent) {
+    let key = keyEvent.key;
+    if (key == ' ') { // leave mode
+        changeDrawMode("line");
+        cursor.visible = true;
+    }
+}
+
 function clamp(v, min, max) { return v < min ? min : v > max ? max : v }
 function step(v, s) { return Math.round(v / s) * s }
 
@@ -68,11 +94,25 @@ export function onMouseMove(event) {
 
     let maxW = image.width;
     let maxH = image.height;
-
     mouseGridX = clamp(step(event.point.x, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
     mouseGridY = clamp(step(event.point.y, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
+    
+    switch (drawMode) {
+        case "line":
+            cursor.position = [mouseGridX, mouseGridY];
+            break;
 
-    cursor.position = [mouseGridX, mouseGridY];
+        case "area":
+            cursor.position = [event.point.x, event.point.y];
+            break;
+
+        case "moveSheet":
+            platten.translate(event.delta);
+            break;
+
+        default:
+            break;
+    }
 }
 
 export function onMouseDown(event) {
@@ -81,17 +121,16 @@ export function onMouseDown(event) {
 
     const hitOptions = {
         segments: true,
-        fill: true
+        fill: true,
+        visible: true
     };
-
 
     switch (drawMode) {
 
         case "line":
-            if (!paper.project.hitTest(new paper.Point(mouseGridX, mouseGridY))){
+            if (!paper.project.hitTest(new paper.Point(mouseGridX, mouseGridY))) {
                 drawLine();
             }
-
             break;
 
         case "area":
@@ -136,16 +175,6 @@ function drawLine() {
         // TODO: To remove a segment from a path, we use the path. removeSegment(index) function and pass it the index of the segment we want to remove. // TODO: associate gridPoints with line segments id
         // TODO: remove the specific linesegment helper
         // TODO: remove specific gp from active list
-    }
-}
-
-
-function onMouseDrag(event) {
-    if (segment) {
-        segment.point += event.delta;
-        path.smooth();
-    } else if (path) {
-        path.position += event.delta;
     }
 }
 

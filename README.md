@@ -19,7 +19,7 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
     - [ ] Liniensegmente an Gitterpunkte binden
     - [ ] Liniensegmente exportieren/speichern
 - [ ] Raster:
-    - [ ] Aussparungen markieren
+    - [x] Aussparungen markieren
     - [ ] Raster zerschneiden??
     - [ ] Erkennung vertikale vs horizontale Verläufe
     - [ ] Raster bewegen per drag&drop

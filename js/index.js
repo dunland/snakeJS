@@ -1,17 +1,20 @@
 import { setRadius } from "./paperUtils.js";
-import { raster } from "./paperSnake.js";
+import { cursor, raster } from "./paperSnake.js";
 import { changeDrawMode } from "./UserInteraction.js";
 
 let buttonTool = document.getElementById("buttonTool");
 buttonTool.onclick = function () {
+    this.classList.toggle("active");
 
     if (buttonTool.textContent.includes("line")) {
         buttonTool.textContent = ("draw area");
         changeDrawMode("area");
+        cursor.strokeColor = 'red';
     }
     else if (buttonTool.textContent.includes("area")) {
         buttonTool.textContent = ("draw line");
         changeDrawMode("line");
+        cursor.strokeColor = 'white';
     }
 }
 
