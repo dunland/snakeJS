@@ -96,7 +96,7 @@ export function onMouseMove(event) {
     let maxH = image.height;
     mouseGridX = clamp(step(event.point.x, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
     mouseGridY = clamp(step(event.point.y, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
-    
+
     switch (drawMode) {
         case "line":
             cursor.position = [mouseGridX, mouseGridY];
@@ -108,6 +108,11 @@ export function onMouseMove(event) {
 
         case "moveSheet":
             platten.translate(event.delta);
+
+            for (var i = 0; i < platten.children.length; i++) {
+                showIntersections(platten.children[i], raster.line);
+            }
+
             break;
 
         default:
@@ -128,9 +133,10 @@ export function onMouseDown(event) {
     switch (drawMode) {
 
         case "line":
-            if (!paper.project.hitTest(new paper.Point(mouseGridX, mouseGridY))) {
-                drawLine();
-            }
+            if (raster.area.contains(new paper.Point(mouseGridX, mouseGridY)))
+                break;
+
+            drawLine();
             break;
 
         case "area":
@@ -180,4 +186,16 @@ function drawLine() {
 
 function drawArea() {
     raster.area.add(new paper.Point(mouseGridX, mouseGridY));
+}
+
+function showIntersections(path1, path2) {
+    var intersections = path1.getIntersections(path2);
+    console.log(intersections.length);
+    for (var i = 0; i < intersections.length; i++) {
+        new paper.Path.Circle({
+            center: intersections[i].point,
+            radius: 5,
+            fillColor: '#009dec'
+        }).removeOnMove();
+    }
 }
