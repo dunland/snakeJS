@@ -1,11 +1,10 @@
 import imageSettings from "../settings.json" assert { type: 'json' };
 import { Liniensegment } from "./Liniensegmente.js";
-import { keyPressed } from "./UserInteraction.js";
-import { setRadius } from "./paperUtils.js";
+import { keyPressed, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
 
-var cursor, mouseGridX, mouseGridY;
-var image;
+export var cursor;
+export var image;
 export var raster = new Raster();
 
 // Only executed our code once the DOM is ready.
@@ -18,9 +17,13 @@ window.onload = function () {
     const imageDimensions = loadImage(imageSettings.imageName);
 
     paper.setup(canvas);
-    raster.path = new paper.CompoundPath();
-    raster.path.strokeColor = 'red';
-    raster.path.strokeWidth = 2;
+    raster.line = new paper.CompoundPath();
+    raster.line.strokeColor = 'white';
+    raster.line.strokeWidth = 2;
+
+    raster.area = new paper.Path();
+    raster.area.fillColor = new paper.Color(1, 0, 0, 0.45);
+    raster.area.closed = true;
     
     // Gitterpunkte erstellen:
     raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
@@ -45,9 +48,9 @@ window.onload = function () {
     
     // addEventListener("mousemove", mouseMoved);
     var cursorTool = new paper.Tool();
-    cursorTool.onMouseMove = mouseMoved;
+    cursorTool.onMouseMove = onMouseMove;
 
-    addEventListener("mousedown", mousePressed);
+    addEventListener("mousedown", onMouseDown);
     addEventListener("keydown", keyPressed);
 
     // Draw the view now:
@@ -70,60 +73,4 @@ function loadImage(imageName) {
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
 
     return [image.width, image.height];
-}
-
-function mouseMoved(event) {
-
-    let maxW = image.width;
-    let maxH = image.height;
-
-    mouseGridX = clamp(step(event.point.x, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
-    mouseGridY = clamp(step(event.point.y, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
-
-    cursor.position = [mouseGridX, mouseGridY];
-}
-
-function clamp(v, min, max) { return v < min ? min : v > max ? max : v }
-function step(v, s) { return Math.round(v / s) * s }
-
-function mousePressed() {
-
-    console.log("click!", mouseGridX, mouseGridY);
-
-    const gpIdx = raster.gitterpunkte.findIndex((el) => (el.x == mouseGridX && el.y == mouseGridY));
-    const gp = raster.gridDots[gpIdx];
-
-    if (!gp) return;
-
-    raster.gitterpunkte[gpIdx].active = !raster.gitterpunkte[gpIdx].active;
-    let scaling = raster.gitterpunkte[gpIdx].active ? raster.rasterMass / 3 : 1;
-    setRadius(gp, scaling);
-    
-    if (raster.gitterpunkte[gpIdx].active) {
-        raster.activeGridPoints.push(gp);
-        raster.gridPointHistory.push(raster.gitterpunkte[gpIdx]);
-        
-        // neues Liniensegment:
-        if (raster.activeGridPoints.length > 1) {
-            var gp_vorher =
-            raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
-            raster.gitterpunkte[gpIdx].updateDirection(gp_vorher);
-            // raster.liniensegmente.push(
-            //     new Liniensegment(gp, gp_vorher, raster, liniensegmente));
-            // TODO : gp.linie = zuletzt erstelle Linie
-            var ls = new Liniensegment(gp, gp_vorher, raster);
-            raster.liniensegmente.push(ls);
-            console.log(raster.liniensegmente);
-
-            raster.path.addChild(ls.segment);
-            console.log(raster.path);
-        }
-    } else {
-        // entferne Liniensegment:
-        // ls.remove();
-        // raster.gitterpunkte[gpIdx].active = false;
-        // raster.activeGridPoints.remove(gp);
-        // TODO : alle aktiven gps müssen zugeordnete linie haben → entferne
-        // diese linie
-    }
 }

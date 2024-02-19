@@ -15,7 +15,8 @@ export class Raster {
         this.rasterMass = 13;
         this.punktAbstand_x = this.rasterMass;
         this.punktAbstand_y = this.rasterMass;
-        this.path; // must be initialized after paper.setup()
+        this.line; // must be initialized after paper.setup()
+        this.area;
 
         this.scaling_mode_is_on = false;
         this.choose_point_index = 0;
@@ -46,13 +47,13 @@ export class Raster {
 
         console.log(`replace ${this.liniensegmente[this.liniensegmente.length - 1].type} (${this.liniensegmente[this.liniensegmente.length - 1].segment}) with type ${type}`);
 
-        this.path.lastChild.remove(); // remove last segment
+        this.line.lastChild.remove(); // remove last segment
         this.liniensegmente.pop(); // remove last linesegment helper
 
         const ls = new Liniensegment(this.activeGridPoints[this.activeGridPoints.length - 1], this.activeGridPoints[this.activeGridPoints.length - 2], this, type);
         this.liniensegmente.push(ls);
 
-        this.path.addChild(ls.segment); // add new segment
+        this.line.addChild(ls.segment); // add new segment
     }
 
     // --------------------------------------------

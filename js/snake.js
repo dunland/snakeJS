@@ -12,8 +12,6 @@ import { exportLines } from "./lineExport.js";
 var backgroundImage;
 var imagePath;
 
-export var MODE = "SETUP"; // can be "RUNNING" or "SETUP"
-export function changeMode(newMode) { MODE = newMode; }
 // Punktlisten:
 export var font;
 

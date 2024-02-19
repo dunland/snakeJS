@@ -1,9 +1,13 @@
-import { changeMode } from "./snake.js";
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { raster } from "./paperSnake.js";
+import { raster, image, cursor } from "./paperSnake.js";
+import { setRadius } from "./paperUtils.js";
 
-export var mouseGridX, mouseGridY;
+var mouseGridX, mouseGridY;
+export var drawMode = "line"; // draw "line" or "area"
+export function changeDrawMode(newMode) { drawMode = newMode; }
+// export var MODE = "SETUP"; // can be "RUNNING" or "SETUP"
+// function changeMode(newMode) { MODE = newMode; }
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
@@ -55,4 +59,96 @@ export function keyPressed(keyEvent) {
         });
         buttonShowGrid.classList.toggle("active");
     }
+}
+
+function clamp(v, min, max) { return v < min ? min : v > max ? max : v }
+function step(v, s) { return Math.round(v / s) * s }
+
+export function onMouseMove(event) {
+
+    let maxW = image.width;
+    let maxH = image.height;
+
+    mouseGridX = clamp(step(event.point.x, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
+    mouseGridY = clamp(step(event.point.y, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
+
+    cursor.position = [mouseGridX, mouseGridY];
+}
+
+export function onMouseDown(event) {
+
+    console.log("click!", event.x, event.y, "=>", mouseGridX, mouseGridY);
+
+    const hitOptions = {
+        segments: true,
+        fill: true
+    };
+
+
+    switch (drawMode) {
+
+        case "line":
+            if (!paper.project.hitTest(new paper.Point(mouseGridX, mouseGridY))){
+                drawLine();
+            }
+
+            break;
+
+        case "area":
+
+            if (event.x >= image.width || event.y >= image.height) return;
+
+            var pt = new paper.Point(event.x, event.y);
+            var hitObject = paper.project.hitTest(pt, hitOptions);
+            console.log("you hit a", hitObject);
+            if (!hitObject)
+                drawArea();
+            break;
+    }
+}
+
+function drawLine() {
+    const gpIdx = raster.gitterpunkte.findIndex((el) => (el.x == mouseGridX && el.y == mouseGridY));
+    const gp = raster.gridDots[gpIdx];
+
+    if (!gp) return;
+
+    // toggle gridPoint:
+    raster.gitterpunkte[gpIdx].active = !raster.gitterpunkte[gpIdx].active; // helper
+    let scaling = raster.gitterpunkte[gpIdx].active ? raster.rasterMass / 3 : 1;
+    setRadius(gp, scaling); // size
+
+    // add or remove gp:
+    if (raster.gitterpunkte[gpIdx].active) { // add
+        raster.activeGridPoints.push(gp);
+        raster.gridPointHistory.push(raster.gitterpunkte[gpIdx]);
+
+        // neues Liniensegment:
+        if (raster.activeGridPoints.length > 1) {
+            var gp_vorher =
+                raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
+            raster.gitterpunkte[gpIdx].updateDirection(gp_vorher);
+            var ls = new Liniensegment(gp, gp_vorher, raster);
+            raster.liniensegmente.push(ls);
+            raster.line.addChild(ls.segment);
+        }
+    } else { // remove
+        // TODO: To remove a segment from a path, we use the path. removeSegment(index) function and pass it the index of the segment we want to remove. // TODO: associate gridPoints with line segments id
+        // TODO: remove the specific linesegment helper
+        // TODO: remove specific gp from active list
+    }
+}
+
+
+function onMouseDrag(event) {
+    if (segment) {
+        segment.point += event.delta;
+        path.smooth();
+    } else if (path) {
+        path.position += event.delta;
+    }
+}
+
+function drawArea() {
+    raster.area.add(new paper.Point(mouseGridX, mouseGridY));
 }
