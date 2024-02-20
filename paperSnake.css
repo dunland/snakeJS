@@ -17,6 +17,11 @@ canvas[resize] {
     height: 90%;
 }
 
+div span.variable{
+background-color: yellow;
+}
+
+/* general buttons: active vs normal */
 button{
     background-color: lightgrey;
 }
@@ -25,10 +30,15 @@ button.active{
     background-color: green;
 }
 
+/* tool button: line vs area */
 #buttonTool{
     background-color: lightcoral;
 }
 
 #buttonTool.active{
     background-color: white;
+}
+
+#buttonMeasureDistance.active{
+    background-color: yellow;
 }

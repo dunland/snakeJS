@@ -4,7 +4,7 @@ import { Raster } from "./Raster.js";
 
 export var cursor;
 export var image;
-export var raster = new Raster();
+export var raster = new Raster(13);
 export var plattenMass = 65; // cm
 export var platten;
 

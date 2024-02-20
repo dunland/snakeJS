@@ -1,13 +1,14 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
 import { raster, platten, image, cursor } from "./paperSnake.js";
-import { setRadius } from "./paperUtils.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
 
 var mouseGridX, mouseGridY;
 export var drawMode = "line"; // draw "line" or "area"
 export function changeDrawMode(newMode) { drawMode = newMode; }
+var distance;
+var distanceToolClicks = 0;
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
@@ -112,6 +113,13 @@ export function onMouseMove(event) {
             for (var i = 0; i < platten.children.length; i++) {
                 showIntersections(platten.children[i], raster.line);
             }
+            break;
+
+        case "measureDistance":
+            if (distanceToolClicks == 1) {
+                distance.segments[1].point = [event.point.x, event.point.y];
+                console.log(distance.length);
+            }
 
             break;
 
@@ -133,10 +141,10 @@ export function onMouseDown(event) {
     switch (drawMode) {
 
         case "line":
-            if (raster.area.contains(new paper.Point(mouseGridX, mouseGridY)))
+            if (raster.area.contains(new paper.Point(mouseGridX, mouseGridY))) // TODO: also check crossing
                 break;
 
-            drawLine();
+            raster.addLine(mouseGridX, mouseGridY);
             break;
 
         case "area":
@@ -149,38 +157,42 @@ export function onMouseDown(event) {
             if (!hitObject)
                 drawArea();
             break;
-    }
-}
 
-function drawLine() {
-    const gpIdx = raster.gitterpunkte.findIndex((el) => (el.x == mouseGridX && el.y == mouseGridY));
-    const gp = raster.gridDots[gpIdx];
+        case "measureDistance":
 
-    if (!gp) return;
+            // first-time object initialization
+            switch (distanceToolClicks) {
+                case 0: // begin line where clicked
+                    distance = new paper.Path.Line({
+                        from: [event.x, event.y],
+                        to: [event.x, event.y],
+                        strokeColor: 'yellow',
+                        strokeWidth: 2
+                    });
 
-    // toggle gridPoint:
-    raster.gitterpunkte[gpIdx].active = !raster.gitterpunkte[gpIdx].active; // helper
-    let scaling = raster.gitterpunkte[gpIdx].active ? raster.rasterMass / 3 : 1;
-    setRadius(gp, scaling); // size
+                    distanceToolClicks += 1;
+                    break;
 
-    // add or remove gp:
-    if (raster.gitterpunkte[gpIdx].active) { // add
-        raster.activeGridPoints.push(gp);
-        raster.gridPointHistory.push(raster.gitterpunkte[gpIdx]);
+                case 1:
+                    distance.segments[1] = [event.x, event.y];
+                    distanceToolClicks += 1;
+                    let userInput = prompt(`${Math.floor(distance.length)} pixel gemessen. Wie viel cm?`);
+                    raster.scaleX = distance.length / userInput;
+                    document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
+                    console.log(raster.scaleX);
+                    break;
 
-        // neues Liniensegment:
-        if (raster.activeGridPoints.length > 1) {
-            var gp_vorher =
-                raster.activeGridPoints.at(raster.activeGridPoints.length - 2);
-            raster.gitterpunkte[gpIdx].updateDirection(gp_vorher);
-            var ls = new Liniensegment(gp, gp_vorher, raster);
-            raster.liniensegmente.push(ls);
-            raster.line.addChild(ls.segment);
-        }
-    } else { // remove
-        // TODO: To remove a segment from a path, we use the path. removeSegment(index) function and pass it the index of the segment we want to remove. // TODO: associate gridPoints with line segments id
-        // TODO: remove the specific linesegment helper
-        // TODO: remove specific gp from active list
+                case 2:
+                    distance.remove();
+                    distanceToolClicks = 0;
+                    break;
+
+                default:
+                    break;
+            }
+            console.log(distance, distanceToolClicks);
+            break;
+
     }
 }
 

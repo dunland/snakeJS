@@ -2,17 +2,18 @@
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
 import { Liniensegment } from "./Liniensegmente.js";
+import { setRadius } from "./paperUtils.js";
 
 export class Raster {
 
-    constructor() {
+    constructor(rasterMass) {
 
         this.gitterpunkte = []; // list of grid points
         this.gridPointHistory = [];
         this.gridDots = []; // list of paper.Path.Circles
         this.activeGridPoints = []; // list of active grid points
         this.liniensegmente = []; // TODO: replace with segmentHistory
-        this.rasterMass = 13;
+        this.rasterMass = rasterMass;
         this.punktAbstand_x = this.rasterMass;
         this.punktAbstand_y = this.rasterMass;
         this.line; // must be initialized after paper.setup()
@@ -22,20 +23,52 @@ export class Raster {
         this.choose_point_index = 0;
         //   PVector[] scale_line = new PVector[2]; // TODO: vectors in JS?
 
-        this.scale_x = 1;
+        this.scaleX = 1;
         this._color = (255, 255, 255);
     }
 
     ////////////////// FUNCTIONS ///////////////////
 
     createPoints(dimX, dimY) {
-        for (let x = 0; x < dimX; x += this.punktAbstand_x * this.scale_x) {
-            for (let y = 0; y < dimY; y += this.punktAbstand_y * this.scale_x) {
+        for (let x = 0; x < dimX; x += this.punktAbstand_x * this.scaleX) {
+            for (let y = 0; y < dimY; y += this.punktAbstand_y * this.scaleX) {
                 this.gitterpunkte.push(new GitterPunkt(x, y, this));
             }
         }
         console.log(this.gitterpunkte.length, " Gitterpunkte erstellt.");
 
+    }
+
+    addLine(posX, posY) {
+        const gpIdx = this.gitterpunkte.findIndex((el) => (el.x == posX && el.y == posY));
+        const gp = this.gridDots[gpIdx];
+    
+        if (!gp) return;
+    
+        // toggle gridPoint:
+        this.gitterpunkte[gpIdx].active = !this.gitterpunkte[gpIdx].active; // helper
+        let scaling = this.gitterpunkte[gpIdx].active ? this.rasterMass / 3 : 1;
+        setRadius(gp, scaling); // size
+    
+        // add or remove gp:
+        if (this.gitterpunkte[gpIdx].active) { // add
+            this.activeGridPoints.push(gp);
+            this.gridPointHistory.push(this.gitterpunkte[gpIdx]);
+    
+            // neues Liniensegment:
+            if (this.activeGridPoints.length > 1) {
+                var gp_vorher =
+                    this.activeGridPoints.at(this.activeGridPoints.length - 2);
+                this.gitterpunkte[gpIdx].updateDirection(gp_vorher);
+                var ls = new Liniensegment(gp, gp_vorher, this);
+                this.liniensegmente.push(ls);
+                this.line.addChild(ls.segment);
+            }
+        } else { // remove
+            // TODO: To remove a segment from a path, we use the path. removeSegment(index) function and pass it the index of the segment we want to remove. // TODO: associate gridPoints with line segments id
+            // TODO: remove the specific linesegment helper
+            // TODO: remove specific gp from active list
+        }
     }
 
     replaceCurve(type) {
@@ -83,8 +116,8 @@ export class Raster {
                     // neue Gitterpunkte erstellen:
                     this.gitterpunkte = [];   // clear
                     this.liniensegmente = []; // clear
-                    for (let x = 0; x < width; x += this.punktAbstand_x * this.scale_x) {
-                        for (let y = 0; y < width; y += this.punktAbstand_y * this.scale_x) {
+                    for (let x = 0; x < width; x += this.punktAbstand_x * this.scaleX) {
+                        for (let y = 0; y < width; y += this.punktAbstand_y * this.scaleX) {
                             this.gitterpunkte.push(new GitterPunkt(x, y, this));
                         }
                     }
