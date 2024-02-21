@@ -1,14 +1,29 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { raster, platten, image, cursor } from "./paperSnake.js";
+import { raster, platten, image, cursor, changeCursor } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
+import { Raster } from "./Raster.js";
 
 var mouseGridX, mouseGridY;
-export var drawMode = "line"; // draw "line" or "area"
-export function changeDrawMode(newMode) { drawMode = newMode; }
+export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var distance;
-var distanceToolClicks = 0;
+var measureToolState = 0;
+
+export function changeDrawMode(newMode) {
+    var oldMode = drawMode;
+    if (oldMode == newMode) return;
+
+    if (oldMode == "measureDistance") {
+        if (distance)
+            distance.remove();
+        measureToolState = 0;
+        document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
+
+    }
+
+    drawMode = newMode;
+}
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
@@ -73,7 +88,7 @@ export function keyPressed(keyEvent) {
     }
     if (key == 'g' || key == 'G') {
         let buttonShowGrid = document.getElementById("buttonShowGrid");
-        raster.gridDots.forEach((dot) => {
+        raster.gridCirclePaths.forEach((dot) => {
             dot.visible = !dot.visible;
         });
         buttonShowGrid.classList.toggle("active");
@@ -116,7 +131,7 @@ export function onMouseMove(event) {
             break;
 
         case "measureDistance":
-            if (distanceToolClicks == 1) {
+            if (measureToolState == 1) {
                 distance.segments[1].point = [event.point.x, event.point.y];
                 console.log(distance.length);
             }
@@ -131,6 +146,7 @@ export function onMouseMove(event) {
 export function onMouseDown(event) {
 
     console.log("click!", event.x, event.y, "=>", mouseGridX, mouseGridY);
+    if (event.x >= image.width || event.y >= image.height) return;
 
     const hitOptions = {
         segments: true,
@@ -140,6 +156,7 @@ export function onMouseDown(event) {
 
     switch (drawMode) {
 
+
         case "line":
             if (raster.area.contains(new paper.Point(mouseGridX, mouseGridY))) // TODO: also check crossing
                 break;
@@ -148,8 +165,6 @@ export function onMouseDown(event) {
             break;
 
         case "area":
-
-            if (event.x >= image.width || event.y >= image.height) return;
 
             var pt = new paper.Point(event.x, event.y);
             var hitObject = paper.project.hitTest(pt, hitOptions);
@@ -161,7 +176,7 @@ export function onMouseDown(event) {
         case "measureDistance":
 
             // first-time object initialization
-            switch (distanceToolClicks) {
+            switch (measureToolState) {
                 case 0: // begin line where clicked
                     distance = new paper.Path.Line({
                         from: [event.x, event.y],
@@ -170,27 +185,35 @@ export function onMouseDown(event) {
                         strokeWidth: 2
                     });
 
-                    distanceToolClicks += 1;
+                    measureToolState += 1;
                     break;
 
                 case 1:
                     distance.segments[1] = [event.x, event.y];
-                    distanceToolClicks += 1;
+                    measureToolState += 1;
                     let userInput = prompt(`${Math.floor(distance.length)} pixel gemessen. Wie viel cm?`);
-                    raster.scaleX = distance.length / userInput;
-                    document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
+                    raster.scaleX = userInput == null ?raster.scaleX : distance.length / userInput;
+                    raster.rasterMass = raster.rasterMass * raster.scaleX;
                     console.log(raster.scaleX);
+                    
+                    raster.removeGridPoints();
+                    raster.createPoints(image.width, image.height);
+
+                    changeCursor(raster.rasterMass * raster.scaleX / 2);
+
+                    document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
+                    changeDrawMode("line");
                     break;
 
                 case 2:
                     distance.remove();
-                    distanceToolClicks = 0;
+                    measureToolState = 0;
                     break;
 
                 default:
                     break;
             }
-            console.log(distance, distanceToolClicks);
+            console.log(distance, measureToolState);
             break;
 
     }

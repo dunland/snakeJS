@@ -12,7 +12,7 @@ export class Liniensegment {
         this.raster = raster;
         this.liniensegmente = raster.liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
 
-        this.radius = raster.rasterMass;
+        this.radius = raster.rasterMass / raster.scaleX;
         this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
@@ -73,7 +73,8 @@ export class Liniensegment {
                     strokeColor: 'white'
                 });
 
-                console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
+                if (globalVerboseLevel > 1)
+                    console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
 
                 return;
 
@@ -85,7 +86,8 @@ export class Liniensegment {
                     strokeColor: 'white'
                 });
 
-                console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
+                if (globalVerboseLevel > 1)
+                    console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
 
                 return;
 
@@ -169,7 +171,8 @@ export class Liniensegment {
                 break;
         }
 
-        console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${handleIn} \t ${handleOut} \t ${this.x2}|${this.y2}`);
+        if (globalVerboseLevel > 1)
+            console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${handleIn} \t ${handleOut} \t ${this.x2}|${this.y2}`);
 
         var firstSegment = new paper.Segment(this.start, null, handleOut);
         var secondSegment = new paper.Segment(this.end, handleIn, null);

@@ -1,1 +1,1 @@
-export var globalVerboseLevel = 2;
+export var globalVerboseLevel = 1;
