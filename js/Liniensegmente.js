@@ -12,9 +12,9 @@ export class Liniensegment {
         this.raster = raster;
         this.liniensegmente = raster.liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
 
-        this.radius = this.raster.rasterMass;
+        this.radius = raster.rasterMass;
         this.angle = 90;
-        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scale_x;
+        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
         if (raster.activeGridPoints) { // do not allocate first activePoint
             this.type = type == undefined ? this.getType() : type;
@@ -174,14 +174,10 @@ export class Liniensegment {
         var firstSegment = new paper.Segment(this.start, null, handleOut);
         var secondSegment = new paper.Segment(this.end, handleIn, null);
 
-        console.log(handleIn, handleOut);
-
         this.segment = new paper.Path({
             segments: [firstSegment, secondSegment],
         });
-
     }
-
 }
 
 function degreesToRadians(degrees) {
