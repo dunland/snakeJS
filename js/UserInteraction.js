@@ -2,7 +2,7 @@ import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { scaleSheets } from "./Platten.js";
+import { sheetHelpers, scaleSheets } from "./Platten.js";
 
 var mouseGridX, mouseGridY;
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
@@ -114,7 +114,29 @@ export function onMouseMove(event) {
 
     switch (drawMode) {
         case "line":
-            cursor.position = [mouseGridX, mouseGridY];
+
+        // move cursor:
+        cursor.position = [mouseGridX, mouseGridY];
+
+        // show/hide gridPoints:
+            sheetHelpers.forEach(sheet => {
+                sheet.hideGridPoints();
+            });            
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                if (sheetsGroup.children[i].contains([mouseGridX, mouseGridY])) {
+
+                    var idx = sheetHelpers.findIndex((el) => el.rectangleObject.id == sheetsGroup.children[i].id);
+
+                    console.log(sheetHelpers[idx].gridDots,
+                        sheetHelpers[idx].rectangleObject.id,
+                        sheetsGroup.children[idx].id);
+
+                    var sh = sheetHelpers[idx];
+                    sh.showGridPoints();
+
+                    break;
+                }
+            }
             break;
 
         case "area":
@@ -126,10 +148,6 @@ export function onMouseMove(event) {
 
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
-                if (imageArea.bounds.intersects(sheetsGroup.children[i].bounds)){
-                    sheetsGroup.children[i].fillColor = null;
-                }
-        
             }
             break;
 
