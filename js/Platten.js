@@ -1,8 +1,13 @@
-export function createSheets(maxH, maxW, sheetLength, sheetWidth) {
+import { imageArea } from "./paperSnake.js";
+
+export function createSheets(maxH, maxW, sheetLength, sheetWidth, scaleBy) {
+
+    sheetLength = sheetLength * scaleBy;
+    sheetWidth = sheetWidth * scaleBy;
 
     var sheetsGroup = new paper.Group();
-    for (var y = 0; y < maxH / sheetWidth; y++)
-        for (var x = 0; x < maxW / sheetLength; x++) {
+    for (var y = -1; y < maxH / sheetWidth; y++)
+        for (var x = -1; x < maxW / sheetLength; x++) {
             sheetsGroup.addChild(new paper.Path.Rectangle({
                 point: new paper.Point(x * sheetLength, y * sheetWidth),
                 size: new paper.Size(sheetLength, sheetWidth),
@@ -16,4 +21,19 @@ export function createSheets(maxH, maxW, sheetLength, sheetWidth) {
     sheetsGroup.strokeColor = 'grey';
 
     return sheetsGroup
+}
+
+// scale sheets, but do not remove or replace:
+export function scaleSheets(sheetsGroup, scaleBy) {
+    for (var i = 0; i < sheetsGroup.children.length; i++) {
+        var child = sheetsGroup.children[i];
+
+        child.scale(scaleBy, child.bounds.topLeft);
+        child.position.x = child.position.x * scaleBy;
+        child.position.y = child.position.y * scaleBy;
+
+        if (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)){
+            sheetsGroup.children[i].fillColor = 'red';
+        }
+}
 }

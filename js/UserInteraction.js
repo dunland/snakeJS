@@ -1,9 +1,8 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { Liniensegment } from "./Liniensegmente.js";
-import { raster, platten, image, cursor, changeCursor } from "./paperSnake.js";
+import { raster, sheetsGroup, image, cursor, changeCursor, imageArea } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { Raster } from "./Raster.js";
+import { scaleSheets } from "./Platten.js";
 
 var mouseGridX, mouseGridY;
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
@@ -123,10 +122,14 @@ export function onMouseMove(event) {
             break;
 
         case "moveSheet":
-            platten.translate(event.delta);
+            sheetsGroup.translate(event.delta);
 
-            for (var i = 0; i < platten.children.length; i++) {
-                showIntersections(platten.children[i], raster.line);
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                showIntersections(sheetsGroup.children[i], raster.line);
+                if (imageArea.bounds.intersects(sheetsGroup.children[i].bounds)){
+                    sheetsGroup.children[i].fillColor = null;
+                }
+        
             }
             break;
 
@@ -192,14 +195,15 @@ export function onMouseDown(event) {
                     distance.segments[1] = [event.x, event.y];
                     measureToolState += 1;
                     let userInput = prompt(`${Math.floor(distance.length)} pixel gemessen. Wie viel cm?`);
-                    raster.scaleX = userInput == null ?raster.scaleX : distance.length / userInput;
+                    raster.scaleX = userInput == null ? raster.scaleX : distance.length / userInput;
                     raster.rasterMass = raster.rasterMass * raster.scaleX;
                     console.log(raster.scaleX);
-                    
+
                     raster.removeGridPoints();
                     raster.createPoints(image.width, image.height);
 
                     changeCursor(raster.rasterMass * raster.scaleX / 2);
+                    scaleSheets(sheetsGroup, raster.scaleX);
 
                     document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
                     changeDrawMode("line");
@@ -225,7 +229,6 @@ function drawArea() {
 
 function showIntersections(path1, path2) {
     var intersections = path1.getIntersections(path2);
-    console.log(intersections.length);
     for (var i = 0; i < intersections.length; i++) {
         new paper.Path.Circle({
             center: intersections[i].point,

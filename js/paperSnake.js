@@ -9,25 +9,33 @@ export var image;
 export var raster = new Raster(15, 2.41);
 const sheetLength = 186.1,
     sheetWidth = 59.1; // cm
-export var platten;
+export var sheetsGroup;
+export var imageArea;
 
 // Only executed our code once the DOM is ready.
 window.onload = function () {
 
     // Get a reference to the canvas object
     var canvas = document.getElementById('snakeCanvas');
+        
     // Create an empty project and a view for the canvas:
+    paper.setup(canvas);
+    
+    raster.initialize();
 
     const imageDimensions = loadImage(imageSettings.imageName);
-
-    paper.setup(canvas);
-
-    raster.initialize();
     // Gitterpunkte erstellen:
     raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
         
     // platten erstellen:
-    platten = createSheets(image.height, image.width, sheetLength, sheetWidth);
+    sheetsGroup = createSheets(image.height, image.width, sheetLength, sheetWidth, raster.scaleX);
+
+    // region of interest:
+    imageArea = new paper.Path.Rectangle({
+        point: new paper.Point(0,0),
+        size: new paper.Size(imageDimensions[0], imageDimensions[1]),
+        strokeColor: 'red'
+    })
 
     // mouse cursor:
     cursor = new paper.Path.Circle({

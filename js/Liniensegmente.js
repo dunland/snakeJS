@@ -19,13 +19,10 @@ export class Liniensegment {
         if (raster.activeGridPoints) { // do not allocate first activePoint
             this.type = type == undefined ? this.getType() : type;
             this.createCurveOfType(this.type);
-            console.log(this.getType());
+            if (globalVerboseLevel > 1)
+                console.log(this.getType());
         }
-        // else
-        //     console.log(
-        //         "Liniensegment konnte nicht erzeugt werden, da es zu wenig aktive Gitterpunkte gibt.");
     }
-
     //////////////////////// Zuordnung des Kurventyps ////////////////////////////
     getType() {
         if (this.y1 == this.y2)
