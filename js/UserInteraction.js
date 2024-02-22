@@ -6,7 +6,7 @@ import { sheetHelpers, scaleSheets } from "./Platten.js";
 
 var mouseGridX, mouseGridY;
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
-var distance;
+var measureDistance;
 var measureToolState = 0;
 
 export function changeDrawMode(newMode) {
@@ -14,8 +14,8 @@ export function changeDrawMode(newMode) {
     if (oldMode == newMode) return;
 
     if (oldMode == "measureDistance") {
-        if (distance)
-            distance.remove();
+        if (measureDistance)
+            measureDistance.remove();
         measureToolState = 0;
         document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
 
@@ -109,27 +109,23 @@ export function onMouseMove(event) {
 
     let maxW = image.width;
     let maxH = image.height;
-    mouseGridX = clamp(step(event.point.x, raster.rasterMass), raster.rasterMass, Math.min(maxW, window.width) - raster.rasterMass);
-    mouseGridY = clamp(step(event.point.y, raster.rasterMass), raster.rasterMass, Math.min(maxH, window.height) - raster.rasterMass);
+    mouseGridX = clamp(step(event.point.x, raster.gridSize), raster.gridSize, Math.min(maxW, window.width) - raster.gridSize);
+    mouseGridY = clamp(step(event.point.y, raster.gridSize), raster.gridSize, Math.min(maxH, window.height) - raster.gridSize);
 
     switch (drawMode) {
         case "line":
 
-        // move cursor:
-        cursor.position = [mouseGridX, mouseGridY];
+            // move cursor:
+            cursor.position = [mouseGridX, mouseGridY];
 
-        // show/hide gridPoints:
+            // show/hide gridPoints:
             sheetHelpers.forEach(sheet => {
                 sheet.hideGridPoints();
-            });            
+            });
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 if (sheetsGroup.children[i].contains([mouseGridX, mouseGridY])) {
 
                     var idx = sheetHelpers.findIndex((el) => el.rectangleObject.id == sheetsGroup.children[i].id);
-
-                    console.log(sheetHelpers[idx].gridDots,
-                        sheetHelpers[idx].rectangleObject.id,
-                        sheetsGroup.children[idx].id);
 
                     var sh = sheetHelpers[idx];
                     sh.showGridPoints();
@@ -145,16 +141,22 @@ export function onMouseMove(event) {
 
         case "moveSheet":
             sheetsGroup.translate(event.delta);
+            for (var i = 0; i < sheetHelpers.length; i++)
+                sheetHelpers[i].gridDots.translate(event.delta);
 
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
+
+                if (globalVerboseLevel > 1)
+                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
+
             break;
 
         case "measureDistance":
             if (measureToolState == 1) {
-                distance.segments[1].point = [event.point.x, event.point.y];
-                console.log(distance.length);
+                measureDistance.segments[1].point = [event.point.x, event.point.y];
+                console.log(measureDistance.length);
             }
 
             break;
@@ -199,7 +201,7 @@ export function onMouseDown(event) {
             // first-time object initialization
             switch (measureToolState) {
                 case 0: // begin line where clicked
-                    distance = new paper.Path.Line({
+                    measureDistance = new paper.Path.Line({
                         from: [event.x, event.y],
                         to: [event.x, event.y],
                         strokeColor: 'yellow',
@@ -210,17 +212,17 @@ export function onMouseDown(event) {
                     break;
 
                 case 1:
-                    distance.segments[1] = [event.x, event.y];
+                    measureDistance.segments[1] = [event.x, event.y];
                     measureToolState += 1;
-                    let userInput = prompt(`${Math.floor(distance.length)} pixel gemessen. Wie viel cm?`);
-                    raster.scaleX = userInput == null ? raster.scaleX : distance.length / userInput;
-                    raster.rasterMass = raster.rasterMass * raster.scaleX;
+                    let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
+                    raster.scaleX = userInput == null ? raster.scaleX : measureDistance.length / userInput;
+                    raster.gridSize = raster.gridSize * raster.scaleX;
                     console.log(raster.scaleX);
 
-                    raster.removeGridPoints();
-                    raster.createPoints(image.width, image.height);
+                    // raster.removeGridPoints();
+                    // raster.createPoints(image.width, image.height);
 
-                    changeCursor(raster.rasterMass * raster.scaleX / 2);
+                    changeCursor(raster.gridSize * raster.scaleX / 2);
                     scaleSheets(sheetsGroup, raster.scaleX);
 
                     document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
@@ -228,14 +230,14 @@ export function onMouseDown(event) {
                     break;
 
                 case 2:
-                    distance.remove();
+                    measureDistance.remove();
                     measureToolState = 0;
                     break;
 
                 default:
                     break;
             }
-            console.log(distance, measureToolState);
+            console.log(measureDistance, measureToolState);
             break;
 
     }

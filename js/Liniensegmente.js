@@ -23,7 +23,7 @@ export class Liniensegment {
                 console.log(this.getType());
         }
     }
-    //////////////////////// Zuordnung des Kurventyps ////////////////////////////
+    //////////////// Zuordnung des Kurventyps ////////////////
     getType() {
         if (this.y1 == this.y2)
             return "HORIZONTALE";

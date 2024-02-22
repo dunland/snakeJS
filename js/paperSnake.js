@@ -6,9 +6,11 @@ import { createSheets } from "./Platten.js";
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var image;
-export var raster = new Raster(15, 2.41);
-const sheetLength = 186.1,
-    sheetWidth = 59.1; // cm
+export const globalSheetLength = 1861,
+    globalSheetWidth = 591,
+    globalGridSize = 55, // mm
+    mmPerPx = 0.27;
+export var raster = new Raster(mmPerPx);
 export var sheetsGroup;
 export var imageArea;
 
@@ -17,22 +19,22 @@ window.onload = function () {
 
     // Get a reference to the canvas object
     var canvas = document.getElementById('snakeCanvas');
-        
+
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    
+
     raster.initialize();
 
     const imageDimensions = loadImage(imageSettings.imageName);
     // Gitterpunkte erstellen:
-    raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
-        
+    // raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
+
     // platten erstellen:
-    sheetsGroup = createSheets(image.height, image.width, sheetLength, sheetWidth, raster.scaleX);
+    sheetsGroup = createSheets(image.height, image.width, raster.scaleX);
 
     // region of interest:
     imageArea = new paper.Path.Rectangle({
-        point: new paper.Point(0,0),
+        point: new paper.Point(0, 0),
         size: new paper.Size(imageDimensions[0], imageDimensions[1]),
         strokeColor: 'red'
     })
@@ -40,7 +42,7 @@ window.onload = function () {
     // mouse cursor:
     cursor = new paper.Path.Circle({
         center: new paper.Point(0, 0),
-        radius: raster.rasterMass / 2,
+        radius: raster.gridSize / 2,
         strokeColor: 'white'
     });
 

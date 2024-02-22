@@ -44,14 +44,6 @@ buttonShowPath.onclick = function (event) {
 
 };
 
-let buttonShowGrid = document.getElementById("buttonShowGrid");
-buttonShowGrid.onclick = function (event) {
-    raster.gridCirclePaths.forEach((dot) => {
-        dot.visible = !dot.visible;
-    });
-    this.classList.toggle("active");
-};
-
 let buttonMeasureDistance = document.getElementById("buttonMeasureDistance");
 buttonMeasureDistance.onclick = function (event) {
     // toggle modes:

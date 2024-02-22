@@ -1,12 +1,11 @@
 import { Raster } from "./Raster.js";
-import { imageArea, raster } from "./paperSnake.js";
+import { imageArea, raster, globalSheetLength, globalSheetWidth, globalGridSize } from "./paperSnake.js";
 
 export var sheetHelpers = [];
 class SheetHelper {
 
     constructor(rectangleObject) {
-        this.rasterMass = 6;
-        this.scaleBy = 2.5
+        this.gridSize = raster.gridSize;
         this.rectangleObject = rectangleObject;
         this.gridDots = new paper.Group();
         // this.raster = new Raster(rasterMass, scaleBy);
@@ -18,8 +17,8 @@ class SheetHelper {
         // var sheetWidth = this.rectangleObject.bounds.height;
         // var sheetLength = this.rectangleObject.bounds.width;
 
-        for (let x = this.rectangleObject.position.x + this.rasterMass; x < this.rectangleObject.position.x + sheetLength - this.rasterMass; x += this.rasterMass * this.scaleBy) {
-            for (let y = this.rectangleObject.position.y + this.rasterMass; y < this.rectangleObject.position.y + sheetWidth - this.rasterMass; y += this.rasterMass * this.scaleBy) {
+        for (let x = this.rectangleObject.position.x + this.gridSize; x < this.rectangleObject.position.x + sheetLength - this.gridSize; x += this.gridSize) {
+            for (let y = this.rectangleObject.position.y + this.gridSize; y < this.rectangleObject.position.y + sheetWidth - this.gridSize; y += this.gridSize) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
@@ -29,7 +28,7 @@ class SheetHelper {
                 }));
             }
         }
-        console.log(this.gridDots.children.length, "gridDots erstellt");
+        console.log(`${this.gridDots.children.length} gridDots erstellt mit gridSize, ${this.gridSize}`);
     }
 
     showGridPoints(){
@@ -45,14 +44,14 @@ class SheetHelper {
     }
 }
 
-export function createSheets(maxH, maxW, sheetLength, sheetWidth, scaleBy) {
+export function createSheets(maxH, maxW, scaleBy) {
 
-    sheetLength = sheetLength * scaleBy;
-    sheetWidth = sheetWidth * scaleBy;
+    var sheetLength = globalSheetLength * scaleBy;
+    var sheetWidth = globalSheetWidth * scaleBy;
 
     var sheetsGroup = new paper.Group();
-    for (var y = -1; y < maxH / sheetWidth; y++)
-        for (var x = -1; x < maxW / sheetLength; x++) {
+    for (var y = -1; y < (maxH+sheetWidth) / sheetWidth; y++)
+        for (var x = -1; x < (maxW+sheetLength) / sheetLength; x++) {
             sheetsGroup.addChild(new paper.Path.Rectangle({
                 point: new paper.Point(x * sheetLength, y * sheetWidth),
                 size: new paper.Size(sheetLength, sheetWidth),
@@ -67,16 +66,7 @@ export function createSheets(maxH, maxW, sheetLength, sheetWidth, scaleBy) {
         }
     sheetsGroup.strokeColor = 'grey';
 
-    // sheetsGroup.onMouseMove = function(sheet) {
-    //     console.log("hi");
-        // var idx = sheetHelpers.findIndex((el) => el.rectangleObject.id == sheet.id);
-        // console.log(sheet,
-        //     el.rectangleObject,
-        //     el.rectangleObject.id,
-        //     sheet.id);
-        // sh = sheetHelpers[idx];        
-        // sh.gridDots.visible = true;
-    // }
+    console.log(sheetsGroup.children.length, "sheets created with gridSize", sheetHelpers[sheetHelpers.length - 1].gridSize, "and size", sheetsGroup.lastChild.bounds.size);
 
     return sheetsGroup
 }
@@ -94,4 +84,5 @@ export function scaleSheets(sheetsGroup, scaleBy) {
             sheetsGroup.children[i].fillColor = 'red';
         }
     }
+    console.log("scaled sheets. new size:", sheetsGroup.lastChild.bounds.size);
 }
