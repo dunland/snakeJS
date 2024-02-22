@@ -2,6 +2,8 @@ import { Raster } from "./Raster.js";
 import { imageArea, raster, globalSheetLength, globalSheetWidth, globalGridSize } from "./paperSnake.js";
 
 export var sheetHelpers = [];
+export var activeSheet;
+export function setActiveSheet(newSheet) { activeSheet = newSheet }
 class SheetHelper {
 
     constructor(rectangleObject) {
@@ -28,6 +30,7 @@ class SheetHelper {
                 }));
             }
         }
+        console.log(this.gridDots.lastChild.position);
         console.log(`${this.gridDots.children.length} gridDots erstellt mit gridSize, ${this.gridSize}`);
     }
 

@@ -2,9 +2,8 @@ import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { sheetHelpers, scaleSheets } from "./Platten.js";
+import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet } from "./Platten.js";
 
-var mouseGridX, mouseGridY;
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
 var measureToolState = 0;
@@ -102,37 +101,38 @@ export function keyReleased(keyEvent) {
     }
 }
 
-function clamp(v, min, max) { return v < min ? min : v > max ? max : v }
-function step(v, s) { return Math.round(v / s) * s }
-
 export function onMouseMove(event) {
-
-    let maxW = image.width;
-    let maxH = image.height;
-    mouseGridX = clamp(step(event.point.x, raster.gridSize), raster.gridSize, Math.min(maxW, window.width) - raster.gridSize);
-    mouseGridY = clamp(step(event.point.y, raster.gridSize), raster.gridSize, Math.min(maxH, window.height) - raster.gridSize);
 
     switch (drawMode) {
         case "line":
-
-            // move cursor:
-            cursor.position = [mouseGridX, mouseGridY];
 
             // show/hide gridPoints:
             sheetHelpers.forEach(sheet => {
                 sheet.hideGridPoints();
             });
             for (var i = 0; i < sheetsGroup.children.length; i++) {
-                if (sheetsGroup.children[i].contains([mouseGridX, mouseGridY])) {
-
-                    var idx = sheetHelpers.findIndex((el) => el.rectangleObject.id == sheetsGroup.children[i].id);
-
-                    var sh = sheetHelpers[idx];
-                    sh.showGridPoints();
-
+                if (sheetsGroup.children[i].contains([event.point.x, event.point.y])) {
+                    setActiveSheet(sheetHelpers[i]);
+                    sheetHelpers[i].showGridPoints();
                     break;
                 }
             }
+
+            // move cursor:
+            if (!activeSheet) break;
+
+            // get shortest distance to active gridPoints:
+            var smallestDist = Infinity;
+            var ptAtSmallestDist;
+            for (var i = 0; i < activeSheet.gridDots.children.length; i++) {
+                var distToCursor = activeSheet.gridDots.children[i].position.getDistance([event.point.x, event.point.y]);
+                if (distToCursor < smallestDist) {
+                    smallestDist = distToCursor;
+                    ptAtSmallestDist = activeSheet.gridDots.children[i];
+                }
+            }
+            cursor.position = ptAtSmallestDist.position;
+
             break;
 
         case "area":
@@ -148,7 +148,7 @@ export function onMouseMove(event) {
                 showIntersections(sheetsGroup.children[i], raster.line);
 
                 if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                    sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
 
             break;
@@ -168,7 +168,7 @@ export function onMouseMove(event) {
 
 export function onMouseDown(event) {
 
-    console.log("click!", event.x, event.y, "=>", mouseGridX, mouseGridY);
+    console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y);
     if (event.x >= image.width || event.y >= image.height) return;
 
     const hitOptions = {
@@ -181,10 +181,10 @@ export function onMouseDown(event) {
 
 
         case "line":
-            if (raster.area.contains(new paper.Point(mouseGridX, mouseGridY))) // TODO: also check crossing
+            if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
                 break;
 
-            raster.addLine(mouseGridX, mouseGridY);
+            raster.addLine(cursor.position.x, cursor.position.y);
             break;
 
         case "area":
@@ -244,7 +244,7 @@ export function onMouseDown(event) {
 }
 
 function drawArea() {
-    raster.area.add(new paper.Point(mouseGridX, mouseGridY));
+    raster.area.add(new paper.Point(cursor.position.x, cursor.position.y));
 }
 
 function showIntersections(path1, path2) {
