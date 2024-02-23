@@ -12,11 +12,11 @@ export class Liniensegment {
         this.raster = raster;
         this.liniensegmente = raster.liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
 
-        this.radius = raster.rasterMass / raster.scaleX;
+        this.radius = raster.gridSize / raster.scaleX;
         this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
-        if (raster.activeGridPoints) { // do not allocate first activePoint
+        if (raster.gridPoints) { // do not allocate first point
             this.type = type == undefined ? this.getType() : type;
             this.createCurveOfType(this.type);
             if (globalVerboseLevel > 1)

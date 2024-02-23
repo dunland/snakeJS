@@ -8,7 +8,7 @@ export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var image;
 export const globalSheetLength = 1861,
     globalSheetWidth = 591,
-    globalGridSize = 55, // mm
+    globalGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden
     mmPerPx = 0.27;
 export var raster = new Raster(mmPerPx);
 export var sheetsGroup;

@@ -3,11 +3,15 @@ import { cursor, raster } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
 
 document.getElementById("buttonUndo").onclick = function(){
+    if (raster.gridPoints.length < 1) return;
+    
+    raster.gridPoints[raster.gridPoints.length - 1].selected = false;
+    setRadius(raster.gridPoints[raster.gridPoints.length - 1], 1.5); // size
+    raster.gridPoints.pop();
+    
+    if (raster.line.children.length < 1) return;
     raster.line.lastChild.remove();
-    raster.gridPointHistory[raster.gridPointHistory.length - 1].active = false;
-    setRadius(raster.activeGridPoints[raster.activeGridPoints.length - 1], 1.5); // size
-    raster.activeGridPoints.pop();
-    raster.gridPointHistory.pop();
+    raster.lineSegments.pop();
 }
 
 let buttonTool = document.getElementById("buttonTool");

@@ -7,6 +7,7 @@ import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet } from "./Platte
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
 var measureToolState = 0;
+var ptAtSmallestDist;
 
 export function changeDrawMode(newMode) {
     var oldMode = drawMode;
@@ -56,19 +57,20 @@ export function keyPressed(keyEvent) {
     if (key == 'W' || key == 'w')
         raster.replaceCurve("KURVE_OBEN");
     if (key == 'A' || key == 'a')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_LINKS";
+        raster.lineSegments.at(raster.lineSegments.length - 1).typ = "KURVE_LINKS";
     if (key == 'S' || key == 's')
         raster.replaceCurve("KURVE_UNTEN");
     if (key == 'D' || key == 'd')
-        raster.liniensegmente.at(raster.liniensegmente.length - 1).typ = "KURVE_RECHTS";
-    if (key == 'Q' || key == 'q')
-        raster.replaceCurve("KURVE_OBENLINKS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
+        raster.lineSegments.at(raster.lineSegments.length - 1).typ = "KURVE_RECHTS";
+    if (key == 'Q' || key == 'q'){
+        raster.replaceCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
+    }
     if (key == 'E' || key == 'e')
-        raster.replaceCurve("KURVE_OBENRECHTS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
+        raster.replaceCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
     if (key == 'Y' || key == 'y')
-        raster.replaceCurve("KURVE_UNTENLINKS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
+        raster.replaceCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
     if (key == 'X' || key == 'x')
-        raster.replaceCurve("KURVE_UNTENRECHTS_" + raster.gridPointHistory[raster.gridPointHistory.length - 1].direction);
+        raster.replaceCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
     if (key == ' ') {
         changeDrawMode("moveSheet");
         cursor.visible = false;
@@ -123,7 +125,6 @@ export function onMouseMove(event) {
 
             // get shortest distance to active gridPoints:
             var smallestDist = Infinity;
-            var ptAtSmallestDist;
             for (var i = 0; i < activeSheet.gridDots.children.length; i++) {
                 var distToCursor = activeSheet.gridDots.children[i].position.getDistance([event.point.x, event.point.y]);
                 if (distToCursor < smallestDist) {
@@ -184,7 +185,8 @@ export function onMouseDown(event) {
             if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
                 break;
 
-            raster.addLine(cursor.position.x, cursor.position.y);
+            raster.addLine(ptAtSmallestDist);
+
             break;
 
         case "area":

@@ -58,7 +58,7 @@ export function exportLines() {
     // https://observablehq.com/@danmarshall/html-canvas-to-dxf
 
 
-    const ls = raster.liniensegmente[0];
+    const ls = raster.lineSegments[0];
     const model = {
         models: {
             c1: {

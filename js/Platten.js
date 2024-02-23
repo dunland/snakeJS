@@ -7,10 +7,12 @@ export function setActiveSheet(newSheet) { activeSheet = newSheet }
 class SheetHelper {
 
     constructor(rectangleObject) {
-        this.gridSize = raster.gridSize;
+        this.gridGapX = raster.gridSize;
+        this.gridGapY = globalSheetWidth / Math.floor(globalSheetWidth / globalGridSize) * raster.scaleX;
+        console.log(this.gridGapY);
         this.rectangleObject = rectangleObject;
         this.gridDots = new paper.Group();
-        // this.raster = new Raster(rasterMass, scaleBy);
+        
     }
 
     createGridPoints(sheetLength, sheetWidth) {
@@ -19,8 +21,8 @@ class SheetHelper {
         // var sheetWidth = this.rectangleObject.bounds.height;
         // var sheetLength = this.rectangleObject.bounds.width;
 
-        for (let x = this.rectangleObject.position.x + this.gridSize; x < this.rectangleObject.position.x + sheetLength - this.gridSize; x += this.gridSize) {
-            for (let y = this.rectangleObject.position.y + this.gridSize; y < this.rectangleObject.position.y + sheetWidth - this.gridSize; y += this.gridSize) {
+        for (let x = this.rectangleObject.position.x + this.gridGapX; x < this.rectangleObject.position.x + sheetLength; x += this.gridGapX) {
+            for (let y = this.rectangleObject.position.y + this.gridGapY; y < this.rectangleObject.position.y + sheetWidth - this.gridGapY; y += this.gridGapY) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
@@ -30,8 +32,6 @@ class SheetHelper {
                 }));
             }
         }
-        console.log(this.gridDots.lastChild.position);
-        console.log(`${this.gridDots.children.length} gridDots erstellt mit gridSize, ${this.gridSize}`);
     }
 
     showGridPoints(){
@@ -69,7 +69,9 @@ export function createSheets(maxH, maxW, scaleBy) {
         }
     sheetsGroup.strokeColor = 'grey';
 
-    console.log(sheetsGroup.children.length, "sheets created with gridSize", sheetHelpers[sheetHelpers.length - 1].gridSize, "and size", sheetsGroup.lastChild.bounds.size);
+    console.log(sheetsGroup.children.length, "sheets created with size", sheetsGroup.lastChild.bounds.size);
+    console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length,  "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
+
 
     return sheetsGroup
 }
