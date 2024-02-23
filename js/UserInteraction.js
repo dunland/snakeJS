@@ -62,9 +62,8 @@ export function keyPressed(keyEvent) {
         raster.replaceCurve("KURVE_UNTEN");
     if (key == 'D' || key == 'd')
         raster.lineSegments.at(raster.lineSegments.length - 1).typ = "KURVE_RECHTS";
-    if (key == 'Q' || key == 'q'){
+    if (key == 'Q' || key == 'q')
         raster.replaceCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
-    }
     if (key == 'E' || key == 'e')
         raster.replaceCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
     if (key == 'Y' || key == 'y')

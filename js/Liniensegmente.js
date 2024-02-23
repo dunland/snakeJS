@@ -17,10 +17,10 @@ export class Liniensegment {
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
         if (raster.gridPoints) { // do not allocate first point
-            this.type = type == undefined ? this.getType() : type;
+            this.type = (type == undefined) ? this.getType() : type;
             this.createCurveOfType(this.type);
             if (globalVerboseLevel > 1)
-                console.log(this.getType());
+                console.log(this.type);
         }
     }
     //////////////// Zuordnung des Kurventyps ////////////////

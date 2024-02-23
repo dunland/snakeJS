@@ -95,7 +95,7 @@ export class Raster {
 
     getPathDirection() {
         if (this.gridPoints.length < 2) return;
-        if (this.gridPoints[this.gridPoints.length - 1].position.y > this.gridPoints[this.gridPoints.length - 2].position.y)
+        if (this.gridPoints[this.gridPoints.length - 1].position.y < this.gridPoints[this.gridPoints.length - 2].position.y)
             return "UP";
         else return "DOWN";
     }
