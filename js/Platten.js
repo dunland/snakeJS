@@ -1,5 +1,4 @@
-import { Raster } from "./Raster.js";
-import { imageArea, raster, globalSheetLength, globalSheetWidth, globalGridSize } from "./paperSnake.js";
+import { imageArea, raster, globalSheetLength, globalSheetWidth, globalGridSize, pxPerMM } from "./paperSnake.js";
 
 export var sheetHelpers = [];
 export var activeSheet;
@@ -22,7 +21,7 @@ class SheetHelper {
         // var sheetLength = this.rectangleObject.bounds.width;
 
         for (let x = this.rectangleObject.position.x + this.gridGapX; x < this.rectangleObject.position.x + sheetLength; x += this.gridGapX) {
-            for (let y = this.rectangleObject.position.y + this.gridGapY; y < this.rectangleObject.position.y + sheetWidth - this.gridGapY; y += this.gridGapY) {
+            for (let y = this.rectangleObject.position.y + this.gridGapY; y < this.rectangleObject.position.y + sheetWidth; y += this.gridGapY) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
@@ -47,18 +46,15 @@ class SheetHelper {
     }
 }
 
-export function createSheets(maxH, maxW, scaleBy) {
+export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
 
-    var sheetLength = globalSheetLength * scaleBy;
-    var sheetWidth = globalSheetWidth * scaleBy;
-
-    sheetsGroup = new paper.Group();
+    var sheetsGroup = new paper.Group();
     for (var y = -1; y < (maxH + sheetWidth) / sheetWidth; y++)
         for (var x = -1; x < (maxW + sheetLength) / sheetLength; x++) {
             sheetsGroup.addChild(new paper.Path.Rectangle({
                 point: new paper.Point(x * sheetLength, y * sheetWidth),
                 size: new paper.Size(sheetLength, sheetWidth),
-                strokeColor: 'red',
+                strokeColor: 'grey',
                 strokeWidth: 2
             }));
             if (y % 2 == 0) {
@@ -67,7 +63,6 @@ export function createSheets(maxH, maxW, scaleBy) {
             sheetHelpers.push(new SheetHelper(sheetsGroup.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints(sheetLength, sheetWidth);
         }
-    sheetsGroup.strokeColor = 'grey';
 
     console.log(sheetsGroup.children.length, "sheets created with size", sheetsGroup.lastChild.bounds.size);
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length,  "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
@@ -80,10 +75,8 @@ export function createSheets(maxH, maxW, scaleBy) {
 export function scaleSheets(sheetsGroup) {
 
     let previousSheetLength = sheetsGroup.children[0].bounds.width;
-    console.log(previousSheetLength);
     var newSheetLength = globalSheetLength * raster.scaleX;
     var scaleBy = newSheetLength / previousSheetLength;
-    console.log(scaleBy);
 
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         var child = sheetsGroup.children[i];
@@ -95,6 +88,17 @@ export function scaleSheets(sheetsGroup) {
         if (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) {
             sheetsGroup.children[i].fillColor = 'red';
         }
+
+        // recreate gridDots:
+        sheetHelpers[i].gridGapX = raster.gridSize;
+        sheetHelpers[i].gridGapY = globalSheetWidth / Math.floor(globalSheetWidth / globalGridSize) * raster.scaleX;
+
+        sheetHelpers[i].gridDots.removeChildren(); // TODO: funktioniert das?
+        sheetHelpers[i].gridDots = new paper.Group();
+        sheetHelpers[i].createGridPoints(globalSheetLength * raster.scaleX, globalSheetWidth * raster.scaleX);
+        
+        console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length,  "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
+
     }
     console.log("scaled sheets. new size:", sheetsGroup.lastChild.bounds.size);
 }

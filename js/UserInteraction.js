@@ -1,5 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, sheetsGroup, image, cursor, changeCursor, imageArea } from "./paperSnake.js";
+import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
 import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet } from "./Platten.js";
@@ -217,11 +217,7 @@ export function onMouseDown(event) {
                     measureToolState += 1;
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
                     raster.scaleX = userInput == null ? raster.scaleX : measureDistance.length / userInput;
-                    raster.gridSize = raster.gridSize * raster.scaleX;
-                    console.log(raster.scaleX);
-
-                    // raster.removeGridPoints();
-                    // raster.createPoints(image.width, image.height);
+                    raster.gridSize = globalGridSize * raster.scaleX;
 
                     changeCursor(raster.gridSize * raster.scaleX / 2);
                     scaleSheets(sheetsGroup, raster.scaleX);

@@ -11,6 +11,7 @@ export const globalSheetLength = 1861, // [mm]
     globalGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden [mm]
     pxPerMM = 0.29;
 export var raster = new Raster(pxPerMM);
+export var sheetsGroup;
 export var imageArea;
 
 // Only executed our code once the DOM is ready.
@@ -29,7 +30,11 @@ window.onload = function () {
     // raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
 
     // platten erstellen:
-    sheetsGroup = createSheets(image.height, image.width, raster.scaleX);
+    sheetsGroup = createSheets(
+        globalSheetLength * pxPerMM, 
+        globalSheetWidth * pxPerMM, 
+        image.height, image.width
+        );
 
     // region of interest:
     imageArea = new paper.Path.Rectangle({
