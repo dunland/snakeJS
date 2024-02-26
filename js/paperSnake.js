@@ -6,12 +6,11 @@ import { createSheets } from "./Platten.js";
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var image;
-export const globalSheetLength = 1861,
-    globalSheetWidth = 591,
-    globalGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden
-    mmPerPx = 0.27;
-export var raster = new Raster(mmPerPx);
-export var sheetsGroup;
+export const globalSheetLength = 1861, // [mm]
+    globalSheetWidth = 591, // [mm]
+    globalGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden [mm]
+    pxPerMM = 0.29;
+export var raster = new Raster(pxPerMM);
 export var imageArea;
 
 // Only executed our code once the DOM is ready.

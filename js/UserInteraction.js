@@ -82,8 +82,8 @@ export function keyPressed(keyEvent) {
         globalVerboseLevel--;
         console.log("globalVerboseLevel = ", globalVerboseLevel);
     }
-    if (key == 'n' || key == 'N') {
-        raster.enable_scaling_mode();
+    if (key == 'm' || key == 'M') {
+        changeDrawMode("measureDistance");
     }
     if (key == 'g' || key == 'G') {
         let buttonShowGrid = document.getElementById("buttonShowGrid");

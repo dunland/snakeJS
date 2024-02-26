@@ -1,5 +1,5 @@
 import { setRadius } from "./paperUtils.js";
-import { cursor, raster } from "./paperSnake.js";
+import { cursor, pxPerMM, raster } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
 
 document.getElementById("buttonUndo").onclick = function(){
@@ -49,6 +49,8 @@ buttonShowPath.onclick = function (event) {
 };
 
 let buttonMeasureDistance = document.getElementById("buttonMeasureDistance");
+document.getElementById("rasterScaleX").textContent = pxPerMM.toFixed(3);
+
 buttonMeasureDistance.onclick = function (event) {
     // toggle modes:
     Array.prototype.forEach.call(document.getElementsByClassName("tool"), (element) => {
