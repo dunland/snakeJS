@@ -5,7 +5,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>snakeJS</title>
-  <link rel="stylesheet" href="./paperSnake.css"></link>
+  <link rel="stylesheet" href="./paperSnake.css">
+  </link>
   <!-- <script type="module" src="./node_modules/p5/lib/p5.min.js"></script> -->
   <script type="text/javascript" src="./js/paper/paperjs-v0.12.17/dist/paper-core.js"></script>
   <script type="module" src="./js/paperSnake.js"></script>
@@ -14,19 +15,23 @@
 </head>
 
 <body>
-    <canvas id="snakeCanvas" resize="false"></canvas>
-    <div><button id="buttonShowPath" class="active">show path</button>
-      <button id="buttonTool" class="active">draw line</button>
-      <button id="buttonMeasureDistance">(m)easure distance</button>
-      <button id="buttonUndo">undo</button>
-    </div>
-    <div><p>
+  <canvas id="snakeCanvas" resize="false"></canvas>
+  <div><button id="buttonGetLeftovers">Verschnitt berechnen</button>
+    <button id="buttonShowPath" class="active">show path</button>
+    <button id="buttonTool" class="active">draw line</button>
+    <button id="buttonMeasureDistance">(m)easure distance</button>
+    <button id="buttonUndo">undo</button>
+  </div>
+  <div>
+    <p>
       <span id="rasterScaleX" class="variable">1</span> px/mm
-      <br>Pfadlänge: <span id="pathLength" class="variable">0</span>mm
+      <br>Pfadlänge: <span id="pathLength" class="variable">0</span> mm
+      <br>Platten: <span id="sheets" class="variable">0</span> -- Verschnitt: <span id="leftovers" class="variable">0</span> m²
     </p>
-      <p><span class="key">↑↓</span> : Plattenreihe auswählen
-      <br><span class="key">←→</span> : Plattenreihe verschieben</p>
-    </div>
-    </body>
+    <p><span class="key">↑↓</span> : Alle Platten verschieben
+      <br><span class="key">←→</span> : Plattenreihe verschieben
+    </p>
+  </div>
+</body>
 
 </html>

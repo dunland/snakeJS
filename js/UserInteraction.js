@@ -117,16 +117,48 @@ export function keyPressed(keyEvent) {
 
     }
     if (keyEvent.keyCode == 38) { // up:
-        selectNextRow(sheetsGroup, -1)
+        for (var i = 0; i < sheetsGroup.children.length; i++){
+            sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+            sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+        }
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
+            showIntersections(sheetsGroup.children[i], raster.line);
+
+            if (globalVerboseLevel > 1)
+                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+        }
     } 
     if (keyEvent.keyCode == 40) { // down:
-        selectNextRow(sheetsGroup, 1);
+        for (var i = 0; i < sheetsGroup.children.length; i++){
+            sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+            sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+        }
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
+            showIntersections(sheetsGroup.children[i], raster.line);
+
+            if (globalVerboseLevel > 1)
+                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+        }
     }
 }
 
 export function keyReleased(keyEvent) {
     let key = keyEvent.key;
     if (key == ' ') { // leave mode
+        let leftovers = 0;
+        let sheets = 0;
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
+            let child = sheetsGroup.children[i];
+            if (imageArea.bounds.intersects(child.bounds)) {
+                let tempObj = imageArea.exclude(sheetsGroup.children[i]).subtract(imageArea).removeOnMove();
+                tempObj.fillColor = 'red';
+                leftovers += tempObj.bounds.width * tempObj.bounds.height;
+                sheets++;
+            }
+        }
+        leftovers = leftovers * Math.pow(10, -6); // mm² to m²
+        document.getElementById("leftovers").textContent = leftovers.toFixed(3)
+        document.getElementById("sheets").textContent = sheets;
         changeDrawMode("line");
         cursor.visible = true;
     }
@@ -248,9 +280,9 @@ export function onMouseDown(event) {
                     measureToolState += 1;
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
                     raster.scaleX = userInput == null ? raster.scaleX : measureDistance.length / userInput;
-                    raster.gridSize = globalGridSize * raster.scaleX;
+                    raster.gridGap = globalGridSize * raster.scaleX;
 
-                    changeCursor(raster.gridSize * raster.scaleX / 2);
+                    changeCursor(raster.gridGap * raster.scaleX / 2);
                     scaleSheets(sheetsGroup, raster.scaleX);
 
                     document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);

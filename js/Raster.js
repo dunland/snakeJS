@@ -11,14 +11,14 @@ export class Raster {
 
         this.gridPoints = []; // linear list of grid points
         this.lineSegments = []; // TODO: replace with segmentHistory
-        this.gridSize = globalSheetLength / Math.floor(globalSheetLength / globalGridSize) * scaleX;
+        this.gridGap = globalSheetLength / Math.floor(globalSheetLength / globalGridSize) * scaleX;
         this.line; // must be initialized after paper.setup()
         this.area;
 
         this.scaleX = scaleX;
         this._color = (255, 255, 255);
 
-        console.log(`raster created with gridSize=${this.gridSize}, scaleX=${this.scaleX}`);
+        console.log(`raster created with gridSize=${this.gridGap}, scaleX=${this.scaleX}`);
     }
 
     initialize() {
@@ -42,7 +42,7 @@ export class Raster {
 
         // toggle gridPoint:
         ptAtSmallestDist.selected = !ptAtSmallestDist.selected;
-        let scaling = ptAtSmallestDist.selected ? this.gridSize / 5 : 1.5;
+        let scaling = ptAtSmallestDist.selected ? this.gridGap / 5 : 1.5;
         setRadius(ptAtSmallestDist, scaling); // size
 
         // add line:
@@ -74,7 +74,7 @@ export class Raster {
             }         
         }
         // update path length:
-        let pathLength = this.line.length * this.scaleX;
+        let pathLength = this.line.length / this.scaleX;
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
     }
 

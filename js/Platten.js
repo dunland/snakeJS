@@ -10,7 +10,7 @@ export function setActiveSheet(newSheet) { activeSheet = newSheet }
 class SheetHelper {
 
     constructor(rectangleObject) {
-        this.gridGapX = raster.gridSize;
+        this.gridGapX = raster.gridGap;
         this.gridGapY = globalSheetWidth / Math.floor(globalSheetWidth / globalGridSize) * raster.scaleX;
         this.rectangleObject = rectangleObject;
         this.gridDots = new paper.Group();
@@ -60,8 +60,8 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
                 strokeWidth: 1
             }));
             if (y % 2 == 0) {
-                sheetsGroup.lastChild.position.x -= Math.floor(sheetLength / raster.gridSize);
-                console.log(raster.gridSize, sheetLength);
+                sheetsGroup.lastChild.position.x -= Math.floor(sheetLength / raster.gridGap);
+                console.log(raster.gridGap, sheetLength);
             }
             sheetHelpers.push(new SheetHelper(sheetsGroup.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
@@ -102,7 +102,7 @@ export function scaleSheets(sheetsGroup) {
         }
 
         // recreate gridDots:
-        sheetHelpers[i].gridGapX = raster.gridSize;
+        sheetHelpers[i].gridGapX = raster.gridGap;
         sheetHelpers[i].gridGapY = globalSheetWidth / Math.floor(globalSheetWidth / globalGridSize) * raster.scaleX;
 
         sheetHelpers[i].gridDots.removeChildren(); // TODO: funktioniert das?

@@ -7,14 +7,14 @@ body {
 
 canvas{
     width: 100%;
-    height: 90%;
+    height: 85%;
     background-repeat: no-repeat;
 }
  
 /* Scale canvas with resize attribute to full size */
 canvas[resize] {
     width: 100%;
-    height: 90%;
+    height: 85%;
 }
 
 div span.variable{

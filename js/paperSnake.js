@@ -26,8 +26,6 @@ window.onload = function () {
     raster.initialize();
 
     const imageDimensions = loadImage(imageSettings.imageName);
-    // Gitterpunkte erstellen:
-    // raster.createPoints(Math.min(canvas.clientWidth, imageDimensions[0]), Math.min(canvas.clientHeight, imageDimensions[1]));
 
     // platten erstellen:
     sheetsGroup = createSheets(
@@ -40,13 +38,12 @@ window.onload = function () {
     imageArea = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
         size: new paper.Size(imageDimensions[0], imageDimensions[1]),
-        strokeColor: 'red'
     })
 
     // mouse cursor:
     cursor = new paper.Path.Circle({
         center: new paper.Point(0, 0),
-        radius: raster.gridSize / 2,
+        radius: raster.gridGap / 2,
         strokeColor: 'white'
     });
 

@@ -10,9 +10,8 @@ export class Liniensegment {
         this.ctrl1 = new paper.Point(0, 0);
         this.ctrl2 = new paper.Point(0, 0);
         this.raster = raster;
-        this.liniensegmente = raster.liniensegmente; // TODO: ersetzen durch "line". Es wird hier immer nur ein segment geben!
 
-        this.radius = raster.gridSize / raster.scaleX;
+        this.radius = raster.gridGap / raster.scaleX;
         this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
@@ -28,7 +27,7 @@ export class Liniensegment {
         if (Math.abs(this.y1 - this.y2) <= 1)
             return "HORIZONTALE";
 
-        else if (Math.abs(this.x1 - this.x2) <= this.raster.gridSize)
+        else if (Math.abs(this.x1 - this.x2) <= this.raster.gridGap)
             return "VERTIKALE";
 
         else if (this.x1 > this.x2 && this.y1 < this.y2)
