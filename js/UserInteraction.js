@@ -95,12 +95,26 @@ export function keyPressed(keyEvent) {
             sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
         }
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
+            showIntersections(sheetsGroup.children[i], raster.line);
+
+            if (globalVerboseLevel > 1)
+                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+        }
+
     }
     if (keyEvent.keyCode == 39) { // right
         for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
             sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
         }
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
+            showIntersections(sheetsGroup.children[i], raster.line);
+
+            if (globalVerboseLevel > 1)
+                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+        }
+
     }
     if (keyEvent.keyCode == 38) { // up:
         selectNextRow(sheetsGroup, -1)

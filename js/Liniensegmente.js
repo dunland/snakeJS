@@ -25,10 +25,10 @@ export class Liniensegment {
     }
     //////////////// Zuordnung des Kurventyps ////////////////
     getType() {
-        if (this.y1 == this.y2)
+        if (Math.abs(this.y1 - this.y2) <= 1)
             return "HORIZONTALE";
 
-        else if (this.x1 == this.x2)
+        else if (Math.abs(this.x1 - this.x2) <= this.raster.gridSize)
             return "VERTIKALE";
 
         else if (this.x1 > this.x2 && this.y1 < this.y2)

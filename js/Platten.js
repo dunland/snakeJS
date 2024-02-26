@@ -16,11 +16,11 @@ class SheetHelper {
         this.gridDots = new paper.Group();
     }
 
-    createGridPoints(sheetLength, sheetWidth) {
+    createGridPoints() {
 
         // TODO: change when rotate
-        // var sheetWidth = this.rectangleObject.bounds.height;
-        // var sheetLength = this.rectangleObject.bounds.width;
+        var sheetWidth = this.rectangleObject.bounds.height;
+        var sheetLength = this.rectangleObject.bounds.width;
 
         for (let x = this.rectangleObject.position.x + this.gridGapX; x < this.rectangleObject.position.x + sheetLength; x += this.gridGapX) {
             for (let y = this.rectangleObject.position.y + this.gridGapY; y < this.rectangleObject.position.y + sheetWidth; y += this.gridGapY) {
@@ -64,7 +64,7 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
                 console.log(raster.gridSize, sheetLength);
             }
             sheetHelpers.push(new SheetHelper(sheetsGroup.lastChild));
-            sheetHelpers[sheetHelpers.length - 1].createGridPoints(sheetLength, sheetWidth);
+            sheetHelpers[sheetHelpers.length - 1].createGridPoints();
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;

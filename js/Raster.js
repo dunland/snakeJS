@@ -2,7 +2,7 @@
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
 import { Liniensegment } from "./Liniensegmente.js";
-import { cursor, globalSheetLength, globalGridSize } from "./paperSnake.js";
+import { globalSheetLength, globalGridSize } from "./paperSnake.js";
 import { setRadius } from "./paperUtils.js";
 
 export class Raster {
@@ -73,6 +73,9 @@ export class Raster {
                 }
             }         
         }
+        // update path length:
+        let pathLength = this.line.length * this.scaleX;
+        document.getElementById("pathLength").textContent = pathLength.toFixed(3);
     }
 
     replaceCurve(type) {
