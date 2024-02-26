@@ -21,6 +21,10 @@ div span.variable{
 background-color: yellow;
 }
 
+div span.key{
+    background-color: aquamarine;
+}
+
 /* general buttons: active vs normal */
 button{
     background-color: lightgrey;

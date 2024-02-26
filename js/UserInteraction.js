@@ -2,7 +2,7 @@ import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet } from "./Platten.js";
+import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -18,7 +18,6 @@ export function changeDrawMode(newMode) {
             measureDistance.remove();
         measureToolState = 0;
         document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
-
     }
 
     drawMode = newMode;
@@ -85,12 +84,29 @@ export function keyPressed(keyEvent) {
     if (key == 'm' || key == 'M') {
         changeDrawMode("measureDistance");
     }
-    if (key == 'g' || key == 'G') {
-        let buttonShowGrid = document.getElementById("buttonShowGrid");
-        raster.gridCirclePaths.forEach((dot) => {
-            dot.visible = !dot.visible;
+    if (key == 'p' || key == 'P') {
+        document.getElementById("buttonShowPath").classList.toggle("active");
+        raster.lineSegments.forEach((ls) => {
+            ls.segment.visible = !ls.segment.visible;
         });
-        buttonShowGrid.classList.toggle("active");
+    }
+    if (keyEvent.keyCode == 37) { // left
+        for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
+            sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+            sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+        }
+    }
+    if (keyEvent.keyCode == 39) { // right
+        for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
+            sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+            sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+        }
+    }
+    if (keyEvent.keyCode == 38) { // up:
+        selectNextRow(sheetsGroup, -1)
+    } 
+    if (keyEvent.keyCode == 40) { // down:
+        selectNextRow(sheetsGroup, 1);
     }
 }
 
@@ -115,6 +131,7 @@ export function onMouseMove(event) {
                 if (sheetsGroup.children[i].contains([event.point.x, event.point.y])) {
                     setActiveSheet(sheetHelpers[i]);
                     sheetHelpers[i].showGridPoints();
+                    selectRowBySheet(i);
                     break;
                 }
             }

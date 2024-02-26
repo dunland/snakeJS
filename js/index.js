@@ -37,13 +37,8 @@ let buttonShowPath = document.getElementById("buttonShowPath");
 buttonShowPath.onclick = function (event) {
     this.classList.toggle("active");
 
-    raster.liniensegmente.forEach((ls) => {
+    raster.lineSegments.forEach((ls) => {
         ls.segment.visible = !ls.segment.visible;
-    });
-    raster.gridCirclePaths.forEach((gridPoint) => {
-        // gridPoint.active = !gridPoint.active;
-        // let scaling = gridPoint.active ? raster.rasterMass / 3 : 1;
-        // setRadius(gridPoint, scaling);
     });
 
 };
