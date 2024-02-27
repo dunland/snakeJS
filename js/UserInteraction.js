@@ -1,6 +1,6 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
-import { exportLines } from "./lineExport.js"
+import { downloadSVG } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
 import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
@@ -31,28 +31,8 @@ export function keyPressed(keyEvent) {
     let imageName = imageSettings.imageName;
     // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
-        console.log("begin dxf export");
-
-        const exportedModel = exportLines();
-        console.log(exportedModel);
-
-        const dataToSend = { fileName: `export/${imageName}.dxf`, fileContent: JSON.stringify(exportedModel) };
-        console.log(dataToSend);
-
-        fetch('http://localhost:3000/api/sendData', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(dataToSend)
-        })
-            .then(response => response.text())
-            .then(message => {
-                console.log('Antwort vom Server:', message);
-            })
-            .catch(error => {
-                console.error('Fehler beim Senden der Daten:', error);
-            });
+        console.log("begin file export");
+        downloadSVG(raster.line, "rasterLinieSkaliert.svg");
     }
     if (key == 'W' || key == 'w')
         raster.replaceCurve("KURVE_OBEN");
@@ -93,7 +73,7 @@ export function keyPressed(keyEvent) {
     }
     if (key == 'p') toggleSheetVisibility();
     if (keyEvent.keyCode == 37) { // left
-        for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
+        for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
             sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
         }
@@ -106,7 +86,7 @@ export function keyPressed(keyEvent) {
 
     }
     if (keyEvent.keyCode == 39) { // right
-        for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
+        for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
             sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
         }
@@ -119,7 +99,7 @@ export function keyPressed(keyEvent) {
 
     }
     if (keyEvent.keyCode == 38) { // up:
-        for (var i = 0; i < sheetsGroup.children.length; i++){
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
             sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
             sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
         }
@@ -129,9 +109,9 @@ export function keyPressed(keyEvent) {
             if (globalVerboseLevel > 1)
                 sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
-    } 
+    }
     if (keyEvent.keyCode == 40) { // down:
-        for (var i = 0; i < sheetsGroup.children.length; i++){
+        for (var i = 0; i < sheetsGroup.children.length; i++) {
             sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
             sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
         }

@@ -41,22 +41,7 @@ var model = {
 };
 
 
-export function exportLines() {
-
-    // TODO: 
-    // function svgPathToDXF(svgPathData) {
-    //   const model = makerjs.importer.fromSVGPathData(svgPathData);
-    //   return makerjs.exporter.toDXF(model);
-    // }
-
-    // https://github.com/microsoft/maker.js/issues/579#issuecomment-1786083802
-
-    // Use d3.path to convert Canvas comands to SVG path data
-    // Use Maker.js to import the SVG path data as a model.
-    // Use Maker.js to export the model as DXF
-
-    // https://observablehq.com/@danmarshall/html-canvas-to-dxf
-
+export function createDemoLines() {
 
     const ls = raster.lineSegments[0];
     const model = {
@@ -83,4 +68,49 @@ export function exportLines() {
 
     return model;
 
+}
+
+// send dxf data to server to write file
+export function writeFile(exportedModel, fileName) {
+
+    const dataToSend = { fileName: `export/${imageName}.dxf`, fileContent: JSON.stringify(exportedModel) };
+    console.log(dataToSend);
+
+    fetch('http://localhost:3000/api/sendData', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataToSend)
+    })
+        .then(response => response.text())
+        .then(message => {
+            console.log('Antwort vom Server:', message);
+        })
+        .catch(error => {
+            console.error('Fehler beim Senden der Daten:', error);
+        });
+
+
+}
+
+// create SVG file and prepare for download:
+export function downloadSVG(object, fileName) {
+
+    object.scale(1 / raster.scaleX);
+    if (!fileName)
+        fileName = "snakeJS_export.svg"
+
+    var url = "data:image/svg+xml;utf8," + encodeURIComponent(object.exportSVG(
+        {
+            asString: true
+        }
+    ));
+
+    var link = document.createElement("a");
+    link.download = fileName;
+    link.href = url;
+    link.click();
+
+    object.scale(raster.scaleX);
 }

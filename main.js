@@ -30,6 +30,19 @@ app.post('/api/sendData', (req, res) => {
   const incomingData = JSON.parse(fileContent);
 
   // TODO: automatisieren
+    // TODO: 
+    // function svgPathToDXF(svgPathData) {
+    //   const model = makerjs.importer.fromSVGPathData(svgPathData);
+    //   return makerjs.exporter.toDXF(model);
+    // }
+
+    // https://github.com/microsoft/maker.js/issues/579#issuecomment-1786083802
+
+    // Use d3.path to convert Canvas comands to SVG path data
+    // Use Maker.js to import the SVG path data as a model.
+    // Use Maker.js to export the model as DXF
+
+    // https://observablehq.com/@danmarshall/html-canvas-to-dxf
   var points = incomingData.models.c1.points;
   var curve1 = new makerjs.models.BezierCurve(points);
 
