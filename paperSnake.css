@@ -38,7 +38,7 @@ div span.key{
 }
 
 button:hover{
-    background-color: lightblue;
+    filter: brightness(80%);
 }
 /* general buttons: active vs normal */
 button{
@@ -69,6 +69,10 @@ button.view.active{
 
 #buttonMeasureDistance.active, #buttonMeasureDistance:hover{
     background-color: yellow;
+}
+
+#buttonExportEntireProject{
+    background-color: grey;
 }
 
 #bottom{

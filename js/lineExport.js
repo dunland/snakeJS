@@ -114,3 +114,23 @@ export function downloadSVG(object, fileName) {
 
     object.scale(raster.scaleX);
 }
+
+// create SVG file of entire project and prepare for download:
+export function downloadProjectSVG(fileName) {
+
+    alert("Achtung: Gesamtprojekt (noch) nicht skalierbar!");
+
+    if (!fileName)
+        fileName = "snakeJS_export.svg"
+
+    var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportSVG(
+        {
+            asString: true
+        }
+    ));
+
+    var link = document.createElement("a");
+    link.download = fileName;
+    link.href = url;
+    link.click();
+}

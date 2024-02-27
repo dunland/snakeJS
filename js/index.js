@@ -2,7 +2,7 @@ import { setRadius } from "./paperUtils.js";
 import { cursor, pxPerMM, raster, imageArea, sheetsGroup } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
 import { toggleSheetVisibility } from "./Platten.js";
-import { downloadSVG } from "./lineExport.js";
+import { downloadSVG, downloadProjectSVG } from "./lineExport.js";
 
 document.getElementById("buttonUndo").onclick = function () {
     if (raster.gridPoints.length < 1) return;
@@ -92,3 +92,4 @@ document.getElementById("buttonGetLeftovers").onclick = function (event) {
 }
 
 document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
+document.getElementById("buttonExportEntireProject").onclick = () => downloadProjectSVG();
