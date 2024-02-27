@@ -142,3 +142,8 @@ export function selectRowBySheet(index) {
     }
 
 }
+
+export function toggleSheetVisibility(){
+    document.getElementById("buttonShowSheets").classList.toggle("active");
+    sheetsGroup.visible = !sheetsGroup.visible;
+}

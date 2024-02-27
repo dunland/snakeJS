@@ -2,7 +2,7 @@ import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
 import { exportLines } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
-import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet } from "./Platten.js";
+import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -16,6 +16,7 @@ export function changeDrawMode(newMode) {
     if (oldMode == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
+        cursor.strokeColor = 'white';
         measureToolState = 0;
         document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
     }
@@ -84,12 +85,13 @@ export function keyPressed(keyEvent) {
     if (key == 'm' || key == 'M') {
         changeDrawMode("measureDistance");
     }
-    if (key == 'p' || key == 'P') {
+    if (key == 'l' || key == 'L') {
         document.getElementById("buttonShowPath").classList.toggle("active");
         raster.lineSegments.forEach((ls) => {
             ls.segment.visible = !ls.segment.visible;
         });
     }
+    if (key == 'p') toggleSheetVisibility();
     if (keyEvent.keyCode == 37) { // left
         for (var i = movableSheetsFrom; i < movableSheetsTo; i++){
             sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
@@ -217,6 +219,9 @@ export function onMouseMove(event) {
             break;
 
         case "measureDistance":
+            cursor.position = [event.point.x, event.point.y];
+            cursor.strokeColor = 'yellow';
+
             if (measureToolState == 1) {
                 measureDistance.segments[1].point = [event.point.x, event.point.y];
                 console.log(measureDistance.length);

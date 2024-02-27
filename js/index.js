@@ -1,6 +1,8 @@
 import { setRadius } from "./paperUtils.js";
 import { cursor, pxPerMM, raster, imageArea, sheetsGroup } from "./paperSnake.js";
-import { changeDrawMode } from "./UserInteraction.js";
+import { changeDrawMode, drawMode } from "./UserInteraction.js";
+import { toggleSheetVisibility } from "./Platten.js";
+import { downloadSVG } from "./lineExport.js";
 
 document.getElementById("buttonUndo").onclick = function () {
     if (raster.gridPoints.length < 1) return;
@@ -14,27 +16,40 @@ document.getElementById("buttonUndo").onclick = function () {
     raster.lineSegments.pop();
 }
 
-let buttonTool = document.getElementById("buttonTool");
-buttonTool.onclick = function () {
+let buttonDrawTool = document.getElementById("buttonDrawTool");
+buttonDrawTool.onmouseenter = () => {
+    if (drawMode == "line") {
+        buttonDrawTool.textContent = ("draw area");
+    }
+    else if (drawMode == "area") {
+        buttonDrawTool.textContent = ("draw line");
+    }
+}
+buttonDrawTool.onmouseleave = () => {
+    if (drawMode == "line") {
+        buttonDrawTool.textContent = ("draw line");
+    }
+    else if (drawMode == "area") {
+        buttonDrawTool.textContent = ("draw area");
+    }
+}
+
+buttonDrawTool.onclick = function () {
     // toggle modes:
     document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
     this.classList.toggle("active");
 
-    if (buttonTool.textContent.includes("line")) {
-        buttonTool.textContent = ("draw area");
+    if (drawMode == "line") {
         changeDrawMode("area");
         cursor.strokeColor = 'red';
     }
-    else if (buttonTool.textContent.includes("area")) {
-        buttonTool.textContent = ("draw line");
+    else if (drawMode == "area") {
         changeDrawMode("line");
         cursor.strokeColor = 'white';
     }
 }
 
-let buttonShowPath = document.getElementById("buttonShowPath");
-
-buttonShowPath.onclick = function (event) {
+document.getElementById("buttonShowPath").onclick = function (event) {
     this.classList.toggle("active");
 
     raster.lineSegments.forEach((ls) => {
@@ -42,6 +57,8 @@ buttonShowPath.onclick = function (event) {
     });
 
 };
+
+document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
 
 let buttonMeasureDistance = document.getElementById("buttonMeasureDistance");
 document.getElementById("rasterScaleX").textContent = pxPerMM.toFixed(3);
@@ -73,3 +90,5 @@ document.getElementById("buttonGetLeftovers").onclick = function (event) {
     document.getElementById("leftovers").textContent = leftovers.toFixed(3)
     document.getElementById("sheets").textContent = sheets;
 }
+
+document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
