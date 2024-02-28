@@ -65,6 +65,9 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
             }
             sheetHelpers.push(new SheetHelper(sheetsGroup.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
+            sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.lastChild.bounds.topLeft.x + 20, sheetsGroup.lastChild.bounds.topLeft.y + 20]);
+            sheetHelpers[sheetHelpers.length - 1].label.strokeColor = 'white'
+            sheetHelpers[sheetHelpers.length - 1].label.content = `${y+2}.${x+2}`;
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;

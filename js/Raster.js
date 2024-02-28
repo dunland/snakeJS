@@ -22,7 +22,7 @@ export class Raster {
     }
 
     initialize() {
-        this.line = new paper.CompoundPath();
+        this.line = new paper.Path();
         this.line.strokeColor = 'white';
         this.line.strokeWidth = 2;
 
@@ -53,9 +53,8 @@ export class Raster {
                     this.gridPoints.at(this.gridPoints.length - 2);
                 // this.gitterpunkte[gpIdx].updateDirection(gp_vorher);
                 var ls = new Liniensegment(ptAtSmallestDist, previousGP, this);
-                console.log(previousGP, ls);
                 this.lineSegments.push(ls);
-                this.line.addChild(ls.segment);
+                this.line.join(ls.segment);
             }
         } else {
 
@@ -64,11 +63,10 @@ export class Raster {
                 let idx = this.gridPoints.findIndex((dot) => (dot.id == ptAtSmallestDist.id));
                 // remove from list:
                 this.gridPoints.splice(idx, 1); // remove point
-                this.line.removeChildren(idx - 1);
                 this.lineSegments.splice([idx - 1], 1); // remove line
                 if (idx != this.gridPoints.length - 1) // not last element → some line in between
                 {
-                    this.line.removeChildren(idx);
+                    this.line.lastSegment.remove();
                     this.lineSegments.splice([idx], 1); // remove line
                 }
             }         
@@ -87,13 +85,12 @@ export class Raster {
 
         console.log(`replace ${this.lineSegments[this.lineSegments.length - 1].type} (${this.lineSegments[this.lineSegments.length - 1].segment}) with type ${type}`);
 
-        this.line.lastChild.remove(); // remove last segment
         this.lineSegments.pop(); // remove last linesegment helper
+        this.line.lastSegment.remove();
 
         const ls = new Liniensegment(this.gridPoints[this.gridPoints.length - 1], this.gridPoints[this.gridPoints.length - 2], this, type);
         this.lineSegments.push(ls);
-
-        this.line.addChild(ls.segment); // add new segment
+        this.line.join(ls.segment);
     }
 
     getPathDirection() {

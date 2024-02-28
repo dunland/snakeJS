@@ -1,6 +1,6 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
-import { downloadSVG } from "./lineExport.js"
+import { downloadSVG, extractPathFromSheets } from "./lineExport.js"
 import imageSettings from "../settings.json" assert { type: 'json' };
 import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
@@ -28,11 +28,11 @@ export function changeDrawMode(newMode) {
 export function keyPressed(keyEvent) {
     let key = keyEvent.key;
     console.log(key);
-    let imageName = imageSettings.imageName;
     // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
         console.log("begin file export");
-        downloadSVG(raster.line, "rasterLinieSkaliert.svg");
+        // downloadSVG(raster.line, "rasterLinieSkaliert.svg");
+        extractPathFromSheets();
     }
     if (key == 'W' || key == 'w')
         raster.replaceLastCurve("KURVE_OBEN");
@@ -192,8 +192,10 @@ export function onMouseMove(event) {
         case "moveSheet":
             sheetsGroup.translate(event.delta);
             raster.line.translate(event.delta);
-            for (var i = 0; i < sheetHelpers.length; i++)
+            for (var i = 0; i < sheetHelpers.length; i++){
                 sheetHelpers[i].gridDots.translate(event.delta);
+                sheetHelpers[i].label.translate(event.delta);
+            }
 
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
@@ -298,7 +300,7 @@ function drawArea() {
     raster.area.add(new paper.Point(cursor.position.x, cursor.position.y));
 }
 
-function showIntersections(path1, path2) {
+export function showIntersections(path1, path2) {
     var intersections = path1.getIntersections(path2);
     for (var i = 0; i < intersections.length; i++) {
         new paper.Path.Circle({

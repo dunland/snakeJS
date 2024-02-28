@@ -1,4 +1,5 @@
-import { raster } from "./paperSnake.js";
+import { showIntersections } from "./UserInteraction.js";
+import { raster, sheetsGroup, testPath } from "./paperSnake.js";
 
 // line example:
 var line = {
@@ -133,4 +134,21 @@ export function downloadProjectSVG(fileName) {
     link.download = fileName;
     link.href = url;
     link.click();
+}
+
+export function extractPathFromSheets() {
+    for (var i = 0; i < sheetsGroup.children.length; i++) {
+        if (raster.line.intersects(sheetsGroup.children[i])){
+            
+            let newObj = raster.line.intersect(sheetsGroup.children[i], { trace: false }).removeOnMove();
+            newObj.strokeColor = paper.Color.random();
+
+            // sheetsGroup.children[i].divide(raster.line).strokeColor = 'green';
+
+            downloadSVG(newObj, `Platte_${sheetHelpers[i].label.content}_Pfad.svg`);
+            downloadSVG(sheetsGroup.children[i], `Platte_${sheetHelpers[i].label.content}.svg`);
+        }
+    }
+}
+    }
 }

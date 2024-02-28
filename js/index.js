@@ -2,7 +2,7 @@ import { setRadius } from "./paperUtils.js";
 import { cursor, pxPerMM, raster, imageArea, sheetsGroup } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
 import { toggleSheetVisibility } from "./Platten.js";
-import { downloadSVG, downloadProjectSVG } from "./lineExport.js";
+import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 
 document.getElementById("buttonUndo").onclick = function () {
     if (raster.gridPoints.length < 1) return;
@@ -11,7 +11,7 @@ document.getElementById("buttonUndo").onclick = function () {
     setRadius(raster.gridPoints[raster.gridPoints.length - 1], 1.5); // size
     raster.gridPoints.pop();
 
-    if (raster.line.children.length < 1) return;
+    if (raster.line.segments.length < 1) return;
     raster.line.lastChild.remove();
     raster.lineSegments.pop();
 }
@@ -92,4 +92,5 @@ document.getElementById("buttonGetLeftovers").onclick = function (event) {
 }
 
 document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
-document.getElementById("buttonExportEntireProject").onclick = () => downloadProjectSVG();
+document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
+document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;
