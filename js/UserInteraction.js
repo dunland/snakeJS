@@ -35,21 +35,23 @@ export function keyPressed(keyEvent) {
         downloadSVG(raster.line, "rasterLinieSkaliert.svg");
     }
     if (key == 'W' || key == 'w')
-        raster.replaceCurve("KURVE_OBEN");
+        raster.replaceLastCurve("KURVE_OBEN");
     if (key == 'A' || key == 'a')
-        raster.lineSegments.at(raster.lineSegments.length - 1).typ = "KURVE_LINKS";
+        raster.replaceLastCurve("KURVE_LINKS");
     if (key == 'S' || key == 's')
-        raster.replaceCurve("KURVE_UNTEN");
+        raster.replaceLastCurve("KURVE_UNTEN");
     if (key == 'D' || key == 'd')
-        raster.lineSegments.at(raster.lineSegments.length - 1).typ = "KURVE_RECHTS";
+        raster.replaceLastCurve("KURVE_RECHTS");
+    if (key == 'F' || key == 'f')
+        raster.replaceLastCurve("GERADE");
     if (key == 'Q' || key == 'q')
-        raster.replaceCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
+        raster.replaceLastCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
     if (key == 'E' || key == 'e')
-        raster.replaceCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
+        raster.replaceLastCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
     if (key == 'Y' || key == 'y')
-        raster.replaceCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
+        raster.replaceLastCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
     if (key == 'X' || key == 'x')
-        raster.replaceCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
+        raster.replaceLastCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
     if (key == ' ') {
         changeDrawMode("moveSheet");
         cursor.visible = false;
@@ -129,15 +131,18 @@ export function keyReleased(keyEvent) {
     if (key == ' ') { // leave mode
         let leftovers = 0;
         let sheets = 0;
+
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             let child = sheetsGroup.children[i];
             if (imageArea.bounds.intersects(child.bounds)) {
                 let tempObj = imageArea.exclude(sheetsGroup.children[i]).subtract(imageArea).removeOnMove();
-                tempObj.fillColor = 'red';
+                if (globalVerboseLevel > 2)
+                    tempObj.fillColor = 'red';
                 leftovers += tempObj.bounds.width * tempObj.bounds.height;
                 sheets++;
             }
         }
+
         leftovers = leftovers * Math.pow(10, -6); // mm² to m²
         document.getElementById("leftovers").textContent = leftovers.toFixed(3)
         document.getElementById("sheets").textContent = sheets;
@@ -186,6 +191,7 @@ export function onMouseMove(event) {
 
         case "moveSheet":
             sheetsGroup.translate(event.delta);
+            raster.line.translate(event.delta);
             for (var i = 0; i < sheetHelpers.length; i++)
                 sheetHelpers[i].gridDots.translate(event.delta);
 

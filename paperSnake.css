@@ -96,3 +96,10 @@ button.view.active{
 #buttonsBelow div{
     margin: 0px 0px 0px 10px;
 }
+
+.reversed{
+    display: inline-block;
+    transform: scaleX(-1);
+    /* transform: rotate(180deg); */
+    writing-mode: horizontal-tb;
+}

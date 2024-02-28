@@ -25,10 +25,10 @@ export class Liniensegment {
     //////////////// Zuordnung des Kurventyps ////////////////
     getType() {
         if (Math.abs(this.y1 - this.y2) <= 1)
-            return "HORIZONTALE";
+            return "GERADE";
 
         else if (Math.abs(this.x1 - this.x2) <= this.raster.gridGap)
-            return "VERTIKALE";
+            return "GERADE";
 
         else if (this.x1 > this.x2 && this.y1 < this.y2)
             return "KURVE_OBENLINKS_DOWN";
@@ -60,21 +60,55 @@ export class Liniensegment {
 
         switch (type) {
 
+            case "KURVE_OBEN":
+                this.angle = 180;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
 
-            case "HORIZONTALE":
-                this.segment = new paper.Path.Line({
-                    from: [this.x1, this.y1],
-                    to: [this.x2, this.y2],
-                    strokeWidth: 2,
-                    strokeColor: 'white'
-                });
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
 
-                if (globalVerboseLevel > 1)
-                    console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
+                handleIn = new paper.Point(0, -this.radius * this.length);
+                handleOut = new paper.Point(0, -this.radius * this.length);
 
-                return;
+            break;
 
-            case "VERTIKALE":
+            case "KURVE_UNTEN":
+                this.angle = 180;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(0, this.radius * this.length);
+                handleOut = new paper.Point(0, this.radius * this.length);
+
+            break;
+
+            case "KURVE_LINKS":
+                this.angle = 180;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(-this.radius * this.length, 0);
+                handleOut = new paper.Point(-this.radius * this.length, 0);
+
+            break;
+
+            case "KURVE_RECHTS":
+                this.angle = 180;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+
+                this.start = new paper.Point(this.x1, this.y1);
+                this.end = new paper.Point(this.x2, this.y2);
+
+                handleIn = new paper.Point(this.radius * this.length, 0);
+                handleOut = new paper.Point(this.radius * this.length, 0);
+
+            break;
+
+            case "GERADE":
                 this.segment = new paper.Path.Line({
                     from: [this.x1, this.y1],
                     to: [this.x2, this.y2],

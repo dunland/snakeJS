@@ -78,7 +78,7 @@ export class Raster {
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
     }
 
-    replaceCurve(type) {
+    replaceLastCurve(type) {
 
         if (this.lineSegments.length < 1) {
             console.log("no active points left to change curve")

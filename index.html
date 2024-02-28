@@ -19,6 +19,18 @@
     <div id="right">
       <button id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
       <button id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
+      <p><span class="key">↑↓</span> : Alle Platten verschieben
+        <br><span class="key">←→</span> : Plattenreihe verschieben
+        <br><span class="key">Q</span> : &#x25DC;
+        <br><span class="key">E</span> : &#x25DD;
+        <br><span class="key">Y</span> : &#9695;
+        <br><span class="key">X</span> : &#x25DE;
+        <br><span class="key">W</span> : &#x25E0;
+        <br><span class="key">A</span> : &#129287;
+        <br><span class="key">S</span> : &#x25E1;
+        <br><span class="key">D</span> : <span class="reversed">&#129287;</span>
+        <br><span class="key">F</span> : ‒ |
+      </p>
     </div>
   </div>
   <div id="bottom">
@@ -27,20 +39,19 @@
       <br>Pfadlänge: <span id="pathLength" class="variable">0</span> mm
       <br>Platten: <span id="sheets" class="variable">0</span> -- Verschnitt: <span id="leftovers"
       class="variable">0</span> m²
-      <p><span class="key">↑↓</span> : Alle Platten verschieben
-        <br><span class="key">←→</span> : Plattenreihe verschieben
-      </p>
     </div>
     <div id="buttonsBelow">
       <div id="buttonsDrawTools">
         <button id="buttonDrawTool" class="active">draw line</button>
         <br><button id="buttonMeasureDistance">(m)easure distance</button>
-        <br><button id="buttonUndo">undo</button>
       </div>
       <div id="buttonsProjectTools">
         <button id="buttonGetLeftovers">Verschnitt berechnen</button>
         <br><button id="buttonExportEntirePath">Download Gesamt-Pfad</button>
         <br><button id="buttonExportEntireProject">Download Gesamt-Projekt</button>
+        <br><button id="buttonUndo">zurück</button>
+      </div>
+      <div>
       </div>
     </div>
     <div></div>

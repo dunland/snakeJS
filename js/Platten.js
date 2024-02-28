@@ -22,8 +22,8 @@ class SheetHelper {
         var sheetWidth = this.rectangleObject.bounds.height;
         var sheetLength = this.rectangleObject.bounds.width;
 
-        for (let x = this.rectangleObject.position.x + this.gridGapX; x < this.rectangleObject.position.x + sheetLength; x += this.gridGapX) {
-            for (let y = this.rectangleObject.position.y + this.gridGapY; y < this.rectangleObject.position.y + sheetWidth; y += this.gridGapY) {
+        for (let x = this.rectangleObject.position.x; x < this.rectangleObject.position.x + sheetLength + this.gridGapX; x += this.gridGapX) {
+            for (let y = this.rectangleObject.position.y; y < this.rectangleObject.position.y + sheetWidth + this.gridGapY; y += this.gridGapY) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
