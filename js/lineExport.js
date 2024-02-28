@@ -142,14 +142,16 @@ export function extractPathFromSheets() {
         if (raster.line.intersects(sheetsGroup.children[i])){
             
             let newObj = raster.line.intersect(sheetsGroup.children[i], { trace: false }).removeOnMove();
-            newObj.strokeColor = paper.Color.random();
 
-            // sheetsGroup.children[i].divide(raster.line).strokeColor = 'green';
+            var joinedObj = new paper.CompoundPath({
+                children: [
+                    newObj, sheetsGroup.children[i].clone()
+                ],
+                strokeColor: paper.Color.random(),
+                strokeWidth: 2
+            }).removeOnMove();
 
-            downloadSVG(newObj, `Platte_${sheetHelpers[i].label.content}_Pfad.svg`);
-            downloadSVG(sheetsGroup.children[i], `Platte_${sheetHelpers[i].label.content}.svg`);
+            downloadSVG(joinedObj, `Platte_${sheetHelpers[i].label.content}.svg`)
         }
-    }
-}
     }
 }
