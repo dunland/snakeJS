@@ -1,5 +1,6 @@
+import { sheetHelpers } from "./Platten.js";
 import { showIntersections } from "./UserInteraction.js";
-import { raster, sheetsGroup, testPath } from "./paperSnake.js";
+import { raster, sheetsGroup } from "./paperSnake.js";
 
 // line example:
 var line = {
