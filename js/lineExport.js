@@ -1,6 +1,6 @@
-import { sheetHelpers } from "./Platten.js";
-import { showIntersections } from "./UserInteraction.js";
-import { raster, sheetsGroup } from "./paperSnake.js";
+import imageSettings from "../settings.json" assert { type: 'json' };
+import { sheetsGroup, sheetHelpers } from "./Platten.js";
+import { raster } from "./paperSnake.js";
 
 // line example:
 var line = {
@@ -45,7 +45,7 @@ var model = {
 
 export function createDemoLines() {
 
-    const ls = raster.lineSegments[0];
+    const ls = raster.lineSegmentsTypeHistory[0];
     const model = {
         models: {
             c1: {
@@ -118,7 +118,7 @@ export function downloadSVG(object, fileName) {
 }
 
 // create SVG file of entire project and prepare for download:
-export function downloadProjectSVG(fileName) {
+export function downloadProjectSVG(event, fileName) {
 
     alert("Achtung: Gesamtprojekt (noch) nicht skalierbar!");
 
@@ -137,10 +137,30 @@ export function downloadProjectSVG(fileName) {
     link.click();
 }
 
+// create SVG file of entire project and prepare for download:
+export function downloadProjectJSON(event, fileName) {
+
+    if (!fileName)
+        fileName = imageSettings.imageName.split('.')[0] + '.json';
+
+    console.log(fileName);
+
+    var url = "data:image/svg+xml;utf8," + encodeURIComponent(paper.project.exportJSON(
+        {
+            asString: true
+        }
+    ));
+
+    var link = document.createElement("a");
+    link.download = fileName;
+    link.href = url;
+    link.click();
+}
+
 export function extractPathFromSheets() {
     for (var i = 0; i < sheetsGroup.children.length; i++) {
-        if (raster.line.intersects(sheetsGroup.children[i])){
-            
+        if (raster.line.intersects(sheetsGroup.children[i])) {
+
             let newObj = raster.line.intersect(sheetsGroup.children[i], { trace: false }).removeOnMove();
 
             var joinedObj = new paper.CompoundPath({

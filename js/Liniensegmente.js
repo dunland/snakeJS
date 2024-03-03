@@ -1,19 +1,19 @@
 import { globalVerboseLevel } from "./Devtools.js";
+import { raster } from "./paperSnake.js";
 
 export class Liniensegment {
 
-    constructor(gp_end, gp_start, raster, type) {
+    constructor(gp_end, gp_start, type) {
         this.x1 = gp_start.position.x;
         this.y1 = gp_start.position.y;
         this.x2 = gp_end.position.x;
         this.y2 = gp_end.position.y;
         this.ctrl1 = new paper.Point(0, 0);
         this.ctrl2 = new paper.Point(0, 0);
-        this.raster = raster;
 
-        this.radius = raster.gridGap / raster.scaleX;
+        this.radius = raster.gridGapX / raster.scaleX;
         this.angle = 90;
-        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
         if (raster.gridPoints) { // do not allocate first point
             this.type = (type == undefined) ? this.getType() : type;
@@ -27,7 +27,7 @@ export class Liniensegment {
         if (Math.abs(this.y1 - this.y2) <= 1)
             return "GERADE";
 
-        else if (Math.abs(this.x1 - this.x2) <= this.raster.gridGap)
+        else if (Math.abs(this.x1 - this.x2) <= raster.gridGapX)
             return "GERADE";
 
         else if (this.x1 > this.x2 && this.y1 < this.y2)
@@ -62,7 +62,7 @@ export class Liniensegment {
 
             case "KURVE_OBEN":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -74,7 +74,7 @@ export class Liniensegment {
 
             case "KURVE_UNTEN":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -86,7 +86,7 @@ export class Liniensegment {
 
             case "KURVE_LINKS":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -98,7 +98,7 @@ export class Liniensegment {
 
             case "KURVE_RECHTS":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * this.raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);

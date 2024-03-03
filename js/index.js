@@ -1,8 +1,9 @@
 import { setRadius } from "./paperUtils.js";
-import { cursor, pxPerMM, raster, imageArea, sheetsGroup } from "./paperSnake.js";
+import { cursor, pxPerMM, raster, imageArea } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
-import { toggleSheetVisibility } from "./Platten.js";
+import { sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
+import { exportProject } from "./ProjectManager.js";
 
 document.getElementById("buttonUndo").onclick = function () {
     if (raster.gridPoints.length < 1) return;
@@ -12,8 +13,8 @@ document.getElementById("buttonUndo").onclick = function () {
     raster.gridPoints.pop();
 
     if (raster.line.segments.length < 1) return;
-    raster.line.lastChild.remove();
-    raster.lineSegments.pop();
+    raster.line.lastSegment.remove();
+    raster.lineSegmentsTypeHistory.pop();
 }
 
 let buttonDrawTool = document.getElementById("buttonDrawTool");
@@ -51,11 +52,7 @@ buttonDrawTool.onclick = function () {
 
 document.getElementById("buttonShowPath").onclick = function (event) {
     this.classList.toggle("active");
-
-    raster.lineSegments.forEach((ls) => {
-        ls.segment.visible = !ls.segment.visible;
-    });
-
+    raster.line.visible = !raster.line.visible;
 };
 
 document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
@@ -91,6 +88,12 @@ document.getElementById("buttonGetLeftovers").onclick = function (event) {
     document.getElementById("sheets").textContent = sheets;
 }
 
+// document.getElementById("buttonSaveProjectJSON").onclick = {paper.project.exportJSON()};
+document.getElementById("buttonSaveProject").onclick = exportProject;
+document.getElementById("buttonLoadProject").onclick = () => {
+    // paper.project.importJSON("../file.json");
+    
+};
 document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;

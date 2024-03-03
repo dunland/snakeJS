@@ -1,8 +1,7 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, sheetsGroup, image, cursor, changeCursor, imageArea, globalGridSize } from "./paperSnake.js";
-import { downloadSVG, extractPathFromSheets } from "./lineExport.js"
-import imageSettings from "../settings.json" assert { type: 'json' };
-import { sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
+import { raster, image, cursor, changeCursor, imageArea, realGridSize } from "./paperSnake.js";
+import { extractPathFromSheets } from "./lineExport.js"
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -69,9 +68,7 @@ export function keyPressed(keyEvent) {
     }
     if (key == 'l' || key == 'L') {
         document.getElementById("buttonShowPath").classList.toggle("active");
-        raster.lineSegments.forEach((ls) => {
-            ls.segment.visible = !ls.segment.visible;
-        });
+        raster.line.visible = !raster.line.visible;
     }
     if (key == 'p') toggleSheetVisibility();
     if (keyEvent.keyCode == 37) { // left
@@ -192,7 +189,7 @@ export function onMouseMove(event) {
         case "moveSheet":
             sheetsGroup.translate(event.delta);
             raster.line.translate(event.delta);
-            for (var i = 0; i < sheetHelpers.length; i++){
+            for (var i = 0; i < sheetHelpers.length; i++) {
                 sheetHelpers[i].gridDots.translate(event.delta);
                 sheetHelpers[i].label.translate(event.delta);
             }
@@ -240,7 +237,7 @@ export function onMouseDown(event) {
             if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
                 break;
 
-            raster.addLine(ptAtSmallestDist);
+                raster.addLine(ptAtSmallestDist);
 
             break;
 
@@ -248,7 +245,8 @@ export function onMouseDown(event) {
 
             var pt = new paper.Point(event.x, event.y);
             var hitObject = paper.project.hitTest(pt, hitOptions);
-            console.log("you hit a", hitObject);
+            if (globalVerboseLevel > 2)
+                console.log("you hit a", hitObject);
             if (!hitObject)
                 drawArea();
             break;
@@ -273,9 +271,9 @@ export function onMouseDown(event) {
                     measureToolState += 1;
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
                     raster.scaleX = userInput == null ? raster.scaleX : measureDistance.length / userInput;
-                    raster.gridGap = globalGridSize * raster.scaleX;
+                    raster.gridGapX = realGridSize * raster.scaleX;
 
-                    changeCursor(raster.gridGap * raster.scaleX / 2);
+                    changeCursor(raster.gridGapX * raster.scaleX / 2);
                     scaleSheets(sheetsGroup, raster.scaleX);
 
                     document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);

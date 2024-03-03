@@ -1,17 +1,17 @@
 import imageSettings from "../settings.json" assert { type: 'json' };
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
-import { createSheets } from "./Platten.js";
+import { createSheetHelpers, createSheets } from "./Platten.js";
+import { importProject } from "./ProjectManager.js";
 
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var image;
-export const globalSheetLength = 1861, // [mm]
-    globalSheetWidth = 591, // [mm]
-    globalGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden [mm]
+export const realSheetLength = 1861, // [mm]
+    realSheetWidth = 591, // [mm]
+    realGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden [mm]
     pxPerMM = 0.29;
 export var raster = new Raster(pxPerMM);
-export var sheetsGroup;
 export var imageArea;
 
 // Only executed our code once the DOM is ready.
@@ -22,17 +22,28 @@ window.onload = function () {
 
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-
-    raster.initialize();
-
     const imageDimensions = loadImage(imageSettings.imageName);
 
-    // platten erstellen:
-    sheetsGroup = createSheets(
-        globalSheetLength * pxPerMM, 
-        globalSheetWidth * pxPerMM, 
-        image.height, image.width
+    const projectDataFile = new URLSearchParams(window.location.search).get('projectData');
+    if (projectDataFile) {
+        console.log("loading project from URL");
+        importProject(projectDataFile);
+    }
+    else{
+        raster.initialize();
+        // platten erstellen:
+        createSheets(
+            realSheetLength * pxPerMM,
+            realSheetWidth * pxPerMM,
+            image.height, image.width
         );
+        createSheetHelpers(
+            realSheetLength * pxPerMM,
+            realSheetWidth * pxPerMM,
+            image.height, image.width
+        );
+    }
+
 
     // region of interest:
     imageArea = new paper.Path.Rectangle({
@@ -43,7 +54,7 @@ window.onload = function () {
     // mouse cursor:
     cursor = new paper.Path.Circle({
         center: new paper.Point(0, 0),
-        radius: raster.gridGap / 2,
+        radius: raster.gridGapX / 2,
         strokeColor: 'white'
     });
 
