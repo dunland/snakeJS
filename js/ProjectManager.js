@@ -2,7 +2,8 @@ import imageSettings from "../settings.json" assert { type: 'json' };
 import { sheetsGroup, createSheetHelpers, importSheets } from "./Platten.js";
 import { raster, realSheetLength, realSheetWidth, image } from "./paperSnake.js";
 
-export var projectFolder;
+export var projectName;
+export function setProjectName(newPath) {projectName = newPath};
 
 export function exportProject(event, fileName) {
 
@@ -33,7 +34,7 @@ export function exportProject(event, fileName) {
 }
 
 export function importProject(projectDataFile) {
-    console.log(projectDataFile);
+    console.log("import from", projectDataFile);
 
     fetch(projectDataFile)
         .then(response => response.json())

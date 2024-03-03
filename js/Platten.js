@@ -1,4 +1,4 @@
-import { imageArea, raster, realSheetLength, realSheetWidth, realGridSize } from "./paperSnake.js";
+import { imageArea, raster, realSheetLength, realSheetWidth, realGridSize, image } from "./paperSnake.js";
 
 export var sheetsGroup;
 export var sheetHelpers = [];
@@ -49,9 +49,20 @@ class SheetHelper {
     }
 }
 
-export function importSheets(JSONdata) { sheetsGroup = new paper.Group().importJSON(JSONdata); }
+export function importSheets(JSONdata) { 
+    sheetsGroup = new paper.Group().importJSON(JSONdata);
+
+    let sheetLength = realSheetLength * raster.scaleX;
+    let sheetWidth = realSheetWidth * raster.scaleX
+    let maxH = image.height;
+    let maxW = image.width;
+
+    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth);
+}
 
 export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
+    console.log('creating sheets');
 
     var sheets = new paper.Group();
     for (var y = -1; y < (maxH + sheetWidth) / sheetWidth; y++)
@@ -66,11 +77,6 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
                 sheets.lastChild.position.x -= Math.floor(sheetLength / raster.gridGapX);
                 console.log(raster.gridGapX, sheetLength);
             }
-            // sheetHelpers.push(new SheetHelper(sheetsGroup.lastChild));
-            // sheetHelpers[sheetHelpers.length - 1].createGridPoints();
-            // sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.lastChild.bounds.topLeft.x + 20, sheetsGroup.lastChild.bounds.topLeft.y + 20]);
-            // sheetHelpers[sheetHelpers.length - 1].label.strokeColor = 'white'
-            // sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2}.${x + 2}`;
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
@@ -95,7 +101,7 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
         for (var x = -1; x < (maxW + sheetLength) / sheetLength; x++) {
             sheetHelpers.push(new SheetHelper(sheetsGroup.children[index]));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
-            sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.lastChild.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetsGroup.children[index].bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
+            sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.children[index].bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetsGroup.children[index].bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
             sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
                 }.${x + 2} `;
             index++;

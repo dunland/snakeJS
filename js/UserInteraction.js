@@ -1,7 +1,7 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, image, cursor, changeCursor, imageArea, realGridSize } from "./paperSnake.js";
 import { extractPathFromSheets } from "./lineExport.js"
-import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectNextRow, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -75,6 +75,7 @@ export function keyPressed(keyEvent) {
         for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
             sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+            sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
         }
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
@@ -88,6 +89,8 @@ export function keyPressed(keyEvent) {
         for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
             sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+            sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+
         }
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
@@ -101,6 +104,7 @@ export function keyPressed(keyEvent) {
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
             sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+            sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
         }
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
@@ -113,6 +117,7 @@ export function keyPressed(keyEvent) {
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
             sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+            sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
         }
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);

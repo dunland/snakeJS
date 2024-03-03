@@ -2,7 +2,7 @@ import imageSettings from "../settings.json" assert { type: 'json' };
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
 import { createSheetHelpers, createSheets } from "./Platten.js";
-import { importProject } from "./ProjectManager.js";
+import { importProject, projectName, setProjectName } from "./ProjectManager.js";
 
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
@@ -24,12 +24,15 @@ window.onload = function () {
     paper.setup(canvas);
     const imageDimensions = loadImage(imageSettings.imageName);
 
-    const projectDataFile = new URLSearchParams(window.location.search).get('projectData');
-    if (projectDataFile) {
+    const urlInput = new URLSearchParams(window.location.search).get('project');
+    if (urlInput) {
+        setProjectName(`./Projects/${urlInput}`);
+        // setProjectName(urlInput);
         console.log("loading project from URL");
-        importProject(projectDataFile);
+        importProject(`${projectName}/save.json`);
     }
-    else{
+    else {
+        console.log(projectName);
         raster.initialize();
         // platten erstellen:
         createSheets(
