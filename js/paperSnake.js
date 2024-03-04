@@ -13,7 +13,7 @@ export var pxPerMM = 0.29;
 export function importSheetLength(newVar) { realSheetLength = newVar; }
 export function importSheetWidth(newVar) { realSheetWidth = newVar; }
 export function importGridSize(newVar) { realGridSize = newVar; }
-export function importImageFile(newVar) { imageFile = newVar; }
+export function importImageFile(newVar) { imageFile = `../${projectPath}/${newVar}`; }
 export var raster = new Raster(pxPerMM);
 export var imageArea;
 
@@ -25,16 +25,18 @@ window.onload = function () {
 
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    image = loadImage(imageFile);
+    loadImage();
+    console.log(image);
 
     const urlInput = new URLSearchParams(window.location.search).get('project');
     if (urlInput) {
-        setProjectPath(`./Projects/${urlInput}`);
+        setProjectPath(`Projects/${urlInput}`);
         // setProjectName(urlInput);
         console.log("loading project from URL");
+
         importProject(`${projectPath}/project.json`);
     }
-    else {
+    else { // emptyProject
         console.log("creating new project");
 
         realSheetLength = 1861; // [mm]
@@ -54,6 +56,7 @@ window.onload = function () {
             realSheetWidth * pxPerMM,
             image.height, image.width
         );
+
     }
 
     // region of interest:
@@ -80,20 +83,18 @@ window.onload = function () {
     paper.view.draw();
 }
 
-function loadImage(imageName) {
+export function loadImage() {
 
     image = new Image();
     image.src = imageFile;
-    console.log(`Loaded image ${imageName} with dimensions`, image.width, image.height);
+    console.log(`Loaded image ${imageFile} with dimensions`, image.width, image.height);
 
     // set canvas background image:
     const canvasElement = document.getElementById('snakeCanvas');
-    canvasElement.style.backgroundImage = `url(${imageName})`;
+    canvasElement.style.backgroundImage = `url(${imageFile})`;
 
     // TODO: set canvas size:
     // canvasElement.width = image.width + 'px';
     // canvasElement.height = image.height + "px";
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
-
-    return image;
 }

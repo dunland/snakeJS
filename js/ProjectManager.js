@@ -1,8 +1,8 @@
-import { sheetsGroup, createSheetHelpers, importSheets } from "./Platten.js";
-import { raster, realSheetLength, realSheetWidth, image, realGridSize, imageFile, importSheetLength, importSheetWidth, importGridSize, importImageFile } from "./paperSnake.js";
+import { sheetsGroup, createSheets, createSheetHelpers, importSheets } from "./Platten.js";
+import { raster, realSheetLength, realSheetWidth, image, loadImage, realGridSize, imageFile, importSheetLength, importSheetWidth, importGridSize, importImageFile, pxPerMM } from "./paperSnake.js";
 
-export var projectPath;
-export function setProjectPath(newPath) {projectPath = newPath};
+export var projectPath = "Example";
+export function setProjectPath(newPath) { projectPath = newPath };
 
 export function exportProject(event, fileName) {
 
@@ -35,18 +35,36 @@ export function exportProject(event, fileName) {
     link.click();
 }
 
-export function importProject(projectDataFile) {
-    console.log("import from", projectDataFile);
+export async function importProject(projectDataFile) {
+    let newProject = false;
+    console.log(`import project from ${projectDataFile}`);
 
-    fetch(projectDataFile)
+    const response = await fetch(projectDataFile)
         .then(response => response.json())
-        // .then(console.log(response))
         .then(projectData => {
 
+            importImageFile(projectData.imageFile);
             importSheetLength(projectData.realSheetLength);
             importSheetWidth(projectData.realSheetWidth);
             importGridSize(projectData.realGridSize);
-            importImageFile(projectData.imageFile);
+            loadImage();
+
+            if (projectData.newProject) {
+                newProject = true;
+                console.log("found freshly initialized project..");
+                // platten erstellen:
+                createSheets(
+                    realSheetLength * pxPerMM,
+                    realSheetWidth * pxPerMM,
+                    image.height, image.width
+                );
+                createSheetHelpers(
+                    realSheetLength * pxPerMM,
+                    realSheetWidth * pxPerMM,
+                    image.height, image.width
+                );
+                return true;
+            }
 
             raster.gridPoints = projectData.raster.gridPoints;
             raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
@@ -61,6 +79,8 @@ export function importProject(projectDataFile) {
                 realSheetWidth * raster.scaleX,
                 image.height, image.width
             );
-            })
-
+        }).catch(error => {
+            console.error("Error fetching project data:", error);
+        })
+    return false;
 }

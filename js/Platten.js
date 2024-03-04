@@ -62,7 +62,7 @@ export function importSheets(JSONdata) {
 }
 
 export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
-    console.log('creating sheets');
+    console.log('creating sheets:');
 
     var sheets = new paper.Group();
     for (var y = -1; y < (maxH + sheetWidth) / sheetWidth; y++)
@@ -75,13 +75,11 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
             }));
             if (y % 2 == 0) {
                 sheets.lastChild.position.x -= Math.floor(sheetLength / raster.gridGapX);
-                console.log(raster.gridGapX, sheetLength);
             }
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
     sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth);
-    console.log(movableSheetsTo, sheetsPerRow);
 
     // style active rows:
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
@@ -95,7 +93,6 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
 
 export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
 
-    console.log(sheetLength, sheetWidth, maxH, maxW);
     let index = 0;
     for (var y = -1; y < (maxH + sheetWidth) / sheetWidth; y++)
         for (var x = -1; x < (maxW + sheetLength) / sheetLength; x++) {

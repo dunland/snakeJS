@@ -14,6 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById("buttonCreateProject").onclick = () => {
         var projectExport = {
+
+            newProject: true,
+
             imageFile: document.getElementById("text_imageFile").textContent,
             realSheetLength: parseInt(document.getElementById("text_realSheetLength").textContent),
             realSheetWidth: parseInt(document.getElementById("text_realSheetWidth").textContent),
