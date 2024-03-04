@@ -1,0 +1,37 @@
+html, body{
+    margin: 0;
+    height: 100%;
+    width: 100%;
+}
+
+*{
+    /* border: 1px solid black; */
+}
+
+.inputArea{
+    margin: auto;
+    width: 100%;
+    position: absolute;
+    text-align: center;
+}
+
+.inputFields{
+    text-align: left;
+    width: 45%;
+    margin: auto;
+}
+
+.inputFields span{
+    padding-left: 10px;
+}
+
+.info{
+    background-color: lightgoldenrodyellow;
+    width: 45%;
+    text-align: left;
+    margin: auto;
+}
+
+.code {
+    font-family: 'Courier New', Courier, monospace;
+}

@@ -1,16 +1,19 @@
-import imageSettings from "../settings.json" assert { type: 'json' };
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
 import { createSheetHelpers, createSheets } from "./Platten.js";
-import { importProject, projectName, setProjectName } from "./ProjectManager.js";
+import { importProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
-export var image;
-export const realSheetLength = 1861, // [mm]
-    realSheetWidth = 591, // [mm]
-    realGridSize = 55, // Mindestabstand zu Rand und zwischen Pfaden [mm]
-    pxPerMM = 0.29;
+export var imageFile = "../beispielbild.jpeg", image;
+export var realSheetLength = 1861; // [mm]
+export var realSheetWidth = 591; // [mm]
+export var realGridSize = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
+export var pxPerMM = 0.29;
+export function importSheetLength(newVar) { realSheetLength = newVar; }
+export function importSheetWidth(newVar) { realSheetWidth = newVar; }
+export function importGridSize(newVar) { realGridSize = newVar; }
+export function importImageFile(newVar) { imageFile = newVar; }
 export var raster = new Raster(pxPerMM);
 export var imageArea;
 
@@ -22,17 +25,23 @@ window.onload = function () {
 
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    const imageDimensions = loadImage(imageSettings.imageName);
+    image = loadImage(imageFile);
 
     const urlInput = new URLSearchParams(window.location.search).get('project');
     if (urlInput) {
-        setProjectName(`./Projects/${urlInput}`);
+        setProjectPath(`./Projects/${urlInput}`);
         // setProjectName(urlInput);
         console.log("loading project from URL");
-        importProject(`${projectName}/save.json`);
+        importProject(`${projectPath}/project.json`);
     }
     else {
-        console.log(projectName);
+        console.log("creating new project");
+
+        realSheetLength = 1861; // [mm]
+        realSheetWidth = 591; // [mm]
+        realGridSize = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
+        pxPerMM = 0.29;
+
         raster.initialize();
         // platten erstellen:
         createSheets(
@@ -47,11 +56,10 @@ window.onload = function () {
         );
     }
 
-
     // region of interest:
     imageArea = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
-        size: new paper.Size(imageDimensions[0], imageDimensions[1]),
+        size: new paper.Size(image.width, image.height),
     })
 
     // mouse cursor:
@@ -75,7 +83,7 @@ window.onload = function () {
 function loadImage(imageName) {
 
     image = new Image();
-    image.src = "../" + imageName;
+    image.src = imageFile;
     console.log(`Loaded image ${imageName} with dimensions`, image.width, image.height);
 
     // set canvas background image:
@@ -87,5 +95,5 @@ function loadImage(imageName) {
     // canvasElement.height = image.height + "px";
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
 
-    return [image.width, image.height];
+    return image;
 }

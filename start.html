@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="./start.css">
+    </script>
+    <script type="text/javascript" src="./js/start.js"></script>
+    <title>Wandwurm - neues Projekt</title>
+</head>
+
+<body>
+    <div class="inputArea">
+        <h1>Wandwurm - neues Projekt</h1>
+        <div class="inputFields">
+            <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
+            <button id="button_imageFile">OK</button>
+            <span id="text_imageFile">beispielbild.jpg</span> (relativ zu Projektordner)
+            <br>
+            <input id="input_realSheetLength" type="text" name="field_realSheetLength" placeholder="Plattenl&auml;nge [mm]" />
+            <button id="button_realSheetLength">OK</button>
+            <span id="text_realSheetLength">1861</span> mm
+            <br>
+            <input id="input_realSheetWidth" type="text" name="field_realSheetWidth" placeholder="Plattenbreite [mm]" />
+            <button id="button_realSheetWidth">OK</button>
+            <span id="text_realSheetWidth">591</span> mm
+            <br>
+            <input id="input_realGridSize" type="text" name="field_realGridSize" placeholder="Rasterabstand" />
+            <button id="button_realGridSize">OK</button>
+            <span id="text_realGridSize">55</span> mm
+
+        </div>
+        <p>
+            <button id="buttonCreateProject">Download project.json</button>
+        </p>
+        <div class="info">
+            <h3>Ordnerstruktur:</h3>
+            <br><i>Projektordner müssen eigenständig erstellt werden. Auf dieser Seite kannst du die project.json
+                erstellen und herunterladen. Lege sie in einen neuen Projektordner ab.
+            </i>
+            <p>
+                Du kannst dann dein Projekt öffnen, indem du im Browser folgende URL (anpasst und) eingibst: <span
+                    class="code"><b>localhost:3000/project=Projekt_Name</b></span>
+            </p>
+            <pre>
+snakeJS
+└───js (Quellcode)
+└───node_modules (Quellcode-Bibliotheken)
+└───Projects
+|   └───Projekt_Name
+|   |   └───export
+|   |   └───project.json
+|   |   └───save.json
+|   |   └───image.jpg
+|   └───Projekt_1
+|   |   └───export
+|   |   └───project.json
+|   |   └───save.json
+|   |   └───image.jpg
+|   └───...
+└───index.html
+└───start.html
+
+</pre>
+        </div>
+    </div>
+</body>
+
+</html>
