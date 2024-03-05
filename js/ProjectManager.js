@@ -9,12 +9,13 @@ export function exportProject(event, fileName) {
     fileName = 'project.json'
 
     var projectExport = {
+        globalColor: globalColor,
         realSheetLength: realSheetLength,
         realSheetWidth: realSheetWidth,
         realGridSize: realGridSize,
         imageFile: imageFile,
         raster: {
-            gridPoints: raster.gridPoints, // TODO: this is a list if point objects!
+            gridPoints: raster.gridPoints,
             lineSegmentsTypeHistory: raster.lineSegmentsTypeHistory,
             gridGapX: raster.gridGapX,
             line: raster.line.exportJSON(),
@@ -37,7 +38,7 @@ export function exportProject(event, fileName) {
 
 export async function importProject(projectDataFile) {
     let newProject = false;
-    console.log(`import project from ${projectDataFile}`);
+    console.log(`loading project from ${projectDataFile}`);
 
     const response = await fetch(projectDataFile)
         .then(response => response.json())
@@ -55,11 +56,13 @@ export async function importProject(projectDataFile) {
                 return true;
             }
 
+            console.log(`importing project from ${projectDataFile}`);
+            updateGlobalColors(projectData.globalColor);
             raster.gridPoints = projectData.raster.gridPoints;
             raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
             raster.gridGapX = projectData.raster.gridGapX;
             raster.line = new paper.Path().importJSON(projectData.raster.line);
-            raster.area = new paper.Path().importJSON(projectData.raster.area);
+            raster.area = new paper.Group().importJSON(projectData.raster.area);
             raster.scaleX = projectData.raster.scaleX;
 
             importSheets(projectData.sheetsGroup);
@@ -74,8 +77,8 @@ export async function importProject(projectDataFile) {
     return false;
 }
 
-export function initializeNewProject(){
-    console.log("found freshly initialized project..");
+export function initializeNewProject() {
+    console.log("initialzing new project..");
 
     raster.initialize();
 

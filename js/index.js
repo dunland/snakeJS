@@ -17,6 +17,12 @@ document.getElementById("buttonUndo").onclick = function () {
     raster.lineSegmentsTypeHistory.pop();
 }
 
+document.getElementById("buttonUndoArea").onclick = function () {
+    if (raster.area.children.length < 1) return;
+
+    raster.area.lastChild.remove();
+}
+
 let buttonDrawTool = document.getElementById("buttonDrawTool");
 buttonDrawTool.onmouseenter = () => {
     if (drawMode == "line") {

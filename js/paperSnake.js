@@ -31,9 +31,6 @@ window.onload = function () {
     const urlInput = new URLSearchParams(window.location.search).get('project');
     if (urlInput) {
         setProjectPath(`Projects/${urlInput}`);
-        // setProjectName(urlInput);
-        console.log("loading project from URL");
-
         importProject(`${projectPath}/project.json`);
     }
     else { // emptyProject

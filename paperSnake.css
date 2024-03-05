@@ -56,7 +56,7 @@ button.view.active{
 }
 
 /* tool button: line vs area */
-#buttonDrawTool{
+#buttonDrawTool, #buttonUndoArea{
     background-color: lightcoral;
 }
 

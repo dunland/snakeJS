@@ -25,7 +25,7 @@ export class Raster {
         this.line.strokeColor = globalColor;
         this.line.strokeWidth = 2;
 
-        this.area = new paper.Path();
+        this.area = new paper.Group();
         this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
         this.area.closed = true;
     }

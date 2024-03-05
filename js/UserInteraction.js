@@ -7,6 +7,7 @@ export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
 var measureToolState = 0;
 var ptAtSmallestDist;
+var tempArea;
 
 export function changeDrawMode(newMode) {
     var oldMode = drawMode;
@@ -19,6 +20,17 @@ export function changeDrawMode(newMode) {
         measureToolState = 0;
         document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
     }
+
+    if (oldMode == "area")
+        if (!tempArea || tempArea.segments.length < 1)
+            console.log("no segments in child");
+        else {
+            raster.area.addChild(tempArea)
+            tempArea = new paper.Path();
+            tempArea.fillColor = new paper.Color(1, 0, 0, 0.45);
+            tempArea.closed = true;
+        }
+
 
     drawMode = newMode;
 }
@@ -242,7 +254,7 @@ export function onMouseDown(event) {
             if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
                 break;
 
-                raster.addLine(ptAtSmallestDist);
+            raster.addLine(ptAtSmallestDist);
 
             break;
 
@@ -300,7 +312,12 @@ export function onMouseDown(event) {
 }
 
 function drawArea() {
-    raster.area.add(new paper.Point(cursor.position.x, cursor.position.y));
+    if (!tempArea || tempArea.segments.length < 1) {
+        tempArea = new paper.Path();
+        tempArea.fillColor = new paper.Color(1, 0, 0, 0.45);
+        tempArea.closed = true;
+    }
+    tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
 }
 
 export function showIntersections(path1, path2) {
