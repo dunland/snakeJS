@@ -1,5 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, image, cursor, changeCursor, imageArea, realGridSize } from "./paperSnake.js";
+import { raster, image, cursor, changeCursor, imageArea, realGridSize, globalColor } from "./paperSnake.js";
 import { extractPathFromSheets } from "./lineExport.js"
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
@@ -15,7 +15,7 @@ export function changeDrawMode(newMode) {
     if (oldMode == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
-        cursor.strokeColor = 'white';
+        cursor.strokeColor = globalColor;
         measureToolState = 0;
         document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
     }

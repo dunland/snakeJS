@@ -1,7 +1,7 @@
 import { setRadius } from "./paperUtils.js";
-import { cursor, pxPerMM, raster, imageArea } from "./paperSnake.js";
+import { cursor, pxPerMM, raster, imageArea, globalColor, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode, drawMode } from "./UserInteraction.js";
-import { sheetsGroup, toggleSheetVisibility } from "./Platten.js";
+import { sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
@@ -46,7 +46,7 @@ buttonDrawTool.onclick = function () {
     }
     else if (drawMode == "area") {
         changeDrawMode("line");
-        cursor.strokeColor = 'white';
+        cursor.strokeColor = globalColor;
     }
 }
 
@@ -88,12 +88,13 @@ document.getElementById("buttonGetLeftovers").onclick = function (event) {
     document.getElementById("sheets").textContent = sheets;
 }
 
-// document.getElementById("buttonSaveProjectJSON").onclick = {paper.project.exportJSON()};
+document.getElementById("colorPicker").onchange = () => {
+
+    let color = document.getElementById("colorPicker").value;
+    updateGlobalColors(color);
+}
+
 document.getElementById("buttonSaveProject").onclick = exportProject;
-document.getElementById("buttonLoadProject").onclick = () => {
-    // paper.project.importJSON("../file.json");
-    
-};
 document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;

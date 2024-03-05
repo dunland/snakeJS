@@ -2,7 +2,7 @@
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
 import { Liniensegment } from "./Liniensegmente.js";
-import { realSheetLength, realGridSize } from "./paperSnake.js";
+import { realSheetLength, realGridSize, globalColor } from "./paperSnake.js";
 import { setRadius } from "./paperUtils.js";
 
 export class Raster {
@@ -22,7 +22,7 @@ export class Raster {
 
     initialize() {
         this.line = new paper.Path();
-        this.line.strokeColor = 'white';
+        this.line.strokeColor = globalColor;
         this.line.strokeWidth = 2;
 
         this.area = new paper.Path();

@@ -1,4 +1,4 @@
-import { imageArea, raster, realSheetLength, realSheetWidth, realGridSize, image } from "./paperSnake.js";
+import { imageArea, raster, realSheetLength, realSheetWidth, realGridSize, image, globalColor } from "./paperSnake.js";
 
 export var sheetsGroup;
 export var sheetHelpers = [];
@@ -29,7 +29,7 @@ class SheetHelper {
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
                     radius: 1,
-                    fillColor: 'white',
+                    fillColor: globalColor,
                     visible: false
                 }));
             }
@@ -70,7 +70,7 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
             sheets.addChild(new paper.Path.Rectangle({
                 point: new paper.Point(x * sheetLength, y * sheetWidth),
                 size: new paper.Size(sheetLength, sheetWidth),
-                strokeColor: 'grey',
+                strokeColor: globalColor,
                 strokeWidth: 1
             }));
             if (y % 2 == 0) {
@@ -101,6 +101,7 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.children[index].bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetsGroup.children[index].bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
             sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
                 }.${x + 2} `;
+            sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
             index++;
         }
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
@@ -152,7 +153,7 @@ export function selectNextRow(sheetsGroup, direction) {
     }
     // style:
     sheetsGroup.strokeWidth = 1;
-    sheetsGroup.strokeColor = 'grey';
+    sheetsGroup.strokeColor = globalColor;
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
         sheetsGroup.children[i].strokeWidth = 4;
     }
@@ -164,7 +165,7 @@ export function selectRowBySheet(index) {
 
     // style:
     sheetsGroup.strokeWidth = 1;
-    sheetsGroup.strokeColor = 'grey';
+    sheetsGroup.strokeColor = globalColor;
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
         sheetsGroup.children[i].strokeWidth = 4;
     }

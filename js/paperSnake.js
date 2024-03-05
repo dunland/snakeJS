@@ -1,6 +1,6 @@
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
-import { createSheetHelpers, createSheets } from "./Platten.js";
+import { createSheetHelpers, createSheets, sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
 export var cursor;
@@ -16,6 +16,7 @@ export function importGridSize(newVar) { realGridSize = newVar; }
 export function importImageFile(newVar) { imageFile = `../${projectPath}/${newVar}`; }
 export var raster = new Raster(pxPerMM);
 export var imageArea;
+export var globalColor = "white";
 
 // Only executed our code once the DOM is ready.
 window.onload = function () {
@@ -26,7 +27,6 @@ window.onload = function () {
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
     loadImage();
-    console.log(image);
 
     const urlInput = new URLSearchParams(window.location.search).get('project');
     if (urlInput) {
@@ -97,4 +97,18 @@ export function loadImage() {
     // canvasElement.width = image.width + 'px';
     // canvasElement.height = image.height + "px";
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
+}
+
+export function updateGlobalColors(newColor) {
+
+    globalColor = newColor;
+
+    // update colors:
+    raster.line.strokeColor = newColor;
+    sheetsGroup.strokeColor = newColor;
+    for (let i = 0; i < sheetHelpers.length; i++) {
+        sheetHelpers[i].gridDots.strokeColor = newColor;
+        sheetHelpers[i].label.strokeColor = newColor;
+    }
+
 }
