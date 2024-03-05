@@ -45,13 +45,6 @@ window.onload = function () {
 
     }
 
-    // region of interest:
-    imageArea = new paper.Path.Rectangle({
-        point: new paper.Point(0, 0),
-        size: new paper.Size(image.width, image.height),
-        strokeColor: globalColor
-    })
-
     // mouse cursor:
     cursor = new paper.Path.Circle({
         center: new paper.Point(0, 0),
@@ -83,6 +76,14 @@ export function loadImage() {
     // TODO: set canvas size:
     // canvasElement.width = image.width + 'px';
     // canvasElement.height = image.height + "px";
+
+    // region of interest:
+    imageArea = new paper.Path.Rectangle({
+        point: new paper.Point(0, 0),
+        size: new paper.Size(image.width, image.height)
+        // strokeColor: 'red'
+    })
+
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
 }
 

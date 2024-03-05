@@ -89,6 +89,7 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
         }
+        raster.line.position.x -= sheetHelpers[0].gridGapX;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -104,6 +105,7 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
 
         }
+        raster.line.position.x += sheetHelpers[0].gridGapX;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -118,6 +120,7 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
             sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
         }
+        raster.line.position.y -= sheetHelpers[0].gridGapY;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -131,6 +134,7 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
             sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
         }
+        raster.line.position.y += sheetHelpers[0].gridGapY;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -146,6 +150,7 @@ export function keyReleased(keyEvent) {
         let leftovers = 0;
         let sheets = 0;
 
+        // TODO: Achtung! Wenn imageArea.strokeColor = 'red', bleiben Artefakte hier liegen!
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             let child = sheetsGroup.children[i];
             if (imageArea.bounds.intersects(child.bounds)) {
