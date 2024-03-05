@@ -1,7 +1,7 @@
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
 import { createSheetHelpers, createSheets, sheetHelpers, sheetsGroup } from "./Platten.js";
-import { importProject, projectPath, setProjectPath } from "./ProjectManager.js";
+import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
@@ -44,18 +44,7 @@ window.onload = function () {
         realGridSize = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
         pxPerMM = 0.29;
 
-        raster.initialize();
-        // platten erstellen:
-        createSheets(
-            realSheetLength * pxPerMM,
-            realSheetWidth * pxPerMM,
-            image.height, image.width
-        );
-        createSheetHelpers(
-            realSheetLength * pxPerMM,
-            realSheetWidth * pxPerMM,
-            image.height, image.width
-        );
+        initializeNewProject();
 
     }
 
@@ -63,13 +52,14 @@ window.onload = function () {
     imageArea = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
         size: new paper.Size(image.width, image.height),
+        strokeColor: globalColor
     })
 
     // mouse cursor:
     cursor = new paper.Path.Circle({
         center: new paper.Point(0, 0),
         radius: raster.gridGapX / 2,
-        strokeColor: 'white'
+        strokeColor: globalColor
     });
 
     var cursorTool = new paper.Tool();
@@ -106,8 +96,9 @@ export function updateGlobalColors(newColor) {
     // update colors:
     raster.line.strokeColor = newColor;
     sheetsGroup.strokeColor = newColor;
+    cursor.strokeColor = newColor;
     for (let i = 0; i < sheetHelpers.length; i++) {
-        sheetHelpers[i].gridDots.strokeColor = newColor;
+        sheetHelpers[i].gridDots.fillColor = newColor;
         sheetHelpers[i].label.strokeColor = newColor;
     }
 

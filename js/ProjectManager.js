@@ -51,18 +51,7 @@ export async function importProject(projectDataFile) {
 
             if (projectData.newProject) {
                 newProject = true;
-                console.log("found freshly initialized project..");
-                // platten erstellen:
-                createSheets(
-                    realSheetLength * pxPerMM,
-                    realSheetWidth * pxPerMM,
-                    image.height, image.width
-                );
-                createSheetHelpers(
-                    realSheetLength * pxPerMM,
-                    realSheetWidth * pxPerMM,
-                    image.height, image.width
-                );
+                initializeNewProject();
                 return true;
             }
 
@@ -83,4 +72,22 @@ export async function importProject(projectDataFile) {
             console.error("Error fetching project data:", error);
         })
     return false;
+}
+
+export function initializeNewProject(){
+    console.log("found freshly initialized project..");
+
+    raster.initialize();
+
+    // platten erstellen:
+    createSheets(
+        realSheetLength * pxPerMM,
+        realSheetWidth * pxPerMM,
+        image.height, image.width
+    );
+    createSheetHelpers(
+        realSheetLength * pxPerMM,
+        realSheetWidth * pxPerMM,
+        image.height, image.width
+    );
 }
