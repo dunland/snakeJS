@@ -1,4 +1,4 @@
-import { imageArea, raster, realSheetLength, realSheetWidth, realGridSize, image, globalColor } from "./paperSnake.js";
+import { roi, raster, realSheetLength, realSheetWidth, realGridSize, image, globalColor } from "./paperSnake.js";
 
 export var sheetsGroup;
 export var sheetHelpers = [];
@@ -122,7 +122,7 @@ export function scaleSheets(sheetsGroup) {
         sheet.position.x = sheet.position.x * scaleBy;
         sheet.position.y = sheet.position.y * scaleBy;
 
-        if (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) {
+        if (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) {
             sheetsGroup.children[i].fillColor = 'red';
         }
 

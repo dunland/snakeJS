@@ -1,5 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, image, cursor, changeCursor, imageArea, realGridSize, globalColor } from "./paperSnake.js";
+import { raster, image, cursor, changeCursor, roi, realGridSize, globalColor } from "./paperSnake.js";
 import { extractPathFromSheets } from "./lineExport.js"
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
@@ -13,12 +13,19 @@ export function changeDrawMode(newMode) {
     var oldMode = drawMode;
     if (oldMode == newMode) return;
 
+    // entering mode:
+    if (newMode == "area")
+        cursor.strokeColor = 'red';
+    else if (drawMode == "area")
+        cursor.strokeColor = globalColor;
+
+    // leaving mode:
     if (oldMode == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
         cursor.strokeColor = globalColor;
         measureToolState = 0;
-        document.getElementById("buttonMeasureDistance").classList.remove("active"); // force measureTool off
+        document.getElementById("button_measureDistance").classList.remove("active"); // force measureTool off
     }
 
     if (oldMode == "area")
@@ -94,7 +101,7 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
 
     }
@@ -110,7 +117,7 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
 
     }
@@ -125,7 +132,7 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
     }
     if (keyEvent.keyCode == 40) { // down:
@@ -139,7 +146,7 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
     }
 }
@@ -153,8 +160,8 @@ export function keyReleased(keyEvent) {
         // TODO: Achtung! Wenn imageArea.strokeColor = 'red', bleiben Artefakte hier liegen!
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             let child = sheetsGroup.children[i];
-            if (imageArea.bounds.intersects(child.bounds)) {
-                let tempObj = imageArea.exclude(sheetsGroup.children[i]).subtract(imageArea).removeOnMove();
+            if (roi.bounds.intersects(child.bounds)) {
+                let tempObj = roi.exclude(sheetsGroup.children[i]).subtract(roi).removeOnMove();
                 if (globalVerboseLevel > 2)
                     tempObj.fillColor = 'red';
                 leftovers += tempObj.bounds.width * tempObj.bounds.height;
@@ -220,7 +227,7 @@ export function onMouseMove(event) {
                 showIntersections(sheetsGroup.children[i], raster.line);
 
                 if (globalVerboseLevel > 1)
-                    sheetsGroup.children[i].fillColor = (!imageArea.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                    sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
 
             break;

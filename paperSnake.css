@@ -56,19 +56,20 @@ button.view.active{
 }
 
 /* tool button: line vs area */
-#buttonDrawTool, #buttonUndoArea{
+#button_area, #buttonUndoArea{
     background-color: lightcoral;
 }
 
-#buttonDrawTool:hover, #buttonDrawTool.active{
-    background-color: white;
+.tool.active{
+    border-width: 3px;
 }
 
-#buttonDrawTool.active:hover{
-    background-color: lightcoral;
+.tool{
+    border-width: 1px;
+    border-color: cadetblue;
 }
 
-#buttonMeasureDistance.active, #buttonMeasureDistance:hover{
+#button_measureDistance{
     background-color: yellow;
 }
 

@@ -9,6 +9,7 @@ export function exportProject(event, fileName) {
     fileName = 'project.json'
 
     var projectExport = {
+        roi: roi.exportJSON(),
         globalColor: globalColor,
         realSheetLength: realSheetLength,
         realSheetWidth: realSheetWidth,
@@ -58,6 +59,8 @@ export async function importProject(projectDataFile) {
 
             console.log(`importing project from ${projectDataFile}`);
             updateGlobalColors(projectData.globalColor);
+
+            roi = projectData.roi,
             raster.gridPoints = projectData.raster.gridPoints;
             raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
             raster.gridGapX = projectData.raster.gridGapX;
