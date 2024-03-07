@@ -13,9 +13,8 @@ export var pxPerMM = 0.29;
 export function importSheetLength(newVar) { realSheetLength = newVar; }
 export function importSheetWidth(newVar) { realSheetWidth = newVar; }
 export function importGridSize(newVar) { realGridSize = newVar; }
-export function importImageFile(newVar) { imageFile = `../${projectPath}/${newVar}`; }
+export function importImageFile(newVar) { imageFile = newVar; }
 export var raster = new Raster(pxPerMM);
-export var roi;
 export var globalColor = "white";
 
 // Only executed our code once the DOM is ready.
@@ -78,7 +77,7 @@ export function loadImage() {
     // canvasElement.height = image.height + "px";
 
     // region of interest:
-    roi = new paper.Path.Rectangle({
+    raster.roi = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
         size: new paper.Size(image.width, image.height)
         // strokeColor: 'red'

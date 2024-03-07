@@ -1,5 +1,5 @@
 import { sheetsGroup, createSheets, createSheetHelpers, importSheets } from "./Platten.js";
-import { raster, realSheetLength, realSheetWidth, image, loadImage, realGridSize, imageFile, importSheetLength, importSheetWidth, importGridSize, importImageFile, pxPerMM } from "./paperSnake.js";
+import { raster, realSheetLength, realSheetWidth, image, loadImage, realGridSize, imageFile, importSheetLength, importSheetWidth, importGridSize, importImageFile, pxPerMM, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
 export function setProjectPath(newPath) { projectPath = newPath };
@@ -9,7 +9,7 @@ export function exportProject(event, fileName) {
     fileName = 'project.json'
 
     var projectExport = {
-        roi: roi.exportJSON(),
+        roi: raster.roi.exportJSON(),
         globalColor: globalColor,
         realSheetLength: realSheetLength,
         realSheetWidth: realSheetWidth,
@@ -23,6 +23,7 @@ export function exportProject(event, fileName) {
             scaleX: raster.scaleX,
         },
 
+        
         // sheetHelpers are dynamically created from sheetsGroup!
         sheetsGroup: sheetsGroup.exportJSON()
     }
@@ -57,21 +58,21 @@ export async function importProject(projectDataFile) {
             }
 
             console.log(`importing project from ${projectDataFile}`);
-            updateGlobalColors(projectData.globalColor);
-
-            roi = projectData.roi,
-            raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
+            
+            raster.roi = new paper.Path().importJSON(projectData.roi),
+            raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory
             raster.gridGapX = projectData.raster.gridGapX;
             raster.line = new paper.Path().importJSON(projectData.raster.line);
             raster.area = new paper.Group().importJSON(projectData.raster.area);
             raster.scaleX = projectData.raster.scaleX;
-
+            
             importSheets(projectData.sheetsGroup);
             createSheetHelpers(
                 realSheetLength * raster.scaleX,
                 realSheetWidth * raster.scaleX,
-                image.height, image.width
-            );
+                raster.roi.bounds.height, raster.roi.bounds.width
+                );
+            updateGlobalColors(projectData.globalColor);
         }).catch(error => {
             console.error("Error fetching project data:", error);
         })

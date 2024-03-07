@@ -1,5 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, image, cursor, changeCursor, roi, realGridSize, globalColor } from "./paperSnake.js";
+import { raster, image, cursor, changeCursor, realGridSize, globalColor } from "./paperSnake.js";
 import { extractPathFromSheets } from "./lineExport.js"
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
 
@@ -100,8 +100,10 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
+        for (let i = 0; i < sheetHelpers.length; i++)
+            sheetHelpers[i].gridDots.selected = false;
 
     }
     if (keyEvent.keyCode == 39) { // right
@@ -115,8 +117,10 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
+        for (let i = 0; i < sheetHelpers.length; i++)
+            sheetHelpers[i].gridDots.selected = false;
 
     }
     if (keyEvent.keyCode == 38) { // up:
@@ -129,7 +133,7 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
 
         // each sheet:
@@ -138,26 +142,35 @@ export function keyPressed(keyEvent) {
             sheet.gridDots.selected = false;
 
             // each segment in line:
-            for (let j = 0; j < raster.line.segments.length; j++) {
-                const seg = raster.line.segments[j];
-                // if (seg.position)
-                let segment = new paper.Path.Circle({
-                    center: seg.point,
-                    radius: 10,
-                    strokeColor: 'red'
-                });
+            // for (let j = 0; j < raster.line.segments.length; j++) {
+            //     const seg = raster.line.segments[j];
+            //     // if (seg.position)
+            //     let segment = new paper.Path.Circle({
+            //         center: seg.point,
+            //         radius: 10,
+            //         strokeColor: 'red'
+            //     });
 
-                let segmentBounds = new paper.Path.Rectangle(segment.bounds);
-                segmentBounds.strokeColor = 'red';
+            //     let segmentBounds = new paper.Path.Rectangle(segment.bounds);
+            //     segmentBounds.strokeColor = 'red';
 
-                for (let k = 0; k < sheet.gridDots.children.length; k++) {
-                    const dot = sheet.gridDots.children[k];
-                    if (segmentBounds.contains(dot))
-                        dot.strokeColor = "green";
-                }
-                // sheet.gridDots.selected = true;
-            }
+            //     for (let k = 0; k < sheet.gridDots.children.length; k++) {
+            //         const dot = sheet.gridDots.children[k];
+            //         if (segmentBounds.contains(dot))
+            //             dot.strokeColor = "green";
+            //     }
+            //     // sheet.gridDots.selected = true;
+            // }
 
+
+
+            //     for (let seg = 0; seg < raster.line.segments.length; seg++) {
+
+            //         const element = raster.line.segments[seg];
+            //         if (sheet.gridDots.intersects(element.point))
+            //             console.log(sheet.gridDots.position, element.point);
+            //     }
+        }
     }
     if (keyEvent.keyCode == 40) { // down:
         for (var i = 0; i < sheetsGroup.children.length; i++) {
@@ -169,8 +182,10 @@ export function keyPressed(keyEvent) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
+        for (let i = 0; i < sheetHelpers.length; i++)
+            sheetHelpers[i].gridDots.selected = false;
     }
 }
 
@@ -183,8 +198,8 @@ export function keyReleased(keyEvent) {
         // TODO: Achtung! Wenn imageArea.strokeColor = 'red', bleiben Artefakte hier liegen!
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             let child = sheetsGroup.children[i];
-            if (roi.bounds.intersects(child.bounds)) {
-                let tempObj = roi.exclude(sheetsGroup.children[i]).subtract(roi).removeOnMove();
+            if (raster.roi.bounds.intersects(child.bounds)) {
+                let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi).removeOnMove();
                 if (globalVerboseLevel > 2)
                     tempObj.fillColor = 'red';
                 leftovers += tempObj.bounds.width * tempObj.bounds.height;
@@ -250,7 +265,7 @@ export function onMouseMove(event) {
                 showIntersections(sheetsGroup.children[i], raster.line);
 
                 if (globalVerboseLevel > 1)
-                    sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
 
             break;

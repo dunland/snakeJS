@@ -13,6 +13,7 @@ export class Raster {
         this.gridGapX = realSheetLength / Math.floor(realSheetLength / realGridSize) * scaleX;
         this.line; // must be initialized after paper.setup()
         this.area;
+        this.roi;  // region of interest / work area
 
         this.scaleX = scaleX;
 
