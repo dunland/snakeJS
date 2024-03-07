@@ -4,10 +4,10 @@ import { raster } from "./paperSnake.js";
 export class Liniensegment {
 
     constructor(gp_end, gp_start, type) {
-        this.x1 = gp_start.position.x;
-        this.y1 = gp_start.position.y;
-        this.x2 = gp_end.position.x;
-        this.y2 = gp_end.position.y;
+        this.x1 = gp_start.x;
+        this.y1 = gp_start.y;
+        this.x2 = gp_end.x;
+        this.y2 = gp_end.y;
         this.ctrl1 = new paper.Point(0, 0);
         this.ctrl2 = new paper.Point(0, 0);
 
@@ -15,12 +15,10 @@ export class Liniensegment {
         this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
 
-        if (raster.gridPoints) { // do not allocate first point
-            this.type = (type == undefined) ? this.getType() : type;
-            this.createCurveOfType(this.type);
-            if (globalVerboseLevel > 1)
-                console.log(this.type);
-        }
+        this.type = (type == undefined) ? this.getType() : type;
+        this.createCurveOfType(this.type);
+        if (globalVerboseLevel > 1)
+            console.log(this.type);
     }
     //////////////// Zuordnung des Kurventyps ////////////////
     getType() {
@@ -70,7 +68,7 @@ export class Liniensegment {
                 handleIn = new paper.Point(0, -this.radius * this.length);
                 handleOut = new paper.Point(0, -this.radius * this.length);
 
-            break;
+                break;
 
             case "KURVE_UNTEN":
                 this.angle = 180;
@@ -82,7 +80,7 @@ export class Liniensegment {
                 handleIn = new paper.Point(0, this.radius * this.length);
                 handleOut = new paper.Point(0, this.radius * this.length);
 
-            break;
+                break;
 
             case "KURVE_LINKS":
                 this.angle = 180;
@@ -94,7 +92,7 @@ export class Liniensegment {
                 handleIn = new paper.Point(-this.radius * this.length, 0);
                 handleOut = new paper.Point(-this.radius * this.length, 0);
 
-            break;
+                break;
 
             case "KURVE_RECHTS":
                 this.angle = 180;
@@ -106,7 +104,7 @@ export class Liniensegment {
                 handleIn = new paper.Point(this.radius * this.length, 0);
                 handleOut = new paper.Point(this.radius * this.length, 0);
 
-            break;
+                break;
 
             case "GERADE":
                 this.segment = new paper.Path.Line({

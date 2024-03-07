@@ -1,20 +1,33 @@
 import { setRadius } from "./paperUtils.js";
 import { pxPerMM, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./UserInteraction.js";
-import { sheetsGroup, toggleSheetVisibility } from "./Platten.js";
+import { sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
 document.getElementById("buttonUndo").onclick = function () {
-    if (raster.gridPoints.length < 1) return;
-
-    raster.gridPoints[raster.gridPoints.length - 1].selected = false;
-    setRadius(raster.gridPoints[raster.gridPoints.length - 1], 1.5); // size
-    raster.gridPoints.pop();
 
     if (raster.line.segments.length < 1) return;
+    raster.line.selected = false;
     raster.line.lastSegment.remove();
     raster.lineSegmentsTypeHistory.pop();
+
+    for (let index = 0; index < sheetHelpers.length; index++) {
+        const sheet = sheetHelpers[index];
+        sheet.gridDots.selected = false;
+        // for (let d = 0; d < sheet.gridDots.children.length; d++) {
+        //     const dot = sheet.gridDots.children[d];
+        //     dot.selected = false;
+            // console.log(dot);
+            // for (let s = 0; s < raster.line.segments.length; s++) {
+            //     const seg = raster.line.segments[s];
+            //     console.log(seg.point, dot.point);
+            //     if (seg.point.equals(dot.point)){
+            //         dot.selected = true;
+            //     }
+            // }
+        // }
+    }
 }
 
 document.getElementById("buttonUndoArea").onclick = function () {
@@ -37,9 +50,9 @@ buttons.forEach(button => {
 });
 
 document.getElementById("buttonShowPath").onclick = function (event) {
-        this.classList.toggle("active");
-        raster.line.visible = !raster.line.visible;
-    };
+    this.classList.toggle("active");
+    raster.line.visible = !raster.line.visible;
+};
 
 document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
 

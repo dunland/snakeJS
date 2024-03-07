@@ -96,7 +96,6 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
         }
-        raster.line.position.x -= sheetHelpers[0].gridGapX;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -112,7 +111,6 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
 
         }
-        raster.line.position.x += sheetHelpers[0].gridGapX;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -127,13 +125,39 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
             sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
         }
-        raster.line.position.y -= sheetHelpers[0].gridGapY;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
             if (globalVerboseLevel > 1)
                 sheetsGroup.children[i].fillColor = (!roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
         }
+
+        // each sheet:
+        for (let i = 0; i < sheetHelpers.length; i++) {
+            const sheet = sheetHelpers[i];
+            sheet.gridDots.selected = false;
+
+            // each segment in line:
+            for (let j = 0; j < raster.line.segments.length; j++) {
+                const seg = raster.line.segments[j];
+                // if (seg.position)
+                let segment = new paper.Path.Circle({
+                    center: seg.point,
+                    radius: 10,
+                    strokeColor: 'red'
+                });
+
+                let segmentBounds = new paper.Path.Rectangle(segment.bounds);
+                segmentBounds.strokeColor = 'red';
+
+                for (let k = 0; k < sheet.gridDots.children.length; k++) {
+                    const dot = sheet.gridDots.children[k];
+                    if (segmentBounds.contains(dot))
+                        dot.strokeColor = "green";
+                }
+                // sheet.gridDots.selected = true;
+            }
+
     }
     if (keyEvent.keyCode == 40) { // down:
         for (var i = 0; i < sheetsGroup.children.length; i++) {
@@ -141,7 +165,6 @@ export function keyPressed(keyEvent) {
             sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
             sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
         }
-        raster.line.position.y += sheetHelpers[0].gridGapY;
         for (var i = 0; i < sheetsGroup.children.length; i++) {
             showIntersections(sheetsGroup.children[i], raster.line);
 
@@ -266,6 +289,12 @@ export function onMouseDown(event) {
             if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
                 break;
 
+            if (raster.line.segments.length > 0)
+                for (let i = 0; i < raster.line.segments.length; i++) {
+                    const seg = raster.line.segments[i];
+                    if (cursor.bounds.contains(seg.point))
+                        console.log("match", seg);
+                }
             raster.addLine(ptAtSmallestDist);
 
             break;

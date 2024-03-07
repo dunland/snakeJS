@@ -16,7 +16,6 @@ export function exportProject(event, fileName) {
         realGridSize: realGridSize,
         imageFile: imageFile,
         raster: {
-            gridPoints: raster.gridPoints,
             lineSegmentsTypeHistory: raster.lineSegmentsTypeHistory,
             gridGapX: raster.gridGapX,
             line: raster.line.exportJSON(),
@@ -61,7 +60,6 @@ export async function importProject(projectDataFile) {
             updateGlobalColors(projectData.globalColor);
 
             roi = projectData.roi,
-            raster.gridPoints = projectData.raster.gridPoints;
             raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
             raster.gridGapX = projectData.raster.gridGapX;
             raster.line = new paper.Path().importJSON(projectData.raster.line);
