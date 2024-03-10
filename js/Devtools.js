@@ -7,7 +7,3 @@ export function changeGlobalVerboseLevel(direction) {
 export function printObjectcount() {
     console.log(paper.project.getItems({}).length, "objects in the project.");
 }
-export function printVerbose(msg, minVerboseLevel) {
-    if (minVerboseLevel >= globalVerboseLevel)
-        console.log(msg);
-}

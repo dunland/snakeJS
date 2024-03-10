@@ -41,6 +41,7 @@ window.onload = function () {
     var cursorTool = new paper.Tool();
     cursorTool.onMouseMove = onMouseMove;
 
+    // TODO: not while cursor in input fields!
     addEventListener("mousedown", onMouseDown);
     addEventListener("keydown", keyPressed);
     addEventListener("keyup", keyReleased);

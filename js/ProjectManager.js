@@ -10,7 +10,7 @@ export function exportProject(event, fileName) {
 
     var projectExport = {
         globalColor: globalColor,
-        imageFile: imageFile,
+        imageFile: document.getElementById("text_imageFile").textContent,
         raster: {
             roi: raster.roi.exportJSON(),
             realSheetMargin: raster.realSheetMargin,

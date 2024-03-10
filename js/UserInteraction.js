@@ -1,4 +1,4 @@
-import { changeGlobalVerboseLevel, globalVerboseLevel, printVerbose } from "./Devtools.js";
+import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, image, cursor, changeCursor, globalColor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets } from "./Platten.js";
 
@@ -45,37 +45,22 @@ export function changeDrawMode(newMode) {
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
     let key = keyEvent.key;
-    console.log(key);
-    if (key == 'R' || key == 'r') {
-        recreateSheets();
-    }
-    if (key == 'W' || key == 'w')
-        raster.replaceLastCurve("KURVE_OBEN");
-    if (key == 'A' || key == 'a')
-        raster.replaceLastCurve("KURVE_LINKS");
-    if (key == 'S' || key == 's')
-        raster.replaceLastCurve("KURVE_UNTEN");
-    if (key == 'D' || key == 'd')
-        raster.replaceLastCurve("KURVE_RECHTS");
-    if (key == 'F' || key == 'f')
-        raster.replaceLastCurve("GERADE");
-    if (key == 'Q' || key == 'q')
-        raster.replaceLastCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
-    if (key == 'E' || key == 'e')
-        raster.replaceLastCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
-    if (key == 'Y' || key == 'y')
-        raster.replaceLastCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
-    if (key == 'X' || key == 'x')
-        raster.replaceLastCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
-    if (key == ' ') {
-        changeDrawMode("moveSheet");
-    }
+    if (globalVerboseLevel >= 4)
+            console.log(key);
+    if (key == 'R' || key == 'r') recreateSheets();
+    if (key == 'W' || key == 'w') raster.replaceLastCurve("KURVE_OBEN");
+    if (key == 'A' || key == 'a') raster.replaceLastCurve("KURVE_LINKS");
+    if (key == 'S' || key == 's') raster.replaceLastCurve("KURVE_UNTEN");
+    if (key == 'D' || key == 'd') raster.replaceLastCurve("KURVE_RECHTS");
+    if (key == 'F' || key == 'f') raster.replaceLastCurve("GERADE");
+    if (key == 'Q' || key == 'q') raster.replaceLastCurve;("KURVE_OBENLINKS_" + raster.getPathDirection());
+    if (key == 'E' || key == 'e') raster.replaceLastCurve;("KURVE_OBENRECHTS_" + raster.getPathDirection());
+    if (key == 'Y' || key == 'y') raster.replaceLastCurve;("KURVE_UNTENLINKS_" + raster.getPathDirection());
+    if (key == 'X' || key == 'x') raster.replaceLastCurve;("KURVE_UNTENRECHTS_" + raster.getPathDirection());
+    if (key == ' ') changeDrawMode("moveSheet");
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
-
-    if (key == 'm' || key == 'M') {
-        changeDrawMode("measureDistance");
-    }
+    if (key == 'm' || key == 'M') changeDrawMode("measureDistance");
     if (key == 'l' || key == 'L') {
         document.getElementById("buttonShowPath").classList.toggle("active");
         raster.line.visible = !raster.line.visible;

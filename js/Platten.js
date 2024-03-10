@@ -1,4 +1,4 @@
-import { globalVerboseLevel, printVerbose } from "./Devtools.js";
+import { globalVerboseLevel } from "./Devtools.js";
 import { raster, globalColor } from "./paperSnake.js";
 
 export var sheetsGroup;
@@ -36,7 +36,7 @@ class SheetHelper {
             }
         }
         if (globalVerboseLevel > 2)
-        console.log(this.gridDots.children.length, "gridDots erstellt.");
+            console.log(this.gridDots.children.length, "gridDots erstellt.");
     }
 
     showGridPoints() {
@@ -54,7 +54,8 @@ class SheetHelper {
 
 export function importSheets(JSONdata) {
     sheetsGroup = new paper.Group().importJSON(JSONdata);
-    printVerbose(`imported ${sheetsGroup.children.length} sheets`, 2);
+    if (globalVerboseLevel > 2)
+        console.log(`imported ${sheetsGroup.children.length} sheets`);
 
     let sheetLength = raster.realSheetLength * raster.pxPerMM;
     let sheetWidth = raster.realSheetWidth * raster.pxPerMM
@@ -109,7 +110,8 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
             if (index < sheetsGroup.children.length - 1) index++;
         }
-        printVerbose(sheetHelpers.length, "sheetHelpers erstellt.", 2);
+    if (globalVerboseLevel > 2)
+        console.log(sheetHelpers.length, "sheetHelpers erstellt.",);
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
 }
@@ -181,6 +183,9 @@ export function selectRowBySheet(index) {
 export function toggleSheetVisibility() {
     document.getElementById("buttonShowSheets").classList.toggle("active");
     sheetsGroup.visible = !sheetsGroup.visible;
+    for (let index = 0; index < sheetHelpers.length; index++) {
+        sheetHelpers[index].label.visible = !sheetHelpers[index].label.visible;
+    }
 }
 
 export function recreateSheets() {
