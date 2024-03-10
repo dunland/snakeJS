@@ -64,7 +64,7 @@ export function importSheets(JSONdata) {
 
     movableSheetsFrom = 0;
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength);
-    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth);
+    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) - 1;
 }
 
 export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
@@ -85,7 +85,7 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
-    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth);
+    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) - 1;
 
     // style active rows:
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
@@ -170,6 +170,8 @@ export function selectNextRow(sheetsGroup, direction) {
 export function selectRowBySheet(index) {
     movableSheetsFrom = Math.floor(index / sheetsPerRow) * sheetsPerRow;
     movableSheetsTo = Math.floor(index / sheetsPerRow) * sheetsPerRow + sheetsPerRow;
+    if (globalVerboseLevel > 2)
+        console.log(movableSheetsFrom, movableSheetsTo, sheetsPerRow);
 
     // style:
     sheetsGroup.strokeWidth = 1;

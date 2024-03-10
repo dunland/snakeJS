@@ -53,22 +53,22 @@ export function keyPressed(keyEvent) {
     if (key == 'S' || key == 's') raster.replaceLastCurve("KURVE_UNTEN");
     if (key == 'D' || key == 'd') raster.replaceLastCurve("KURVE_RECHTS");
     if (key == 'F' || key == 'f') raster.replaceLastCurve("GERADE");
-    if (key == 'Q' || key == 'q') raster.replaceLastCurve;("KURVE_OBENLINKS_" + raster.getPathDirection());
-    if (key == 'E' || key == 'e') raster.replaceLastCurve;("KURVE_OBENRECHTS_" + raster.getPathDirection());
-    if (key == 'Y' || key == 'y') raster.replaceLastCurve;("KURVE_UNTENLINKS_" + raster.getPathDirection());
-    if (key == 'X' || key == 'x') raster.replaceLastCurve;("KURVE_UNTENRECHTS_" + raster.getPathDirection());
-    if (key == ' ') changeDrawMode("moveSheet");
+    if (key == 'Q' || key == 'q') raster.replaceLastCurve; ("KURVE_OBENLINKS_" + raster.getPathDirection());
+    if (key == 'E' || key == 'e') raster.replaceLastCurve; ("KURVE_OBENRECHTS_" + raster.getPathDirection());
+    if (key == 'Y' || key == 'y') raster.replaceLastCurve; ("KURVE_UNTENLINKS_" + raster.getPathDirection());
+    if (key == 'X' || key == 'x') raster.replaceLastCurve; ("KURVE_UNTENRECHTS_" + raster.getPathDirection());
+    if (key == 'm') changeDrawMode("moveSheet");
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
-    if (key == 'm' || key == 'M') changeDrawMode("measureDistance");
+    if (key == 'd') changeDrawMode("measureDistance");
     if (key == 'l' || key == 'L') {
         document.getElementById("buttonShowPath").classList.toggle("active");
         raster.line.visible = !raster.line.visible;
     }
     if (key == 'p') toggleSheetVisibility();
     if (keyEvent.keyCode == 37) { // left
-        for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-            sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+        for (var i = 0; i < activeSheets.length; i++) {
+            activeSheets[i].position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
             sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
         }
@@ -167,7 +167,7 @@ export function keyPressed(keyEvent) {
 
 export function keyReleased(keyEvent) {
     let key = keyEvent.key;
-    if (key == ' ') { // leave mode
+    if (key == 'm') { // leave mode
         let leftovers = 0;
         let sheets = 0;
 
@@ -265,7 +265,7 @@ export function onMouseDown(event) {
 
     if (globalVerboseLevel > 2)
         console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y, 2);
-    if (event.x >= raster.roi.bounds.width || event.y >= raster.roi.bounds.height){
+    if (event.x >= raster.roi.bounds.width || event.y >= raster.roi.bounds.height) {
         console.log("cannot draw here! (not in roi)");
         return;
     } 
@@ -329,8 +329,9 @@ export function onMouseDown(event) {
 
                     changeCursor(raster.gridGapX * raster.pxPerMM / 2);
                     scaleSheets(sheetsGroup, raster.pxPerMM);
+                    // recreateSheets();
 
-                    document.getElementById("rasterpxPerMM").textContent = raster.pxPerMM.toFixed(3);
+                    document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
                     changeDrawMode("line");
                     break;
 

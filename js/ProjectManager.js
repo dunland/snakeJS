@@ -56,7 +56,6 @@ export async function importProject(projectDataFile) {
             raster.area = new paper.Group().importJSON(projectData.raster.area);
             raster.pxPerMM = projectData.raster.pxPerMM;
             
-            raster.roi.remove()
             loadImage(); // TODO: this will overwrite the roi!
             raster.initialize(); // initialize line and area if not defined
 
