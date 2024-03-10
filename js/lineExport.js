@@ -99,7 +99,7 @@ export function writeFile(exportedModel, fileName) {
 // create SVG file and prepare for download:
 export function downloadSVG(object, fileName) {
 
-    object.scale(1 / raster.scaleX);
+    object.scale(1 / raster.pxPerMM);
     if (!fileName)
         fileName = "snakeJS_export.svg"
 
@@ -114,7 +114,7 @@ export function downloadSVG(object, fileName) {
     link.href = url;
     link.click();
 
-    object.scale(raster.scaleX);
+    object.scale(raster.pxPerMM);
 }
 
 // create SVG file of entire project and prepare for download:

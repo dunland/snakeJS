@@ -15,7 +15,7 @@
 
 <body>
   <div id="top">
-      <canvas id="snakeCanvas" resize="false"></canvas>
+    <canvas id="snakeCanvas" resize="false"></canvas>
     <div id="right">
       <button id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
       <button id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
@@ -38,10 +38,10 @@
   </div>
   <div id="bottom">
     <div id="info">
-      <span id="rasterScaleX" class="variable">1</span> px/mm
+      <span id="rasterPxPerMM" class="variable">1</span> px/mm
       <br>Pfadlänge: <span id="pathLength" class="variable">0</span> m
       <br>Platten: <span id="sheets" class="variable">0</span> ‒ Verschnitt: <span id="leftovers"
-      class="variable">0</span> m²
+        class="variable">0</span> m²
       <br><button id="buttonGetLeftovers">Verschnitt aktualisieren</button>
       <br><button id="buttonRecreateSheets">Platten neu 🗘</button>
     </div>
@@ -54,17 +54,30 @@
         <br><button id="button_measureDistance" class="tool">(m)easure distance</button>
       </div>
       <div id="buttonsProjectTools">
-        <button id="buttonSaveProject">💾 Projekt speichern</button>
-        <!-- <button id="buttonSaveProjectJSON">💾 Projekt speichern</button> -->
-        <!-- <br><button id="buttonLoadProject">🗁 Projekt laden</button> -->
-        <br><button id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
+        <button id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
         <br><button id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
         <br><button id="buttonExportEntireProject">⍗ Exportiere Gesamt-Projekt</button>
       </div>
-      <div>
+      <div class="inputFields">
+        <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
+        <button id="button_imageFile">OK</button>→
+        <span id="text_imageFile">../beispielbild.jpg</span>
+        <br>
+        <input id="input_realSheetLength" type="text" name="field_realSheetLength"
+          placeholder="Plattenl&auml;nge [mm]" />
+        <button id="button_realSheetLength">OK</button>→
+        <span id="text_realSheetLength">1861</span> mm
+        <br>
+        <input id="input_realSheetWidth" type="text" name="field_realSheetWidth" placeholder="Plattenbreite [mm]" />
+        <button id="button_realSheetWidth">OK</button>→
+        <span id="text_realSheetWidth">591</span> mm
+        <br>
+        <input id="input_realSheetMargin" type="text" name="field_realSheetMargin" placeholder="Platten-Randabstand" />
+        <button id="button_realSheetMargin">OK</button>→
+        <span id="text_realSheetMargin">55</span> mm
+        <br><button id="buttonSaveProject">💾 Projekt speichern</button>
       </div>
     </div>
-    <div></div>
   </div>
 </body>
 

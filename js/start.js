@@ -1,4 +1,4 @@
-const variables = ["imageFile", "realSheetLength", "realSheetWidth", "realGridSize"];
+const variables = ["imageFile", "realSheetLength", "realSheetWidth", "realSheetMargin"];
 
 document.addEventListener("DOMContentLoaded", function () {
 
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
             imageFile: document.getElementById("text_imageFile").textContent,
             realSheetLength: parseInt(document.getElementById("text_realSheetLength").textContent),
             realSheetWidth: parseInt(document.getElementById("text_realSheetWidth").textContent),
-            realGridSize: parseInt(document.getElementById("text_realGridSize").textContent)
+            realSheetMargin: parseInt(document.getElementById("text_realSheetMargin").textContent)
         }
         console.log(projectExport);
 

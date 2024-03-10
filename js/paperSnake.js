@@ -6,13 +6,7 @@ import { importProject, initializeNewProject, projectPath, setProjectPath } from
 export var cursor;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var imageFile = "../beispielbild.jpeg", image;
-export var realSheetLength = 1861; // [mm]
-export var realSheetWidth = 591; // [mm]
-export var realGridSize = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
-export var pxPerMM = 0.29;
-export function importSheetLength(newVar) { realSheetLength = newVar; }
-export function importSheetWidth(newVar) { realSheetWidth = newVar; }
-export function importGridSize(newVar) { realGridSize = newVar; }
+const pxPerMM = 0.29;
 export function importImageFile(newVar) { imageFile = newVar; }
 export var raster = new Raster(pxPerMM);
 export var globalColor = "white";
@@ -25,8 +19,7 @@ window.onload = function () {
 
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    loadImage();
-
+    
     const urlInput = new URLSearchParams(window.location.search).get('project');
     if (urlInput) {
         setProjectPath(`Projects/${urlInput}`);
@@ -34,14 +27,8 @@ window.onload = function () {
     }
     else { // emptyProject
         console.log("creating new project");
-
-        realSheetLength = 1861; // [mm]
-        realSheetWidth = 591; // [mm]
-        realGridSize = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
-        pxPerMM = 0.29;
-
+        if (!image) loadImage();
         initializeNewProject();
-
     }
 
     // mouse cursor:
@@ -79,8 +66,8 @@ export function loadImage() {
     // region of interest:
     raster.roi = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
-        size: new paper.Size(image.width, image.height)
-        // strokeColor: 'red'
+        size: new paper.Size(image.width, image.height),
+        strokeColor: 'blue'
     })
 
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)

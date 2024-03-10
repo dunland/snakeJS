@@ -2,32 +2,38 @@
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
 import { Liniensegment } from "./Liniensegmente.js";
-import { realSheetLength, realGridSize, globalColor } from "./paperSnake.js";
-import { setRadius } from "./paperUtils.js";
+import { globalColor } from "./paperSnake.js";
 
 export class Raster {
 
     constructor(scaleX) {
 
         this.lineSegmentsTypeHistory = []; // linear list of segmentTypes
-        this.gridGapX = realSheetLength / Math.floor(realSheetLength / realGridSize) * scaleX;
+        this.realSheetLength = 1861; // [mm]
+        this.realSheetWidth = 591; // [mm]
+        this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
+        this.gridGapX = this.realSheetLength / Math.floor(this.realSheetLength / this.realSheetMargin) * scaleX;
         this.line; // must be initialized after paper.setup()
         this.area;
         this.roi;  // region of interest / work area
 
-        this.scaleX = scaleX;
+        this.pxPerMM = scaleX;
 
-        console.log(`raster created with gridSize=${this.gridGapX}, scaleX=${this.scaleX}`);
+        console.log(`raster created with gridSize=${this.gridGapX}, pxPerMM=${this.pxPerMM}`);
     }
 
     initialize() {
-        this.line = new paper.Path();
-        this.line.strokeColor = globalColor;
-        this.line.strokeWidth = 2;
+        if (!this.line){
+            this.line = new paper.Path();
+            this.line.strokeColor = globalColor;
+            this.line.strokeWidth = 2;
+        }
 
-        this.area = new paper.Group();
-        this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
-        this.area.closed = true;
+        if (!this.area){
+            this.area = new paper.Group();
+            this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
+            this.area.closed = true;
+        }
     }
 
     ////////////////// FUNCTIONS ///////////////////
@@ -71,7 +77,7 @@ export class Raster {
 
         }
         // update path length:
-        let pathLength = this.line.length / this.scaleX / 1000;
+        let pathLength = this.line.length / this.pxPerMM / 1000;
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
 
     }

@@ -11,9 +11,9 @@ export class Liniensegment {
         this.ctrl1 = new paper.Point(0, 0);
         this.ctrl2 = new paper.Point(0, 0);
 
-        this.radius = raster.gridGapX / raster.scaleX;
+        this.radius = Math.abs(this.x1 - this.x2) / raster.pxPerMM;
         this.angle = 90;
-        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
+        this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
 
         this.type = (type == undefined) ? this.getType() : type;
         this.createCurveOfType(this.type);
@@ -60,7 +60,7 @@ export class Liniensegment {
 
             case "KURVE_OBEN":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -72,7 +72,7 @@ export class Liniensegment {
 
             case "KURVE_UNTEN":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -84,7 +84,7 @@ export class Liniensegment {
 
             case "KURVE_LINKS":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);
@@ -96,7 +96,7 @@ export class Liniensegment {
 
             case "KURVE_RECHTS":
                 this.angle = 180;
-                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.scaleX;
+                this.length = 2 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
 
                 this.start = new paper.Point(this.x1, this.y1);
                 this.end = new paper.Point(this.x2, this.y2);

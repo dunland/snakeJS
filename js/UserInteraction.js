@@ -1,6 +1,5 @@
-import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
-import { raster, image, cursor, changeCursor, realGridSize, globalColor } from "./paperSnake.js";
-import { extractPathFromSheets } from "./lineExport.js"
+import { changeGlobalVerboseLevel, globalVerboseLevel, printVerbose } from "./Devtools.js";
+import { raster, image, cursor, changeCursor, globalColor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
@@ -280,8 +279,11 @@ export function onMouseMove(event) {
 export function onMouseDown(event) {
 
     if (globalVerboseLevel > 2)
-        console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y);
-    if (event.x >= image.width || event.y >= image.height) return;
+        console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y, 2);
+    if (event.x >= raster.roi.bounds.width || event.y >= raster.roi.bounds.height){
+        console.log("cannot draw here! (not in roi)");
+        return;
+    } 
 
     const hitOptions = {
         segments: true,
@@ -293,8 +295,10 @@ export function onMouseDown(event) {
 
 
         case "line":
-            if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) // TODO: also check crossing
+            if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) { // TODO: also check crossing
+                console.log("cannot draw here! (area blocked)");
                 break;
+            }
 
             if (raster.line.segments.length > 0)
                 for (let i = 0; i < raster.line.segments.length; i++) {
@@ -335,13 +339,13 @@ export function onMouseDown(event) {
                     measureDistance.segments[1] = [event.x, event.y];
                     measureToolState += 1;
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
-                    raster.scaleX = userInput == null ? raster.scaleX : measureDistance.length / userInput;
-                    raster.gridGapX = realGridSize * raster.scaleX;
+                    raster.pxPerMM = userInput == null ? raster.pxPerMM : measureDistance.length / userInput;
+                    raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
 
-                    changeCursor(raster.gridGapX * raster.scaleX / 2);
-                    scaleSheets(sheetsGroup, raster.scaleX);
+                    changeCursor(raster.gridGapX * raster.pxPerMM / 2);
+                    scaleSheets(sheetsGroup, raster.pxPerMM);
 
-                    document.getElementById("rasterScaleX").textContent = raster.scaleX.toFixed(3);
+                    document.getElementById("rasterpxPerMM").textContent = raster.pxPerMM.toFixed(3);
                     changeDrawMode("line");
                     break;
 

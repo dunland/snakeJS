@@ -1,4 +1,5 @@
-import { raster, realSheetLength, realSheetWidth, realGridSize, image, globalColor } from "./paperSnake.js";
+import { globalVerboseLevel, printVerbose } from "./Devtools.js";
+import { raster, globalColor } from "./paperSnake.js";
 
 export var sheetsGroup;
 export var sheetHelpers = [];
@@ -12,7 +13,7 @@ class SheetHelper {
 
     constructor(rectangleObject) {
         this.gridGapX = raster.gridGapX;
-        this.gridGapY = realSheetWidth / Math.floor(realSheetWidth / realGridSize) * raster.scaleX;
+        this.gridGapY = raster.realSheetWidth / Math.floor(raster.realSheetWidth / raster.realSheetMargin) * raster.pxPerMM;
         this.rectangleObject = rectangleObject;
         this.gridDots = new paper.Group();
     }
@@ -34,6 +35,8 @@ class SheetHelper {
                 }));
             }
         }
+        if (globalVerboseLevel > 2)
+        console.log(this.gridDots.children.length, "gridDots erstellt.");
     }
 
     showGridPoints() {
@@ -51,10 +54,10 @@ class SheetHelper {
 
 export function importSheets(JSONdata) {
     sheetsGroup = new paper.Group().importJSON(JSONdata);
-    console.log(`imported ${sheetsGroup.children.length} sheets`);
+    printVerbose(`imported ${sheetsGroup.children.length} sheets`, 2);
 
-    let sheetLength = realSheetLength * raster.scaleX;
-    let sheetWidth = realSheetWidth * raster.scaleX
+    let sheetLength = raster.realSheetLength * raster.pxPerMM;
+    let sheetWidth = raster.realSheetWidth * raster.pxPerMM
     let maxH = raster.roi.bounds.height;
     let maxW = raster.roi.bounds.width;
 
@@ -106,6 +109,7 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
             if (index < sheetsGroup.children.length - 1) index++;
         }
+        printVerbose(sheetHelpers.length, "sheetHelpers erstellt.", 2);
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
 }
@@ -114,7 +118,7 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
 export function scaleSheets(sheetsGroup) {
 
     let previousSheetLength = sheetsGroup.children[0].bounds.width;
-    var newSheetLength = realSheetLength * raster.scaleX;
+    var newSheetLength = raster.realSheetLength * raster.pxPerMM;
     var scaleBy = newSheetLength / previousSheetLength;
 
     for (var i = 0; i < sheetsGroup.children.length; i++) {
@@ -134,11 +138,11 @@ export function scaleSheets(sheetsGroup) {
 
         // recreate gridDots:
         sheetHelpers[i].gridGapX = raster.gridGapX;
-        sheetHelpers[i].gridGapY = realSheetWidth / Math.floor(realSheetWidth / realGridSize) * raster.scaleX;
+        sheetHelpers[i].gridGapY = raster.realSheetWidth / Math.floor(raster.realSheetWidth / raster.realSheetMargin) * raster.pxPerMM;
 
         sheetHelpers[i].gridDots.removeChildren(); // TODO: funktioniert das?
         sheetHelpers[i].gridDots = new paper.Group();
-        sheetHelpers[i].createGridPoints(realSheetLength * raster.scaleX, realSheetWidth * raster.scaleX);
+        sheetHelpers[i].createGridPoints(raster.realSheetLength * raster.pxPerMM, raster.realSheetWidth * raster.pxPerMM);
 
         console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
@@ -190,13 +194,13 @@ export function recreateSheets() {
     sheetHelpers = [];
 
     createSheets(
-        realSheetLength * raster.scaleX,
-        realSheetWidth * raster.scaleX,
+        raster.realSheetLength * raster.pxPerMM,
+        raster.realSheetWidth * raster.pxPerMM,
         raster.roi.bounds.height, raster.roi.bounds.width
     );
     createSheetHelpers(
-        realSheetLength * raster.scaleX,
-        realSheetWidth * raster.scaleX,
+        raster.realSheetLength * raster.pxPerMM,
+        raster.realSheetWidth * raster.pxPerMM,
         raster.roi.bounds.height, raster.roi.bounds.width
     );
     calculateLeftovers();
