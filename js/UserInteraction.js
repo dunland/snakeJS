@@ -1,7 +1,7 @@
-import { globalVerboseLevel } from "./Devtools.js";
+import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, image, cursor, changeCursor, realGridSize, globalColor } from "./paperSnake.js";
 import { extractPathFromSheets } from "./lineExport.js"
-import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility } from "./Platten.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets } from "./Platten.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -18,6 +18,8 @@ export function changeDrawMode(newMode) {
         cursor.strokeColor = 'red';
     else if (drawMode == "area")
         cursor.strokeColor = globalColor;
+    else if (newMode == "moveSheet")
+        cursor.visible = false;
 
     // leaving mode:
     if (oldMode == "measureDistance") {
@@ -38,7 +40,6 @@ export function changeDrawMode(newMode) {
             tempArea.closed = true;
         }
 
-
     drawMode = newMode;
 }
 
@@ -46,11 +47,8 @@ export function changeDrawMode(newMode) {
 export function keyPressed(keyEvent) {
     let key = keyEvent.key;
     console.log(key);
-    // exportiere DXF mit Taste 'r':
     if (key == 'R' || key == 'r') {
-        console.log("begin file export");
-        // downloadSVG(raster.line, "rasterLinieSkaliert.svg");
-        extractPathFromSheets();
+        recreateSheets();
     }
     if (key == 'W' || key == 'w')
         raster.replaceLastCurve("KURVE_OBEN");
@@ -72,16 +70,10 @@ export function keyPressed(keyEvent) {
         raster.replaceLastCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
     if (key == ' ') {
         changeDrawMode("moveSheet");
-        cursor.visible = false;
     }
-    if (key == '+' || key == 'ȉ') {
-        globalVerboseLevel++;
-        console.log("globalVerboseLevel = ", globalVerboseLevel);
-    }
-    if (key == '-') {
-        globalVerboseLevel--;
-        console.log("globalVerboseLevel = ", globalVerboseLevel);
-    }
+    if (key == '+') changeGlobalVerboseLevel(key);
+    if (key == '-') changeGlobalVerboseLevel(key);
+
     if (key == 'm' || key == 'M') {
         changeDrawMode("measureDistance");
     }
@@ -262,7 +254,7 @@ export function onMouseMove(event) {
             }
 
             for (var i = 0; i < sheetsGroup.children.length; i++) {
-                showIntersections(sheetsGroup.children[i], raster.line);
+                // showIntersections(sheetsGroup.children[i], raster.line);
 
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
@@ -276,7 +268,6 @@ export function onMouseMove(event) {
 
             if (measureToolState == 1) {
                 measureDistance.segments[1].point = [event.point.x, event.point.y];
-                console.log(measureDistance.length);
             }
 
             break;
@@ -288,7 +279,8 @@ export function onMouseMove(event) {
 
 export function onMouseDown(event) {
 
-    console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y);
+    if (globalVerboseLevel > 2)
+        console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y);
     if (event.x >= image.width || event.y >= image.height) return;
 
     const hitOptions = {
@@ -361,7 +353,7 @@ export function onMouseDown(event) {
                 default:
                     break;
             }
-            console.log(measureDistance, measureToolState);
+            console.log("distance measured in px:", measureDistance.length);
             break;
 
     }

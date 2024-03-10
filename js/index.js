@@ -1,7 +1,7 @@
 import { setRadius } from "./paperUtils.js";
 import { pxPerMM, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./UserInteraction.js";
-import { sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
+import { calculateLeftovers, recreateSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
@@ -59,22 +59,8 @@ document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
 let buttonMeasureDistance = document.getElementById("buttonMeasureDistance");
 document.getElementById("rasterScaleX").textContent = pxPerMM.toFixed(3);
 
-document.getElementById("buttonGetLeftovers").onclick = function (event) {
-    let leftovers = 0;
-    let sheets = 0;
-    for (var i = 0; i < sheetsGroup.children.length; i++) {
-        let child = sheetsGroup.children[i];
-        if (imageArea.bounds.intersects(child.bounds)) {
-            let tempObj = imageArea.exclude(sheetsGroup.children[i]).subtract(imageArea).removeOnMove();
-            tempObj.fillColor = 'red';
-            leftovers += tempObj.bounds.width * tempObj.bounds.height;
-            sheets++;
-        }
-    }
-    leftovers = leftovers * Math.pow(10, -6); // mm² to m²
-    document.getElementById("leftovers").textContent = leftovers.toFixed(3)
-    document.getElementById("sheets").textContent = sheets;
-}
+document.getElementById("buttonGetLeftovers").onclick = calculateLeftovers;
+document.getElementById("buttonRecreateSheets").onclick = recreateSheets;
 
 document.getElementById("colorPicker").onchange = () => {
 

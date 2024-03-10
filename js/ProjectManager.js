@@ -1,4 +1,4 @@
-import { sheetsGroup, createSheets, createSheetHelpers, importSheets } from "./Platten.js";
+import { sheetsGroup, createSheets, createSheetHelpers, importSheets, calculateLeftovers } from "./Platten.js";
 import { raster, realSheetLength, realSheetWidth, image, loadImage, realGridSize, imageFile, importSheetLength, importSheetWidth, importGridSize, importImageFile, pxPerMM, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
@@ -23,7 +23,7 @@ export function exportProject(event, fileName) {
             scaleX: raster.scaleX,
         },
 
-        
+
         // sheetHelpers are dynamically created from sheetsGroup!
         sheetsGroup: sheetsGroup.exportJSON()
     }
@@ -58,21 +58,26 @@ export async function importProject(projectDataFile) {
             }
 
             console.log(`importing project from ${projectDataFile}`);
-            
+
             raster.roi = new paper.Path().importJSON(projectData.roi),
-            raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory
+                raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory
             raster.gridGapX = projectData.raster.gridGapX;
             raster.line = new paper.Path().importJSON(projectData.raster.line);
             raster.area = new paper.Group().importJSON(projectData.raster.area);
             raster.scaleX = projectData.raster.scaleX;
-            
+
             importSheets(projectData.sheetsGroup);
             createSheetHelpers(
                 realSheetLength * raster.scaleX,
                 realSheetWidth * raster.scaleX,
                 raster.roi.bounds.height, raster.roi.bounds.width
-                );
+            );
             updateGlobalColors(projectData.globalColor);
+            calculateLeftovers();
+            // update path length:
+            let pathLength = raster.line.length / raster.scaleX / 1000;
+            document.getElementById("pathLength").textContent = pathLength.toFixed(3);
+
         }).catch(error => {
             console.error("Error fetching project data:", error);
         })
@@ -86,13 +91,13 @@ export function initializeNewProject() {
 
     // platten erstellen:
     createSheets(
-        realSheetLength * pxPerMM,
-        realSheetWidth * pxPerMM,
-        image.height, image.width
+        realSheetLength * raster.scaleX,
+        realSheetWidth * raster.scaleX,
+        raster.roi.bounds.height, raster.roi.bounds.width
     );
     createSheetHelpers(
-        realSheetLength * pxPerMM,
-        realSheetWidth * pxPerMM,
-        image.height, image.width
+        realSheetLength * raster.scaleX,
+        realSheetWidth * raster.scaleX,
+        raster.roi.bounds.height, raster.roi.bounds.width
     );
 }

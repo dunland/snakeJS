@@ -53,7 +53,6 @@ export class Raster {
 
             for (let index = 0; index < this.line.segments.length; index++) {
                 let element = this.line.segments[index];
-                console.log(element.point.x, element.point.y);
             }
         } else { // remove line
 
@@ -72,7 +71,7 @@ export class Raster {
 
         }
         // update path length:
-        let pathLength = this.line.length / this.scaleX;
+        let pathLength = this.line.length / this.scaleX / 1000;
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
 
     }

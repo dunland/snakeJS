@@ -49,15 +49,17 @@ class SheetHelper {
     }
 }
 
-export function importSheets(JSONdata) { 
+export function importSheets(JSONdata) {
     sheetsGroup = new paper.Group().importJSON(JSONdata);
+    console.log(`imported ${sheetsGroup.children.length} sheets`);
 
     let sheetLength = realSheetLength * raster.scaleX;
     let sheetWidth = realSheetWidth * raster.scaleX
-    let maxH = image.height;
-    let maxW = image.width;
+    let maxH = raster.roi.bounds.height;
+    let maxW = raster.roi.bounds.width;
 
-    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    movableSheetsFrom = 0;
+    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength);
     sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth);
 }
 
@@ -102,7 +104,7 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
                 }.${x + 2} `;
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
-            index++;
+            if (index < sheetsGroup.children.length - 1) index++;
         }
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
@@ -175,4 +177,44 @@ export function selectRowBySheet(index) {
 export function toggleSheetVisibility() {
     document.getElementById("buttonShowSheets").classList.toggle("active");
     sheetsGroup.visible = !sheetsGroup.visible;
+}
+
+export function recreateSheets() {
+    sheetsGroup.remove();
+    for (let index = 0; index < sheetHelpers.length; index++) {
+        const sheetHelper = sheetHelpers[index];
+        sheetHelper.gridDots.remove();
+        sheetHelper.label.remove();
+    }
+
+    sheetHelpers = [];
+
+    createSheets(
+        realSheetLength * raster.scaleX,
+        realSheetWidth * raster.scaleX,
+        raster.roi.bounds.height, raster.roi.bounds.width
+    );
+    createSheetHelpers(
+        realSheetLength * raster.scaleX,
+        realSheetWidth * raster.scaleX,
+        raster.roi.bounds.height, raster.roi.bounds.width
+    );
+    calculateLeftovers();
+}
+
+export function calculateLeftovers() {
+    let leftovers = 0;
+    let sheets = 0;
+    for (var i = 0; i < sheetsGroup.children.length; i++) {
+        let child = sheetsGroup.children[i];
+        if (raster.roi.bounds.intersects(child.bounds)) {
+            let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi).removeOnMove();
+            tempObj.fillColor = 'red';
+            leftovers += tempObj.bounds.width * tempObj.bounds.height;
+            sheets++;
+        }
+    }
+    leftovers = leftovers * Math.pow(10, -6); // mm² to m²
+    document.getElementById("leftovers").textContent = leftovers.toFixed(3)
+    document.getElementById("sheets").textContent = sheets;
 }

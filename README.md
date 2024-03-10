@@ -7,6 +7,24 @@ a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
 - `npm start` (führt `nodemon main.js` aus)
 - läuft derzeit nur in Chrome, da Firefox: *snake.js:16:46 import assertions are not currently supported*
 
+## Projektstruktur
+
+```
+snakeJS
+└───js (Quellcode)
+└───node_modules (Quellcode-Bibliotheken)
+└───Projects
+|   └───Projekt_Name
+|   |   └───project.json
+|   |   └───bild1.jpg
+|   └───Projekt_1
+|   |   └───project.json
+|   |   └───beispielbild2.jpg
+|   └───...
+└───index.html
+└───start.html
+```
+
 ## To do
 
 - [x] Keyboard Interaction
