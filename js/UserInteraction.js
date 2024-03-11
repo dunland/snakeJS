@@ -11,34 +11,40 @@ var tempArea;
 
 export var splitActiveSheets = 0;
 
-export function changeDrawMode(newMode) {
-    var oldMode = drawMode;
-    if (oldMode == newMode) return;
+export function changeDrawMode(entering) {
+    var leaving = drawMode;
+    if (leaving == entering) return;
 
     if (globalVerboseLevel > 2)
-        console.log(oldMode, ">>", newMode);
+        console.log(leaving, ">>", entering);
 
     // ------------------ entering mode: ------------------
-    if (newMode == "area")
+    if (entering == "area")
         cursor.strokeColor = 'red';
-    else if (newMode == "line")
+    else if (entering == "line"){
         cursor.strokeColor = globalColor;
-    else if (newMode == "ROI") {
+        document.getElementById('tooltips').classList.remove("hidden");
+    }
+    else if (entering == "ROI") {
         raster.roi.strokeColor = null;
         cursor.strokeColor = 'blue';
     }
-    else if (newMode == "moveSheet")
+    else if (entering == "moveSheet")
         cursor.visible = false;
 
     // ------------------- leaving mode: -------------------
-    if (oldMode == "measureDistance") {
+    if (leaving == "line")
+        document.getElementById('tooltips').classList.add("hidden");
+
+    
+    if (leaving == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
         measureToolState = 0;
         document.getElementById("button_measureDistance").classList.remove("active"); // force measureTool off
     }
 
-    if (oldMode == "area")
+    if (leaving == "area")
         if (!tempArea || tempArea.segments.length < 1)
             console.log("no segments in child");
         else {
@@ -48,7 +54,7 @@ export function changeDrawMode(newMode) {
             tempArea.closed = true;
         }
 
-    if (oldMode == "ROI") {
+    if (leaving == "ROI") {
         // cursor.strokeColor = globalColor;
         if (!tempArea || tempArea.segments.length < 1)
             console.log("no segments in child");
@@ -64,7 +70,7 @@ export function changeDrawMode(newMode) {
         }
     }
 
-    drawMode = newMode;
+    drawMode = entering;
 }
 
 // Tastaturbefehle:

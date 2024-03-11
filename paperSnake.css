@@ -111,3 +111,7 @@ button.view.active{
     /* transform: rotate(180deg); */
     writing-mode: horizontal-tb;
 }
+
+.hidden{
+    display: none;
+}
