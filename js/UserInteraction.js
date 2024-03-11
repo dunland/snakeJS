@@ -1,6 +1,7 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, image, cursor, changeCursor, globalColor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets } from "./Platten.js";
+import { showIntersections } from "./paperUtils.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
 var measureDistance;
@@ -238,8 +239,8 @@ export function onMouseMove(event) {
             }
 
             for (var i = 0; i < sheetsGroup.children.length; i++) {
-                // showIntersections(sheetsGroup.children[i], raster.line);
 
+                // show leftovers:
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
@@ -356,15 +357,4 @@ function drawArea() {
         tempArea.closed = true;
     }
     tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
-}
-
-export function showIntersections(path1, path2) {
-    var intersections = path1.getIntersections(path2);
-    for (var i = 0; i < intersections.length; i++) {
-        new paper.Path.Circle({
-            center: intersections[i].point,
-            radius: 5,
-            fillColor: '#009dec'
-        }).removeOnMove();
-    }
 }

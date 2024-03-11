@@ -17,7 +17,7 @@ canvas{
     height: 100%;
     background-repeat: no-repeat;
     background-position: 0 0;
-    background-size: 100%;
+    /* background-size: 100%; */
 }
  
 /* Scale canvas with resize attribute to full size */

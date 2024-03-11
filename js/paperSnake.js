@@ -3,7 +3,7 @@ import { Raster } from "./Raster.js";
 import { createSheetHelpers, createSheets, sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
-export var cursor;
+export var cursor, cursorLine;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var imageFile = "../beispielbild.jpeg", image;
 const pxPerMM = 0.29;
@@ -59,16 +59,34 @@ export function loadImage() {
     // set canvas background image:
     const canvasElement = document.getElementById('snakeCanvas');
     canvasElement.style.backgroundImage = `url(${imageFile})`;
+    
+    // TODO: image is bigger than canvas:
+    // if (canvasElement.clientWidth < image.width){
+    //     let w = canvasElement.clientWidth;
+    //     let h = canvasElement.clientHeight;
+    //     let r = w/h;
+    //     canvasElement.style.backgroundSize = `${w}px ${h*r}px`;
+    // }
+    // else if (canvasElement.clientHeight < image.height){
+    //     let w = canvasElement.clientWidth;
+    //     let h = canvasElement.clientHeight;
+    //     let r = w/h;
+    //     canvasElement.style.backgroundSize = `${w/r}px ${h}px`;
+    // }
+    // else {
+    //     // TODO: set canvas size:
+    //     canvasElement.width = image.width;
+    //     canvasElement.height = image.height;
+    // }
 
-    // TODO: set canvas size:
-    // canvasElement.width = image.width + 'px';
-    // canvasElement.height = image.height + "px";
 
     // region of interest:
+    let w = Math.min(image.width, canvasElement.clientWidth);
+    let h = Math.min(image.height, canvasElement.clientHeight);
     raster.roi = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
-        size: new paper.Size(image.width, image.height),
-        strokeColor: 'blue'
+        size: new paper.Size(w, h)
+        // strokeColor: 'blue' // ATTENTION: Do not set color here! Else it will be present whenever moving entire view
     })
 
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)

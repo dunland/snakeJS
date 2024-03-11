@@ -219,8 +219,12 @@ export function calculateLeftovers() {
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         let child = sheetsGroup.children[i];
         if (raster.roi.bounds.intersects(child.bounds)) {
-            let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi).removeOnMove();
+            let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi);
+
+            // remove blocked areas:
+            tempObj = tempObj.exclude(raster.area);
             tempObj.fillColor = 'red';
+            tempObj.removeOnMove();
             leftovers += tempObj.bounds.width * tempObj.bounds.height;
             sheets++;
         }

@@ -18,3 +18,14 @@ export var setRadius = function(path, radius) {
     path.scale(newRadiusWithoutStroke / oldRadiusWithoutStroke);
 
 }
+
+export function showIntersections(path1, path2) {
+    var intersections = path1.getIntersections(path2);
+    for (var i = 0; i < intersections.length; i++) {
+        new paper.Path.Circle({
+            center: intersections[i].point,
+            radius: 5,
+            fillColor: '#009dec'
+        }).removeOnMove();
+    }
+}

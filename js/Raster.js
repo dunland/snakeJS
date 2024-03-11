@@ -14,7 +14,7 @@ export class Raster {
         this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
         this.gridGapX = this.realSheetLength / Math.floor(this.realSheetLength / this.realSheetMargin) * scaleX;
         this.line; // must be initialized after paper.setup()
-        this.area;
+        this.area; // group of blocked, non-clickacble areas
         this.roi;  // region of interest / work area
 
         this.pxPerMM = scaleX;
