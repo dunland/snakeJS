@@ -1,9 +1,10 @@
-import { imageFile, importImageFile, raster, updateGlobalColors } from "./paperSnake.js";
+import { imageFile, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./UserInteraction.js";
 import { calculateLeftovers, recreateSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
+// undo line:
 document.getElementById("buttonUndo").onclick = function () {
 
     if (raster.line.segments.length < 1) return;
@@ -14,18 +15,6 @@ document.getElementById("buttonUndo").onclick = function () {
     for (let index = 0; index < sheetHelpers.length; index++) {
         const sheet = sheetHelpers[index];
         sheet.gridDots.selected = false;
-        // for (let d = 0; d < sheet.gridDots.children.length; d++) {
-        //     const dot = sheet.gridDots.children[d];
-        //     dot.selected = false;
-        // console.log(dot);
-        // for (let s = 0; s < raster.line.segments.length; s++) {
-        //     const seg = raster.line.segments[s];
-        //     console.log(seg.point, dot.point);
-        //     if (seg.point.equals(dot.point)){
-        //         dot.selected = true;
-        //     }
-        // }
-        // }
     }
 }
 
@@ -77,7 +66,10 @@ inputVariables.forEach(name => {
         const value = document.getElementById(`input_${name}`).value;
         if (value){
             document.getElementById(`text_${name}`).textContent = value;
-            if (name == 'imageFile') importImageFile(value);
+            if (name == 'imageFile') {
+                importImageFile(value);
+                loadImage();
+            }
             if (name == 'realSheetLength') raster.realSheetLength = value;
             if (name == 'realSheetWidth') raster.realSheetWidth = value;
             if (name == 'realSheetMargin') raster.realSheetMargin = value;

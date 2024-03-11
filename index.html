@@ -17,12 +17,14 @@
   <div id="top">
     <canvas id="snakeCanvas" resize="false"></canvas>
     <div id="right">
-      <button id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
-      <button id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
+      <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
+      <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
       <p>
         <span class="key">m + 🖰</span> : Alle Platten verschieben
         <br><span class="key">↑↓</span> : Alle Platten verschieben
-        <br><span class="key">←→</span> : Plattenreihe verschieben
+        <br><span class="key">Control + + 🖰</span> : Platten von Maus nach links auswählen
+        <br><span class="key">Shift + + 🖰</span> : Platten von Maus nach rechts auswählen
+        <br><span class="key">←→</span> : ausgewählte Platten verschieben
         <br><span class="key">Q</span> : &#x25DC;
         <br><span class="key">E</span> : &#x25DD;
         <br><span class="key">Y</span> : &#9695;
@@ -44,40 +46,42 @@
       <br>Pfadlänge: <span id="pathLength" class="variable">0</span> m
       <br>Platten: <span id="sheets" class="variable">0</span> ‒ Verschnitt: <span id="leftovers"
         class="variable">0</span> m²
-      <br><button id="buttonGetLeftovers">Verschnitt aktualisieren</button>
-      <br><button id="buttonRecreateSheets">Platten neu 🗘</button>
+      <br><button onkeyup="event.preventDefault()" id="buttonGetLeftovers">Verschnitt aktualisieren</button>
+      <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button>
     </div>
     <div id="buttonsBelow">
       <div id="buttonsDrawTools">
-        <button id="button_line" class="tool active">Linie</button>
-        <button id="buttonUndo">⎌</button>
-        <br><button id="button_area" class="tool">Aussparung</button>
-        <button id="buttonUndoArea">⎌</button>
-        <br><button id="button_measureDistance" class="tool">measure (d)istance</button>
+        <button onkeyup="event.preventDefault()" id="button_line" class="tool active">Linie</button>
+        <button onkeyup="event.preventDefault()" id="buttonUndo">⎌</button>
+        <br><button onkeyup="event.preventDefault()" id="button_area" class="tool">Aussparung</button>
+        <button onkeyup="event.preventDefault()" id="buttonUndoArea">⎌</button>
+        <br><button onkeyup="event.preventDefault()" id="button_ROI" class="tool">Arbeitsbereich</button>
+        <button onkeyup="event.preventDefault()" id="buttonUndoROI">⎌</button>
+        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="tool">measure (d)istance</button>
       </div>
       <div id="buttonsProjectTools">
-        <button id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
-        <br><button id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
-        <br><button id="buttonExportEntireProject">⍗ Exportiere Gesamt-Projekt</button>
+        <button onkeyup="event.preventDefault()" id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject">⍗ Exportiere Gesamt-Projekt</button>
       </div>
       <div class="inputFields">
         <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
-        <button id="button_imageFile">OK</button>→
+        <button onkeyup="event.preventDefault()" id="button_imageFile">OK</button>→
         <span id="text_imageFile">../beispielbild.jpg</span>
         <br>
         <input id="input_realSheetLength" type="text" name="field_realSheetLength"
           placeholder="Plattenl&auml;nge [mm]" />
-        <button id="button_realSheetLength">OK</button>→
+        <button onkeyup="event.preventDefault()" id="button_realSheetLength">OK</button>→
         <span id="text_realSheetLength">1861</span> mm
         <br>
         <input id="input_realSheetWidth" type="text" name="field_realSheetWidth" placeholder="Plattenbreite [mm]" />
-        <button id="button_realSheetWidth">OK</button>→
+        <button onkeyup="event.preventDefault()" id="button_realSheetWidth">OK</button>→
         <span id="text_realSheetWidth">591</span> mm
         <br>
         <input id="input_realSheetMargin" type="text" name="field_realSheetMargin" placeholder="Platten-Randabstand" />
-        <button id="button_realSheetMargin">OK</button>→
+        <button onkeyup="event.preventDefault()" id="button_realSheetMargin">OK</button>→
         <span id="text_realSheetMargin">55</span> mm
-        <br><button id="buttonSaveProject">💾 Projekt speichern</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonSaveProject">💾 Projekt speichern</button>
       </div>
     </div>
   </div>

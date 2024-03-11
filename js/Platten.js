@@ -1,14 +1,15 @@
 import { globalVerboseLevel } from "./Devtools.js";
+import { splitActiveSheets } from "./UserInteraction.js";
 import { raster, globalColor } from "./paperSnake.js";
 
 export var sheetsGroup;
 export var sheetHelpers = [];
 export var activeSheet,
+    activeSheetIdx = 0,
     movableSheetsFrom = 0,
     movableSheetsTo,
     sheetsPerRow;
 export var gridGapX, gridGapY;
-export function setActiveSheet(newSheet) { activeSheet = newSheet }
 class SheetHelper {
 
     constructor(rectangleObject) {
@@ -85,7 +86,8 @@ export function createSheets(sheetLength, sheetWidth, maxH, maxW) {
         }
 
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
-    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) - 1;
+    sheetsPerRow = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    console.log(`${sheetsPerRow} sheets per row.`);
 
     // style active rows:
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
@@ -152,24 +154,34 @@ export function scaleSheets(sheetsGroup) {
     console.log("scaled sheets. new size:", sheetsGroup.lastChild.bounds.size);
 }
 
-export function selectNextRow(sheetsGroup, direction) {
-    movableSheetsFrom = (movableSheetsFrom + (sheetsPerRow * direction));
-    movableSheetsTo = movableSheetsTo + (sheetsPerRow * direction);
-    if (movableSheetsFrom < 0 || movableSheetsTo > sheetsGroup.children.length) {
-        movableSheetsFrom = 0;
-        movableSheetsTo = sheetsPerRow;
-    }
-    // style:
-    sheetsGroup.strokeWidth = 1;
-    sheetsGroup.strokeColor = globalColor;
-    for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-        sheetsGroup.children[i].strokeWidth = 4;
+export function getSheetAtCursorPos(pt) {
+    for (var i = 0; i < sheetsGroup.children.length; i++) {
+        if (sheetsGroup.children[i].contains(pt)) {
+            activeSheet = sheetHelpers[i];
+            activeSheetIdx = i;
+            sheetHelpers[i].showGridPoints();
+            selectRowBySheet(i);
+            break;
+        }
     }
 }
 
 export function selectRowBySheet(index) {
-    movableSheetsFrom = Math.floor(index / sheetsPerRow) * sheetsPerRow;
-    movableSheetsTo = Math.floor(index / sheetsPerRow) * sheetsPerRow + sheetsPerRow;
+
+    // split row at idx?
+    if (splitActiveSheets < 0) {
+        movableSheetsFrom = Math.floor(index / sheetsPerRow) * sheetsPerRow;
+        movableSheetsTo = activeSheetIdx + 1;
+    }
+    else if (splitActiveSheets > 0) {
+        movableSheetsFrom = activeSheetIdx;
+        movableSheetsTo = Math.floor(index / sheetsPerRow) * sheetsPerRow + sheetsPerRow;
+    }
+    else {
+        movableSheetsFrom = Math.floor(index / sheetsPerRow) * sheetsPerRow;
+        movableSheetsTo = Math.floor(index / sheetsPerRow) * sheetsPerRow + sheetsPerRow;
+    }
+
     if (globalVerboseLevel > 2)
         console.log(movableSheetsFrom, movableSheetsTo, sheetsPerRow);
 
@@ -179,7 +191,6 @@ export function selectRowBySheet(index) {
     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
         sheetsGroup.children[i].strokeWidth = 4;
     }
-
 }
 
 export function toggleSheetVisibility() {
@@ -218,7 +229,7 @@ export function calculateLeftovers() {
     let sheets = 0;
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         let child = sheetsGroup.children[i];
-        if (raster.roi.bounds.intersects(child.bounds)) {
+        if (raster.roi.intersects(child.bounds)) {
             let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi);
 
             // remove blocked areas:

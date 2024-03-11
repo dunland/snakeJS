@@ -85,8 +85,8 @@ export function loadImage() {
     let h = Math.min(image.height, canvasElement.clientHeight);
     raster.roi = new paper.Path.Rectangle({
         point: new paper.Point(0, 0),
-        size: new paper.Size(w, h)
-        // strokeColor: 'blue' // ATTENTION: Do not set color here! Else it will be present whenever moving entire view
+        size: new paper.Size(w, h),
+        strokeColor: 'blue' // ATTENTION: Do not set color here! Else it will be present whenever moving entire view
     })
 
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)

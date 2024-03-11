@@ -1,6 +1,6 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
-import { raster, image, cursor, changeCursor, globalColor } from "./paperSnake.js";
-import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, setActiveSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets } from "./Platten.js";
+import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
@@ -9,23 +9,31 @@ var measureToolState = 0;
 var ptAtSmallestDist;
 var tempArea;
 
+export var splitActiveSheets = 0;
+
 export function changeDrawMode(newMode) {
     var oldMode = drawMode;
     if (oldMode == newMode) return;
 
-    // entering mode:
+    if (globalVerboseLevel > 2)
+        console.log(oldMode, ">>", newMode);
+
+    // ------------------ entering mode: ------------------
     if (newMode == "area")
         cursor.strokeColor = 'red';
-    else if (drawMode == "area")
+    else if (newMode == "line")
         cursor.strokeColor = globalColor;
+    else if (newMode == "ROI") {
+        raster.roi.strokeColor = null;
+        cursor.strokeColor = 'blue';
+    }
     else if (newMode == "moveSheet")
         cursor.visible = false;
 
-    // leaving mode:
+    // ------------------- leaving mode: -------------------
     if (oldMode == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
-        cursor.strokeColor = globalColor;
         measureToolState = 0;
         document.getElementById("button_measureDistance").classList.remove("active"); // force measureTool off
     }
@@ -40,6 +48,22 @@ export function changeDrawMode(newMode) {
             tempArea.closed = true;
         }
 
+    if (oldMode == "ROI") {
+        // cursor.strokeColor = globalColor;
+        if (!tempArea || tempArea.segments.length < 1)
+            console.log("no segments in child");
+        else {
+            raster.roi.remove();
+            raster.roi = tempArea.clone();
+            raster.roi.strokeColor = 'blue';
+            tempArea.remove();
+            tempArea = new paper.Path();
+            tempArea.closed = true;
+            // let bounds = new paper.Path.Rectangle(raster.roi.bounds);
+            // bounds.strokeColor = 'red';
+        }
+    }
+
     drawMode = newMode;
 }
 
@@ -47,148 +71,153 @@ export function changeDrawMode(newMode) {
 export function keyPressed(keyEvent) {
     let key = keyEvent.key;
     if (globalVerboseLevel >= 4)
-            console.log(key);
-    if (key == 'R' || key == 'r') recreateSheets();
-    if (key == 'W' || key == 'w') raster.replaceLastCurve("KURVE_OBEN");
-    if (key == 'A' || key == 'a') raster.replaceLastCurve("KURVE_LINKS");
-    if (key == 'S' || key == 's') raster.replaceLastCurve("KURVE_UNTEN");
-    if (key == 'D' || key == 'd') raster.replaceLastCurve("KURVE_RECHTS");
-    if (key == 'F' || key == 'f') raster.replaceLastCurve("GERADE");
-    if (key == 'Q' || key == 'q') raster.replaceLastCurve; ("KURVE_OBENLINKS_" + raster.getPathDirection());
-    if (key == 'E' || key == 'e') raster.replaceLastCurve; ("KURVE_OBENRECHTS_" + raster.getPathDirection());
-    if (key == 'Y' || key == 'y') raster.replaceLastCurve; ("KURVE_UNTENLINKS_" + raster.getPathDirection());
-    if (key == 'X' || key == 'x') raster.replaceLastCurve; ("KURVE_UNTENRECHTS_" + raster.getPathDirection());
-    if (key == 'm') changeDrawMode("moveSheet");
-    if (key == '+') changeGlobalVerboseLevel(key);
-    if (key == '-') changeGlobalVerboseLevel(key);
-    if (key == 'd') changeDrawMode("measureDistance");
-    if (key == 'l' || key == 'L') {
-        document.getElementById("buttonShowPath").classList.toggle("active");
-        raster.line.visible = !raster.line.visible;
-    }
-    if (key == 'p') toggleSheetVisibility();
-    if (keyEvent.keyCode == 37) { // left
-        for (var i = 0; i < activeSheets.length; i++) {
-            activeSheets[i].position.x -= sheetHelpers[0].gridGapX;
-            sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
-            sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+        console.log(key);
+    if (drawMode == "line") {
+        if (key == 'R' || key == 'r') recreateSheets();
+        if (key == 'W' || key == 'w') raster.replaceLastCurve("KURVE_OBEN");
+        if (key == 'A' || key == 'a') raster.replaceLastCurve("KURVE_LINKS");
+        if (key == 'S' || key == 's') raster.replaceLastCurve("KURVE_UNTEN");
+        if (key == 'D' || key == 'd') raster.replaceLastCurve("KURVE_RECHTS");
+        if (key == 'F' || key == 'f') raster.replaceLastCurve("GERADE");
+        if (key == 'Q' || key == 'q') raster.replaceLastCurve; ("KURVE_OBENLINKS_" + raster.getPathDirection());
+        if (key == 'E' || key == 'e')
+            raster.replaceLastCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
+        if (key == 'Y' || key == 'y')
+            raster.replaceLastCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
+        if (key == 'X' || key == 'x')
+            raster.replaceLastCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
+        if (key == ' ') changeDrawMode("moveSheet");
+        if (key == '+') changeGlobalVerboseLevel(key);
+        if (key == '-') changeGlobalVerboseLevel(key);
+        if (key == 'd') changeDrawMode("measureDistance");
+        if (key == 'l' || key == 'L') {
+            document.getElementById("buttonShowPath").classList.toggle("active");
+            raster.line.visible = !raster.line.visible;
         }
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            showIntersections(sheetsGroup.children[i], raster.line);
-
-            if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+        if (key == 'p') toggleSheetVisibility();
+        if (key == 'Shift') {
+            splitActiveSheets = -1;
+            getSheetAtCursorPos(cursor.position);
+            selectRowBySheet(activeSheetIdx);
         }
-        for (let i = 0; i < sheetHelpers.length; i++)
-            sheetHelpers[i].gridDots.selected = false;
-
-    }
-    if (keyEvent.keyCode == 39) { // right
-        for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-            sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
-            sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
-            sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
-
+        if (key == 'Control') {
+            splitActiveSheets = 1;
+            getSheetAtCursorPos(cursor.position);
+            selectRowBySheet(activeSheetIdx);
         }
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            showIntersections(sheetsGroup.children[i], raster.line);
+        if (keyEvent.keyCode == 37) { // left
 
-            if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
-        }
-        for (let i = 0; i < sheetHelpers.length; i++)
-            sheetHelpers[i].gridDots.selected = false;
+            // move:
+            for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+                sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+                sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
 
-    }
-    if (keyEvent.keyCode == 38) { // up:
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
-            sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
-            sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
-        }
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            showIntersections(sheetsGroup.children[i], raster.line);
+            }
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                showIntersections(sheetsGroup.children[i], raster.line);
 
-            if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                if (globalVerboseLevel > 1)
+                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+            }
+            for (let i = 0; i < sheetHelpers.length; i++)
+                sheetHelpers[i].gridDots.selected = false;
         }
 
-        // each sheet:
-        for (let i = 0; i < sheetHelpers.length; i++) {
-            const sheet = sheetHelpers[i];
-            sheet.gridDots.selected = false;
+        if (keyEvent.keyCode == 39) { // right
 
-            // each segment in line:
-            // for (let j = 0; j < raster.line.segments.length; j++) {
-            //     const seg = raster.line.segments[j];
-            //     // if (seg.position)
-            //     let segment = new paper.Path.Circle({
-            //         center: seg.point,
-            //         radius: 10,
-            //         strokeColor: 'red'
-            //     });
+            // move:
+            for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+                sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+                sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+            }
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                showIntersections(sheetsGroup.children[i], raster.line);
 
-            //     let segmentBounds = new paper.Path.Rectangle(segment.bounds);
-            //     segmentBounds.strokeColor = 'red';
+                if (globalVerboseLevel > 1)
+                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+            }
+            for (let i = 0; i < sheetHelpers.length; i++)
+                sheetHelpers[i].gridDots.selected = false;
 
-            //     for (let k = 0; k < sheet.gridDots.children.length; k++) {
-            //         const dot = sheet.gridDots.children[k];
-            //         if (segmentBounds.contains(dot))
-            //             dot.strokeColor = "green";
-            //     }
-            //     // sheet.gridDots.selected = true;
-            // }
-
-
-
-            //     for (let seg = 0; seg < raster.line.segments.length; seg++) {
-
-            //         const element = raster.line.segments[seg];
-            //         if (sheet.gridDots.intersects(element.point))
-            //             console.log(sheet.gridDots.position, element.point);
-            //     }
         }
-    }
-    if (keyEvent.keyCode == 40) { // down:
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
-            sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
-            sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
-        }
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            showIntersections(sheetsGroup.children[i], raster.line);
+        if (keyEvent.keyCode == 38) { // up:
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+                sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+                sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+            }
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                showIntersections(sheetsGroup.children[i], raster.line);
 
-            if (globalVerboseLevel > 1)
-                sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+                if (globalVerboseLevel > 1)
+                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+            }
+
+            // each sheet:
+            for (let i = 0; i < sheetHelpers.length; i++) {
+                const sheet = sheetHelpers[i];
+                sheet.gridDots.selected = false;
+
+                // each segment in line:
+                // for (let j = 0; j < raster.line.segments.length; j++) {
+                //     const seg = raster.line.segments[j];
+                //     // if (seg.position)
+                //     let segment = new paper.Path.Circle({
+                //         center: seg.point,
+                //         radius: 10,
+                //         strokeColor: 'red'
+                //     });
+
+                //     let segmentBounds = new paper.Path.Rectangle(segment.bounds);
+                //     segmentBounds.strokeColor = 'red';
+
+                //     for (let k = 0; k < sheet.gridDots.children.length; k++) {
+                //         const dot = sheet.gridDots.children[k];
+                //         if (segmentBounds.contains(dot))
+                //             dot.strokeColor = "green";
+                //     }
+                //     // sheet.gridDots.selected = true;
+                // }
+
+
+
+                //     for (let seg = 0; seg < raster.line.segments.length; seg++) {
+
+                //         const element = raster.line.segments[seg];
+                //         if (sheet.gridDots.intersects(element.point))
+                //             console.log(sheet.gridDots.position, element.point);
+                //     }
+            }
         }
-        for (let i = 0; i < sheetHelpers.length; i++)
-            sheetHelpers[i].gridDots.selected = false;
+        if (keyEvent.keyCode == 40) { // down:
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+                sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+                sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+            }
+            for (var i = 0; i < sheetsGroup.children.length; i++) {
+                showIntersections(sheetsGroup.children[i], raster.line);
+
+                if (globalVerboseLevel > 1)
+                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
+            }
+            for (let i = 0; i < sheetHelpers.length; i++)
+                sheetHelpers[i].gridDots.selected = false;
+        }
     }
 }
 
 export function keyReleased(keyEvent) {
     let key = keyEvent.key;
-    if (key == 'm') { // leave mode
-        let leftovers = 0;
-        let sheets = 0;
-
-        // TODO: Achtung! Wenn imageArea.strokeColor = 'red', bleiben Artefakte hier liegen!
-        for (var i = 0; i < sheetsGroup.children.length; i++) {
-            let child = sheetsGroup.children[i];
-            if (raster.roi.bounds.intersects(child.bounds)) {
-                let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi).removeOnMove();
-                if (globalVerboseLevel > 2)
-                    tempObj.fillColor = 'red';
-                leftovers += tempObj.bounds.width * tempObj.bounds.height;
-                sheets++;
-            }
-        }
-
-        leftovers = leftovers * Math.pow(10, -6); // mm² to m²
-        document.getElementById("leftovers").textContent = leftovers.toFixed(3)
-        document.getElementById("sheets").textContent = sheets;
+    if (key == ' ') { // leave mode
+        calculateLeftovers();
         changeDrawMode("line");
         cursor.visible = true;
+    }
+    if (key == 'Shift' || key == 'Control') {
+        splitActiveSheets = 0;
     }
 }
 
@@ -201,15 +230,7 @@ export function onMouseMove(event) {
             sheetHelpers.forEach(sheet => {
                 sheet.hideGridPoints();
             });
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                if (sheetsGroup.children[i].contains([event.point.x, event.point.y])) {
-                    setActiveSheet(sheetHelpers[i]);
-                    sheetHelpers[i].showGridPoints();
-                    selectRowBySheet(i);
-                    break;
-                }
-            }
-
+            getSheetAtCursorPos([event.point.x, event.point.y]);
             // move cursor:
             if (!activeSheet) break;
 
@@ -227,6 +248,10 @@ export function onMouseMove(event) {
             break;
 
         case "area":
+            cursor.position = [event.point.x, event.point.y];
+            break;
+
+        case "ROI":
             cursor.position = [event.point.x, event.point.y];
             break;
 
@@ -264,12 +289,17 @@ export function onMouseMove(event) {
 
 export function onMouseDown(event) {
 
+    let canvasElement = document.getElementById('snakeCanvas');
+
+
     if (globalVerboseLevel > 2)
         console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y, 2);
-    if (event.x >= raster.roi.bounds.width || event.y >= raster.roi.bounds.height) {
-        console.log("cannot draw here! (not in roi)");
+
+    if (event.x >= canvasElement.clientWidth || event.y >= canvasElement.clientHeight) {
+        console.log("cannot draw here! (not in canvas)");
         return;
-    } 
+    }
+
 
     const hitOptions = {
         segments: true,
@@ -279,8 +309,12 @@ export function onMouseDown(event) {
 
     switch (drawMode) {
 
-
         case "line":
+            if (!raster.roi.contains(cursor.position)) {
+                console.log("cannot draw here! (not in roi)");
+                return;
+            }
+
             if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) { // TODO: also check crossing
                 console.log("cannot draw here! (area blocked)");
                 break;
@@ -304,6 +338,16 @@ export function onMouseDown(event) {
                 console.log("you hit a", hitObject);
             if (!hitObject)
                 drawArea();
+            break;
+
+        case "ROI":
+
+            var pt = new paper.Point(event.x, event.y);
+            var hitObject = paper.project.hitTest(pt, hitOptions);
+            if (globalVerboseLevel > 2)
+                console.log("you hit a", hitObject);
+            if (!hitObject)
+                drawROI();
             break;
 
         case "measureDistance":
@@ -354,6 +398,16 @@ function drawArea() {
     if (!tempArea || tempArea.segments.length < 1) {
         tempArea = new paper.Path();
         tempArea.fillColor = new paper.Color(1, 0, 0, 0.45);
+        tempArea.strokeColor = new paper.Color(1, 0, 0, 0.45);
+        tempArea.closed = true;
+    }
+    tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
+}
+
+function drawROI() {
+    if (!tempArea || tempArea.segments.length < 1) {
+        tempArea = new paper.Path();
+        tempArea.strokeColor = new paper.Color(0, 0, 1);
         tempArea.closed = true;
     }
     tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
