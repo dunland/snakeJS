@@ -25,6 +25,7 @@ class SheetHelper {
         var sheetWidth = this.rectangleObject.bounds.height;
         var sheetLength = this.rectangleObject.bounds.width;
 
+        let a = true; // alternating each point
         for (let x = this.rectangleObject.position.x; x < this.rectangleObject.position.x + sheetLength + this.gridGapX; x += this.gridGapX) {
             for (let y = this.rectangleObject.position.y; y < this.rectangleObject.position.y + sheetWidth + this.gridGapY; y += this.gridGapY) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
@@ -32,8 +33,11 @@ class SheetHelper {
                     center: pt,
                     radius: 1,
                     fillColor: globalColor,
-                    visible: false
+                    visible: false,
+                    opacity: 0.5 + (a * 0.5)
+                    // strokeColor: a ? 'grey' : null
                 }));
+                a = !a;
             }
         }
         if (globalVerboseLevel > 2)
@@ -116,6 +120,8 @@ export function createSheetHelpers(sheetLength, sheetWidth, maxH, maxW) {
         console.log(sheetHelpers.length, "sheetHelpers erstellt.",);
     console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
+    document.getElementById("text_gridGapX").textContent = Math.round(sheetHelpers[0].gridGapX / raster.pxPerMM);
+    document.getElementById("text_gridGapY").textContent = Math.round(sheetHelpers[0].gridGapY / raster.pxPerMM);
 }
 
 // scale sheets and recreate dots:
@@ -226,21 +232,44 @@ export function recreateSheets() {
 
 export function calculateLeftovers() {
     let leftovers = 0;
-    let sheets = 0;
+    let sheetsUsed = 0;
+    raster.roi.strokeColor = null;
     for (var i = 0; i < sheetsGroup.children.length; i++) {
-        let child = sheetsGroup.children[i];
-        if (raster.roi.intersects(child.bounds)) {
+        let child = sheetsGroup.children[i].clone();
+        if (raster.roi.bounds.intersects(child.bounds)) {
             let tempObj = raster.roi.exclude(sheetsGroup.children[i]).subtract(raster.roi);
 
             // remove blocked areas:
-            tempObj = tempObj.exclude(raster.area);
             tempObj.fillColor = 'red';
+            leftovers += tempObj.area / (raster.pxPerMM * raster.pxPerMM);
             tempObj.removeOnMove();
-            leftovers += tempObj.bounds.width * tempObj.bounds.height;
-            sheets++;
+            sheetsUsed++;
         }
+
+        if (!raster.area.children.length) continue;
+        console.log(raster.area.children.length);
+
+        if (child.intersects(raster.area)) {
+            let numAreas = raster.area.children.length;
+            for (let index = 0; index < numAreas; index++) {
+                const areaChild = raster.area.children[index].clone();
+                console.log(raster.area.children.length);
+
+                let someObj = areaChild.intersect(child);
+                console.log(index, `${sheetHelpers[i].label.content} intersects raster.area`);
+
+                // remove blocked areas:
+                someObj.fillColor = 'red';
+                leftovers += someObj.area / (raster.pxPerMM * raster.pxPerMM);
+                areaChild.remove();
+                someObj.removeOnMove();
+            }
+        }
+        child.remove();
     }
+
     leftovers = leftovers * Math.pow(10, -6); // mm² to m²
     document.getElementById("leftovers").textContent = leftovers.toFixed(3)
-    document.getElementById("sheets").textContent = sheets;
+    document.getElementById("sheets").textContent = sheetsUsed;
+    raster.roi.strokeColor = 'blue';
 }
