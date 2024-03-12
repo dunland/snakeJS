@@ -49,8 +49,9 @@ export function changeDrawMode(entering) {
             console.log("no segments in child");
         else {
             raster.area.addChild(tempArea)
+            raster.area.fillColor = new paper.Color(1, 0, 0, 0.45);
+            raster.area.dashArray = null;
             tempArea = new paper.Path();
-            tempArea.fillColor = new paper.Color(1, 0, 0, 0.45);
             tempArea.closed = true;
         }
 
@@ -62,6 +63,7 @@ export function changeDrawMode(entering) {
             raster.roi.remove();
             raster.roi = tempArea.clone();
             raster.roi.strokeColor = 'blue';
+            raster.roi.dashArray = null;
             tempArea.remove();
             tempArea = new paper.Path();
             tempArea.closed = true;
@@ -403,8 +405,8 @@ export function onMouseDown(event) {
 function drawArea() {
     if (!tempArea || tempArea.segments.length < 1) {
         tempArea = new paper.Path();
-        tempArea.fillColor = new paper.Color(1, 0, 0, 0.45);
         tempArea.strokeColor = new paper.Color(1, 0, 0, 0.45);
+        tempArea.dashArray = [4, 4];
         tempArea.closed = true;
     }
     tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
@@ -414,6 +416,7 @@ function drawROI() {
     if (!tempArea || tempArea.segments.length < 1) {
         tempArea = new paper.Path();
         tempArea.strokeColor = new paper.Color(0, 0, 1);
+        tempArea.dashArray = [4, 4];
         tempArea.closed = true;
     }
     tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));

@@ -20,19 +20,19 @@
       <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
       <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
       <p id="tooltips">
-        <span class="key">m + 🖰</span> : Alle Platten verschieben
-        <br><span class="key">↑↓</span> : Alle Platten verschieben
+        <span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
+        <br><span class="key">↑↓</span> : Alle Platten im Raster verschieben
         <br><span class="key">Control + + 🖰</span> : Platten von Maus nach links auswählen
         <br><span class="key">Shift + + 🖰</span> : Platten von Maus nach rechts auswählen
-        <br><span class="key">←→</span> : ausgewählte Platten verschieben
+        <br><span class="key">←→</span> : ausgewählte Platten im Raster verschieben
         <br><span class="key">Q</span> : &#x25DC;
         <br><span class="key">E</span> : &#x25DD;
         <br><span class="key">Y</span> : &#9695;
         <br><span class="key">X</span> : &#x25DE;
         <br><span class="key">W</span> : &#x25E0;
-        <br><span class="key">A</span> : &#129287;
+        <br><span class="key">A</span> : (
         <br><span class="key">S</span> : &#x25E1;
-        <br><span class="key">D</span> : <span class="reversed">&#129287;</span>
+        <br><span class="key">D</span> : )
         <br><span class="key">F</span> : ‒ |
       </p>
       <p>
@@ -62,7 +62,7 @@
       <div id="buttonsProjectTools">
         <button onkeyup="event.preventDefault()" id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
         <br><button onkeyup="event.preventDefault()" id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
-        <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject">⍗ Exportiere Gesamt-Projekt</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject" class="hidden">⍗ Exportiere Gesamt-Projekt</button>
       </div>
       <div class="inputFields">
         <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
@@ -82,6 +82,11 @@
         <button onkeyup="event.preventDefault()" id="button_realSheetMargin">OK</button>→
         <span id="text_realSheetMargin">55</span> mm
         <br><button onkeyup="event.preventDefault()" id="buttonSaveProject">💾 Projekt speichern</button>
+      </div>
+      <div class="info">
+        <u>Rasterabstände</u>
+        <br>R<sub>horizontal</sub>≅ <span id="text_gridGapX">55</span> mm
+        <br>R<sub>vertikal</sub>≅ <span id="text_gridGapY">55</span> mm
       </div>
     </div>
   </div>
