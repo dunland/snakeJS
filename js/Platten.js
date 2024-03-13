@@ -88,7 +88,6 @@ export function createSheetsHorizontal(sheetLength, sheetWidth, maxH, maxW) {
             if (y % 2 == 0) {
                 sheets.lastChild.position.x -= Math.floor(sheetLength / raster.gridGapX);
             }
-            console.log(x);
             _sheetsPerRow = (x > _sheetsPerRow) ? x : _sheetsPerRow;
 
             // create sheets:

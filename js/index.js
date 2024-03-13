@@ -74,7 +74,10 @@ inputVariables.forEach(name => {
                 raster.realSheetH = value;
                 recreateSheets();
             } 
-            if (name == 'realSheetWidth') raster.realSheetV = value;
+            if (name == 'realSheetWidth'){
+                raster.realSheetV = value;
+                recreateSheets();
+            } 
             if (name == 'realSheetMargin') raster.realSheetMargin = value;
         }
     };

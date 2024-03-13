@@ -34,6 +34,9 @@
         <br><span class="key">S</span> : &#x25E1;
         <br><span class="key">D</span> : )
         <br><span class="key">F</span> : ‒ |
+        <br>
+        <br><span class="key">F11</span> : Vollbild
+        <br><span class="key">F12</span> : Debugger
       </p>
       <p>
         Raster- und Linienfarbe: <input type="color" id="colorPicker" value="#ffffff">
@@ -49,8 +52,6 @@
         <br><u>Rasterabstände:</u>
         <br>R<sub>horizontal</sub>≅ <span id="text_gridGapX">55</span> mm
         <br>R<sub>vertikal</sub>≅ <span id="text_gridGapY">55</span> mm
-      <br><button onkeyup="event.preventDefault()" id="buttonGetLeftovers">Verschnitt aktualisieren</button>
-      <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button>
     </div>
     <div id="buttonsBelow">
       <div id="buttonsDrawTools">
@@ -60,30 +61,32 @@
         <button onkeyup="event.preventDefault()" id="buttonUndoArea">⎌</button>
         <br><button onkeyup="event.preventDefault()" id="button_ROI" class="tool">Arbeitsbereich</button>
         <button onkeyup="event.preventDefault()" id="buttonUndoROI">⎌</button>
-        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="tool">measure (d)istance</button>
+        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="tool">(D)istanz messen</button>
       </div>
       <div id="buttonsProjectTools">
         <button onkeyup="event.preventDefault()" id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
         <br><button onkeyup="event.preventDefault()" id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
         <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject" class="hidden">⍗ Exportiere Gesamt-Projekt</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonGetLeftovers">Verschnitt aktualisieren</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button> 
       </div>
       <div class="inputFields">
         <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
         <button onkeyup="event.preventDefault()" id="button_imageFile">OK</button>→
-        <span id="text_imageFile">../beispielbild.jpg</span>
+        <span class="variable" id="text_imageFile">../beispielbild.jpg</span> <i>Projects/Projekt/bild.jpg</i>
         <br>
         <input id="input_realSheetLength" type="text" name="field_realSheetLength"
           placeholder="Platte Horizontale [mm]" />
         <button onkeyup="event.preventDefault()" id="button_realSheetLength">OK</button>→
-        <span id="text_realSheetLength">1861</span> mm
+        <span class="variable" id="text_realSheetLength">1861</span> mm
         <br>
         <input id="input_realSheetWidth" type="text" name="field_realSheetWidth" placeholder="Platte Vertikale [mm]" />
         <button onkeyup="event.preventDefault()" id="button_realSheetWidth">OK</button>→
-        <span id="text_realSheetWidth">591</span> mm
+        <span class="variable" id="text_realSheetWidth">591</span> mm
         <br>
         <input id="input_realSheetMargin" type="text" name="field_realSheetMargin" placeholder="Platten-Randabstand" />
         <button onkeyup="event.preventDefault()" id="button_realSheetMargin">OK</button>→
-        <span id="text_realSheetMargin">55</span> mm
+        <span class="variable" id="text_realSheetMargin">55</span> mm
         <br><button onkeyup="event.preventDefault()" id="buttonSaveProject">💾 Projekt speichern</button>
       </div>
       <div class="info">

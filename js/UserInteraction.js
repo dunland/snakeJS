@@ -103,6 +103,7 @@ export function keyPressed(keyEvent) {
             raster.line.visible = !raster.line.visible;
         }
         if (key == 'p') toggleSheetVisibility();
+        if (key=='Escape') changeDrawMode("line");
         if (key == 'Shift') {
             splitActiveSheets = -1;
             getSheetAtCursorPos(cursor.position);
