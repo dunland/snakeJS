@@ -1,4 +1,4 @@
-import { sheetsGroup, createSheetsHorizontal, createSheetsVertical, createSheetHelpersHorizontal, importSheets, calculateLeftovers } from "./Platten.js";
+import { sheetsGroup, createSheetsHorizontal, createSheetsVertical, importSheets, calculateLeftovers } from "./Platten.js";
 import { raster, loadImage, imageFile, importImageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
