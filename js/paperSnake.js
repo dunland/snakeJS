@@ -1,6 +1,6 @@
 import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
-import { createSheetHelpers, createSheets, sheetHelpers, sheetsGroup } from "./Platten.js";
+import { sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
 export var cursor, cursorLine;

@@ -1,6 +1,6 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
-import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, setMovableSheetsFrom, setMovableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
@@ -21,7 +21,7 @@ export function changeDrawMode(entering) {
     // ------------------ entering mode: ------------------
     if (entering == "area")
         cursor.strokeColor = 'red';
-    else if (entering == "line"){
+    else if (entering == "line") {
         cursor.strokeColor = globalColor;
         document.getElementById('tooltips').classList.remove("hidden");
     }
@@ -36,7 +36,7 @@ export function changeDrawMode(entering) {
     if (leaving == "line")
         document.getElementById('tooltips').classList.add("hidden");
 
-    
+
     if (leaving == "measureDistance") {
         if (measureDistance)
             measureDistance.remove();
@@ -115,30 +115,50 @@ export function keyPressed(keyEvent) {
         }
         if (keyEvent.keyCode == 37) { // left
 
-            // move:
-            for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
-                sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
-                sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
-
+            // vertical layout: move all
+            if (raster.realSheetH < raster.realSheetV) {
+                for (var i = 0; i < sheetsGroup.children.length; i++) {
+                    sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+                }
             }
+            else { // horizontal layout: move selected
+                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                    sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+                }
+            }
+
+            // show intersections:
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
 
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
+            // deselect all gridDots:
             for (let i = 0; i < sheetHelpers.length; i++)
                 sheetHelpers[i].gridDots.selected = false;
         }
 
         if (keyEvent.keyCode == 39) { // right
 
-            // move:
-            for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
-                sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
-                sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+            // vertical layout: move all
+            if (raster.realSheetH < raster.realSheetV) {
+                for (var i = 0; i < sheetsGroup.children.length; i++) {
+                    sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+                }
+            }
+            else { // horizontal layout: move selected
+                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                    sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+                    sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+                }
             }
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
@@ -151,10 +171,22 @@ export function keyPressed(keyEvent) {
 
         }
         if (keyEvent.keyCode == 38) { // up:
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
-                sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
-                sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+            // vertical layout: move selected
+            if (raster.realSheetH < raster.realSheetV) {
+
+                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                    sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+                }
+            }
+            else { // horizontal layout: move all
+                for (var i = 0; i < sheetsGroup.children.length; i++) {
+                    sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+                }
+
             }
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
@@ -168,42 +200,26 @@ export function keyPressed(keyEvent) {
                 const sheet = sheetHelpers[i];
                 sheet.gridDots.selected = false;
 
-                // each segment in line:
-                // for (let j = 0; j < raster.line.segments.length; j++) {
-                //     const seg = raster.line.segments[j];
-                //     // if (seg.position)
-                //     let segment = new paper.Path.Circle({
-                //         center: seg.point,
-                //         radius: 10,
-                //         strokeColor: 'red'
-                //     });
-
-                //     let segmentBounds = new paper.Path.Rectangle(segment.bounds);
-                //     segmentBounds.strokeColor = 'red';
-
-                //     for (let k = 0; k < sheet.gridDots.children.length; k++) {
-                //         const dot = sheet.gridDots.children[k];
-                //         if (segmentBounds.contains(dot))
-                //             dot.strokeColor = "green";
-                //     }
-                //     // sheet.gridDots.selected = true;
-                // }
-
-
-
-                //     for (let seg = 0; seg < raster.line.segments.length; seg++) {
-
-                //         const element = raster.line.segments[seg];
-                //         if (sheet.gridDots.intersects(element.point))
-                //             console.log(sheet.gridDots.position, element.point);
-                //     }
             }
         }
         if (keyEvent.keyCode == 40) { // down:
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
-                sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
-                sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+
+            // vertical layout: move selected
+            if (raster.realSheetH < raster.realSheetV) {
+
+                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                    sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+                }
+
+            } else {
+                for (var i = 0; i < sheetsGroup.children.length; i++) {
+                    sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+                    sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+                }
+
             }
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);

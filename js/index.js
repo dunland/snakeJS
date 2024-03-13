@@ -70,8 +70,11 @@ inputVariables.forEach(name => {
                 importImageFile(value);
                 loadImage();
             }
-            if (name == 'realSheetLength') raster.realSheetLength = value;
-            if (name == 'realSheetWidth') raster.realSheetWidth = value;
+            if (name == 'realSheetLength'){
+                raster.realSheetH = value;
+                recreateSheets();
+            } 
+            if (name == 'realSheetWidth') raster.realSheetV = value;
             if (name == 'realSheetMargin') raster.realSheetMargin = value;
         }
     };

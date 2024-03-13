@@ -9,10 +9,10 @@ export class Raster {
     constructor(scaleX) {
 
         this.lineSegmentsTypeHistory = []; // linear list of segmentTypes
-        this.realSheetLength = 1861; // [mm]
-        this.realSheetWidth = 591; // [mm]
+        this.realSheetH = 1861; // [mm]
+        this.realSheetV = 591; // [mm]
         this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
-        this.gridGapX = this.realSheetLength / Math.floor(this.realSheetLength / this.realSheetMargin) * scaleX;
+        this.gridGapX = this.realSheetH / Math.floor(this.realSheetH / this.realSheetMargin) * scaleX;
         this.line; // must be initialized after paper.setup()
         this.area; // group of blocked, non-clickacble areas
         this.roi;  // region of interest / work area
