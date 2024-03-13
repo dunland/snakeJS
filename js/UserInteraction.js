@@ -1,6 +1,6 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
-import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, setMovableSheetsFrom, setMovableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
 
 export var drawMode = "line"; // "line", "area", "moveSheet", "measureDistance"
