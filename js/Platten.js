@@ -5,6 +5,7 @@ import { raster, globalColor } from "./paperSnake.js";
 export var sheetsGroup;
 export var sheetHelpers = [];
 export var activeSheet,
+    lastActiveSheet,
     activeSheetIdx = 0,
     movableSheetsFrom = 0,
     movableSheetsTo,
@@ -46,7 +47,9 @@ class SheetHelper {
 
     showGridPoints() {
         this.gridDots.children.forEach(dot => {
-            dot.visible = true;
+            if (raster.roi.contains(dot.position) && !raster.area.contains(dot.position)) {
+                dot.visible = true;
+            }
         });
     }
 
@@ -109,7 +112,9 @@ export function createSheetsHorizontal(sheetLength, sheetWidth, maxH, maxW) {
         sheets.children[i].strokeWidth = 4;
     }
 
-    console.log(sheets.children.length, "sheets created with size", sheets.lastChild.bounds.size);
+    console.log(sheets.children.length, "horizontal sheets created with size", sheets.lastChild.bounds.size);
+    document.getElementById("text_gridGapX").textContent = Math.round(sheetHelpers[0].gridGapX / raster.pxPerMM);
+    document.getElementById("text_gridGapY").textContent = Math.round(sheetHelpers[0].gridGapY / raster.pxPerMM);
 
     sheetsGroup = sheets;
 }
@@ -151,29 +156,11 @@ export function createSheetsVertical(sheetLength, sheetWidth, maxH, maxW) {
         sheets.children[i].strokeWidth = 4;
     }
 
-    console.log(sheets.children.length, "sheets created with size", sheets.lastChild.bounds.size);
-
-    sheetsGroup = sheets;
-}
-export function createSheetHelpersVertical(sheetLength, sheetWidth, maxH, maxW) {
-
-    let index = 0;
-    for (var a = -1; a < (maxW + sheetWidth) / sheetWidth; a++)
-        for (var b = -1; b < (maxH + sheetLength) / sheetLength; b++) {
-            sheetHelpers.push(new SheetHelper(sheetsGroup.children[index]));
-            sheetHelpers[sheetHelpers.length - 1].createGridPoints();
-            sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheetsGroup.children[index].bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetsGroup.children[index].bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
-            sheetHelpers[sheetHelpers.length - 1].label.content = `${b + 2
-                }.${a + 2} `;
-            sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
-            if (index < sheetsGroup.children.length - 1) index++;
-        }
-    if (globalVerboseLevel > 2)
-        console.log(sheetHelpers.length, "sheetHelpers erstellt.",);
-    console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
-
+    console.log(sheets.children.length, "vertical sheets created with size", sheets.lastChild.bounds.size);
     document.getElementById("text_gridGapX").textContent = Math.round(sheetHelpers[0].gridGapX / raster.pxPerMM);
     document.getElementById("text_gridGapY").textContent = Math.round(sheetHelpers[0].gridGapY / raster.pxPerMM);
+
+    sheetsGroup = sheets;
 }
 
 // scale sheets and recreate dots:
@@ -217,11 +204,17 @@ export function rotateSheets() {
 }
 
 export function getSheetAtCursorPos(pt) {
+    lastActiveSheet = activeSheet
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         if (sheetsGroup.children[i].contains(pt)) {
             activeSheet = sheetHelpers[i];
             activeSheetIdx = i;
-            sheetHelpers[i].showGridPoints();
+            if (lastActiveSheet != activeSheet) {
+                sheetHelpers.forEach(sheet => {
+                    sheet.hideGridPoints();
+                });
+                sheetHelpers[i].showGridPoints();
+            }
             selectRowBySheet(i);
             break;
         }

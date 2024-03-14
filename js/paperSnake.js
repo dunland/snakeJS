@@ -1,4 +1,4 @@
-import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
+import { changeDrawMode, keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
 import { Raster } from "./Raster.js";
 import { sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
@@ -19,17 +19,6 @@ window.onload = function () {
 
     // Create an empty project and a view for the canvas:
     paper.setup(canvas);
-    
-    const urlInput = new URLSearchParams(window.location.search).get('project');
-    if (urlInput) {
-        setProjectPath(`Projects/${urlInput}`);
-        importProject(`${projectPath}/project.json`);
-    }
-    else { // emptyProject
-        console.log("creating new project");
-        if (!image) loadImage();
-        initializeNewProject();
-    }
 
     // mouse cursor:
     cursor = new paper.Path.Circle({
@@ -41,10 +30,23 @@ window.onload = function () {
     var cursorTool = new paper.Tool();
     cursorTool.onMouseMove = onMouseMove;
 
+    const urlInput = new URLSearchParams(window.location.search).get('project');
+    if (urlInput) {
+        setProjectPath(`Projects/${urlInput}`);
+        importProject(`${projectPath}/project.json`);
+    }
+    else { // emptyProject
+        console.log("creating new project");
+        if (!image) loadImage();
+        initializeNewProject();
+    }
+
     // TODO: not while cursor in input fields!
     addEventListener("mousedown", onMouseDown);
     addEventListener("keydown", keyPressed);
     addEventListener("keyup", keyReleased);
+
+    changeDrawMode("ROI");
 
     // Draw the view now:
     paper.view.draw();
@@ -59,7 +61,7 @@ export function loadImage() {
     // set canvas background image:
     const canvasElement = document.getElementById('snakeCanvas');
     canvasElement.style.backgroundImage = `url(${imageFile})`;
-    
+
     // TODO: image is bigger than canvas:
     // if (canvasElement.clientWidth < image.width){
     //     let w = canvasElement.clientWidth;
@@ -83,11 +85,11 @@ export function loadImage() {
     // region of interest:
     let w = Math.min(image.width, canvasElement.clientWidth);
     let h = Math.min(image.height, canvasElement.clientHeight);
-    raster.roi = new paper.Path.Rectangle({
-        point: new paper.Point(0, 0),
-        size: new paper.Size(w, h),
-        strokeColor: 'blue' // ATTENTION: Do not set color here! Else it will be present whenever moving entire view
-    })
+    // raster.roi = new paper.Path.Rectangle({
+    //     point: new paper.Point(0, 0),
+    //     size: new paper.Size(w, h),
+    //     strokeColor: 'blue' // ATTENTION: Do not set color here! Else it will be present whenever moving entire view
+    // })
 
     console.log("canvas dimensions:", canvasElement.clientWidth, canvasElement.offsetHeight)
 }

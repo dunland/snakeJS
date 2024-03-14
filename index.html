@@ -19,11 +19,11 @@
     <div id="right">
       <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
       <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
-      <p id="tooltips">
+      <p id="tooltips" class="hidden">
         <span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
         <br><span class="key">↑↓</span> : Alle Platten im Raster verschieben
-        <br><span class="key">Control + + 🖰</span> : Platten von Maus nach links auswählen
-        <br><span class="key">Shift + + 🖰</span> : Platten von Maus nach rechts auswählen
+        <br><span class="key">Control + 🖰</span> : Platten von Maus nach links auswählen
+        <br><span class="key">Shift + 🖰</span> : Platten von Maus nach rechts auswählen
         <br><span class="key">←→</span> : ausgewählte Platten im Raster verschieben
         <br><span class="key">Q</span> : &#x25DC;
         <br><span class="key">E</span> : &#x25DD;
@@ -55,13 +55,13 @@
     </div>
     <div id="buttonsBelow">
       <div id="buttonsDrawTools">
-        <button onkeyup="event.preventDefault()" id="button_line" class="tool active">Linie</button>
+        <button onkeyup="event.preventDefault()" id="button_line" class="tool inactive">Linie</button>
         <button onkeyup="event.preventDefault()" id="buttonUndo">⎌</button>
         <br><button onkeyup="event.preventDefault()" id="button_area" class="tool">Aussparung</button>
         <button onkeyup="event.preventDefault()" id="buttonUndoArea">⎌</button>
-        <br><button onkeyup="event.preventDefault()" id="button_ROI" class="tool">Arbeitsbereich</button>
+        <br><button onkeyup="event.preventDefault()" id="button_ROI" class="tool active">Arbeits(b)ereich</button>
         <button onkeyup="event.preventDefault()" id="buttonUndoROI">⎌</button>
-        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="tool">(D)istanz messen</button>
+        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="distance tool">(D)istanz messen</button><button onkeyup="event.preventDefault()" id="button_measureDiagonal" class="distance">/</button>
       </div>
       <div id="buttonsProjectTools">
         <button onkeyup="event.preventDefault()" id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
@@ -75,22 +75,19 @@
         <button onkeyup="event.preventDefault()" id="button_imageFile">OK</button>→
         <span class="variable" id="text_imageFile">../beispielbild.jpg</span> <i>Projects/Projekt/bild.jpg</i>
         <br>
-        <input id="input_realSheetLength" type="text" name="field_realSheetLength"
+        <input id="input_realSheetH" type="text" name="field_realSheetH"
           placeholder="Platte Horizontale [mm]" />
-        <button onkeyup="event.preventDefault()" id="button_realSheetLength">OK</button>→
-        <span class="variable" id="text_realSheetLength">1861</span> mm
+        <button onkeyup="event.preventDefault()" id="button_realSheetH">OK</button>→
+        <span class="variable" id="text_realSheetH">1861</span> mm
         <br>
-        <input id="input_realSheetWidth" type="text" name="field_realSheetWidth" placeholder="Platte Vertikale [mm]" />
-        <button onkeyup="event.preventDefault()" id="button_realSheetWidth">OK</button>→
-        <span class="variable" id="text_realSheetWidth">591</span> mm
+        <input id="input_realSheetV" type="text" name="field_realSheetV" placeholder="Platte Vertikale [mm]" />
+        <button onkeyup="event.preventDefault()" id="button_realSheetV">OK</button>→
+        <span class="variable" id="text_realSheetV">591</span> mm
         <br>
         <input id="input_realSheetMargin" type="text" name="field_realSheetMargin" placeholder="Platten-Randabstand" />
         <button onkeyup="event.preventDefault()" id="button_realSheetMargin">OK</button>→
         <span class="variable" id="text_realSheetMargin">55</span> mm
         <br><button onkeyup="event.preventDefault()" id="buttonSaveProject">💾 Projekt speichern</button>
-      </div>
-      <div class="info">
-
       </div>
     </div>
   </div>

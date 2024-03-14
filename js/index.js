@@ -29,13 +29,33 @@ let buttons = document.querySelectorAll(".tool");
 buttons.forEach(button => {
     button.addEventListener("click", function () { // onclick
         buttons.forEach(element => {
-            element.classList.remove("active"); // deactivate all
+            if (!element.classList.contains('inactive'))
+                element.classList.remove("active"); // deactivate all
         })
-        this.classList.add('active'); // activate only this
-        let mode = this.id.slice(7);
-        changeDrawMode(mode);
+        if (!this.classList.contains('inactive')) {
+            let mode = this.id.slice(7);
+            changeDrawMode(mode);
+        }
+        else {
+            console.log("button inactive! ROI defined?");
+        }
     });
 });
+
+document.getElementById('button_measureDiagonal').onclick = function (event) {
+    let snakeCanvas = document.getElementById("snakeCanvas");
+    let diagonalDistance = new paper.Path.Line({
+        from: [0, snakeCanvas.clientHeight],
+        to: [snakeCanvas.clientWidth, 0],
+        strokeColor: 'yellow'
+    }).removeOnMove();
+    // new paper.PointText([snakeCanvas.clientHeight / 2, snakeCanvas.clientHeight / 2], diagonalDistance.length);
+    raster.pxPerMM = diagonalDistance.length / Math.sqrt(Math.pow(snakeCanvas.clientWidth, 2), Math.pow(snakeCanvas.clientHeight, 2));
+    raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
+    document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
+    console.log("diagonal distance in px:", diagonalDistance.length);
+
+}
 
 document.getElementById("buttonShowPath").onclick = function (event) {
     this.classList.toggle("active");
@@ -60,24 +80,24 @@ document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(ra
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;
 
-const inputVariables = ["imageFile", "realSheetLength", "realSheetWidth", "realSheetMargin"];
+const inputVariables = ["imageFile", "realSheetH", "realSheetV", "realSheetMargin"];
 inputVariables.forEach(name => {
     document.getElementById(`button_${name}`).onclick = () => {
         const value = document.getElementById(`input_${name}`).value;
-        if (value){
+        if (value) {
             document.getElementById(`text_${name}`).textContent = value;
             if (name == 'imageFile') {
                 importImageFile(value);
                 loadImage();
             }
-            if (name == 'realSheetLength'){
+            if (name == 'realSheetH') {
                 raster.realSheetH = value;
                 recreateSheets();
-            } 
-            if (name == 'realSheetWidth'){
+            }
+            if (name == 'realSheetV') {
                 raster.realSheetV = value;
                 recreateSheets();
-            } 
+            }
             if (name == 'realSheetMargin') raster.realSheetMargin = value;
         }
     };
