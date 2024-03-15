@@ -1,6 +1,6 @@
-import { imageFile, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
+import { image, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./UserInteraction.js";
-import { calculateLeftovers, recreateSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
+import { calculateLeftovers, recreateSheets, sheetHelpers, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
@@ -45,16 +45,19 @@ buttons.forEach(button => {
 document.getElementById('button_measureDiagonal').onclick = function (event) {
     let snakeCanvas = document.getElementById("snakeCanvas");
     let diagonalDistance = new paper.Path.Line({
-        from: [0, snakeCanvas.clientHeight],
-        to: [snakeCanvas.clientWidth, 0],
+        from: [0, Math.min(snakeCanvas.clientHeight, image.height)],
+        to: [Math.min(snakeCanvas.clientWidth, image.width), 0],
         strokeColor: 'yellow'
     }).removeOnMove();
     // new paper.PointText([snakeCanvas.clientHeight / 2, snakeCanvas.clientHeight / 2], diagonalDistance.length);
-    raster.pxPerMM = diagonalDistance.length / Math.sqrt(Math.pow(snakeCanvas.clientWidth, 2), Math.pow(snakeCanvas.clientHeight, 2));
+    let userInput = prompt(`${Math.floor(diagonalDistance.length)} pixel gemessen. Wie viel mm?`);
+    raster.pxPerMM = userInput == null ? raster.pxPerMM : diagonalDistance.length / userInput;
     raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
     document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
     console.log("diagonal distance in px:", diagonalDistance.length);
-
+    changeCursor(raster.gridGapX * raster.pxPerMM / 2);
+    scaleSheets(sheetsGroup, raster.pxPerMM);
+    changeDrawMode('line');
 }
 
 document.getElementById("buttonShowPath").onclick = function (event) {

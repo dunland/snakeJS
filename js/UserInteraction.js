@@ -263,6 +263,18 @@ export function keyPressed(keyEvent) {
         if (key == "Enter") {
             changeDrawMode('line'); // leave Mode
         }
+        if (key == "Escape"){
+            if (tempArea){
+                tempArea.remove();
+                tempArea = new paper.Path();
+                tempArea.closed = true;
+            }
+            if (measureDistance){
+
+                measureToolState = 0;
+                measureDistance.remove()
+            }
+        }
     }
 }
 
@@ -422,7 +434,8 @@ export function onMouseDown(event) {
                         from: [event.x, event.y],
                         to: [event.x, event.y],
                         strokeColor: 'yellow',
-                        strokeWidth: 2
+                        strokeWidth: 2,
+                        dashArray: [4,4]
                     });
 
                     measureToolState += 1;
