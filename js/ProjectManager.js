@@ -1,5 +1,5 @@
 import { sheetsGroup, createSheetsHorizontal, createSheetsVertical, importSheets, calculateLeftovers } from "./Platten.js";
-import { changeDrawMode } from "./UserInteraction.js";
+import { changeDrawMode } from "./Modes.js";
 import { raster, loadImage, imageFile, importImageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
@@ -50,8 +50,8 @@ export async function importProject(projectDataFile) {
             raster.realSheetV = projectData.raster.realSheetV;
             raster.realSheetMargin = projectData.raster.realSheetMargin;
 
-            raster.roi = new paper.Path().importJSON(projectData.raster.roi),
-                raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory
+            raster.roi = new paper.Path().importJSON(projectData.raster.roi);
+            raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
             raster.gridGapX = projectData.raster.gridGapX;
             raster.line = new paper.Path().importJSON(projectData.raster.line);
             raster.area = new paper.Group().importJSON(projectData.raster.area);
@@ -78,6 +78,9 @@ export async function importProject(projectDataFile) {
             updateGlobalColors(projectData.globalColor);
             calculateLeftovers();
 
+            document.getElementById("button_line").classList.remove("inactive");
+            changeDrawMode("line");
+
             // update input fields:
             document.getElementById("text_imageFile").textContent = imageFile;
             document.getElementById("text_realSheetH").textContent = raster.realSheetH;
@@ -97,20 +100,20 @@ export function initializeNewProject() {
 
     raster.initialize();
 
-    if (raster.roi){
+    if (raster.roi) {
 
         // platten erstellen:
         if (raster.realSheetH > raster.realSheetV)
-        createSheetsHorizontal(
-    raster.realSheetH * raster.pxPerMM,
-    raster.realSheetV * raster.pxPerMM,
-    raster.roi.bounds.height, raster.roi.bounds.width
-    );
-    else {
-        createSheetsVertical(
-            raster.realSheetH * raster.pxPerMM,
-            raster.realSheetV * raster.pxPerMM,
-            raster.roi.bounds.height, raster.roi.bounds.width
+            createSheetsHorizontal(
+                raster.realSheetH * raster.pxPerMM,
+                raster.realSheetV * raster.pxPerMM,
+                raster.roi.bounds.height, raster.roi.bounds.width
+            );
+        else {
+            createSheetsVertical(
+                raster.realSheetH * raster.pxPerMM,
+                raster.realSheetV * raster.pxPerMM,
+                raster.roi.bounds.height, raster.roi.bounds.width
             );
         }
     }

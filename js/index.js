@@ -1,5 +1,5 @@
 import { image, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
-import { changeDrawMode } from "./UserInteraction.js";
+import { changeDrawMode } from "./Modes.js";
 import { calculateLeftovers, recreateSheets, sheetHelpers, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
@@ -37,7 +37,7 @@ buttons.forEach(button => {
             changeDrawMode(mode);
         }
         else {
-            console.log("button inactive! ROI defined?");
+            console.log("button inactive! ROI defined?", raster.roi);
         }
     });
 });

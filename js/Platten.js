@@ -60,6 +60,7 @@ class SheetHelper {
     }
 }
 
+// load sheetsGroup from JSON
 export function importSheets(JSONdata) {
     sheetsGroup = new paper.Group().importJSON(JSONdata);
     if (globalVerboseLevel > 2)
@@ -73,27 +74,41 @@ export function importSheets(JSONdata) {
     movableSheetsFrom = 0;
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength);
     sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) - 1;
+
+    // create sheet helpers:
+    for (let index = 0; index < sheetsGroup.children.length; index++) {
+        var sheet = sheetsGroup.children[index];
+        
+        sheetHelpers.push(new SheetHelper(sheet));
+        sheetHelpers[sheetHelpers.length - 1].createGridPoints();
+        sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheet.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheet.bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
+        // sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
+        // }.${x + 2} `;
+        sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
+    }
+    console.log(`${sheetHelpers.length} sheetHelpers created.`);
+
 }
 
-export function createSheetsHorizontal(sheetLength, sheetWidth, maxH, maxW) {
+export function createSheetsHorizontal(sheetH, sheetV, maxH, maxW) {
     console.log('creating sheets:');
 
     var sheets = new paper.Group();
     let _sheetsPerRow = 0;
-    for (var y = -1; y < (maxH + sheetWidth) / sheetWidth; y++)
-        for (var x = -1; x < (maxW + sheetLength) / sheetLength; x++) {
+    for (var y = -1; y < (maxH + sheetV) / sheetV; y++)
+        for (var x = -1; x < (maxW + sheetH) / sheetH; x++) {
             sheets.addChild(new paper.Path.Rectangle({
-                point: new paper.Point(x * sheetLength, y * sheetWidth),
-                size: new paper.Size(sheetLength, sheetWidth),
+                point: new paper.Point(x * sheetH, y * sheetV),
+                size: new paper.Size(sheetH, sheetV),
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
             if (y % 2 == 0) {
-                sheets.lastChild.position.x -= Math.floor(sheetLength / raster.gridGapX);
+                sheets.lastChild.position.x -= Math.floor(sheetH / raster.gridGapX);
             }
             _sheetsPerRow = (x > _sheetsPerRow) ? x : _sheetsPerRow;
 
-            // create sheets:
+            // create sheet helpers:
             sheetHelpers.push(new SheetHelper(sheets.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
             sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheets.lastChild.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheets.lastChild.bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
@@ -102,7 +117,7 @@ export function createSheetsHorizontal(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
         }
 
-    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    movableSheetsTo = Math.floor((maxW + sheetH) / sheetH) + 2;
     sheetsPerRow = _sheetsPerRow + 2;
 
     console.log(`${sheetsPerRow} sheets per row.`);
@@ -119,21 +134,21 @@ export function createSheetsHorizontal(sheetLength, sheetWidth, maxH, maxW) {
     sheetsGroup = sheets;
 }
 
-export function createSheetsVertical(sheetLength, sheetWidth, maxH, maxW) {
+export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
     console.log('creating sheets:');
 
     let _sheetsPerRow = 0;
     var sheets = new paper.Group();
-    for (var x = -1; x < (maxW + sheetWidth) / sheetWidth; x++)
-        for (var y = -1; y < (maxH + sheetLength) / sheetLength; y++) {
+    for (var x = -1; x < (maxW + sheetV) / sheetV; x++)
+        for (var y = -1; y < (maxH + sheetH) / sheetH; y++) {
             sheets.addChild(new paper.Path.Rectangle({
-                point: new paper.Point(x * sheetWidth, y * sheetLength),
-                size: new paper.Size(sheetWidth, sheetLength),
+                point: new paper.Point(x * sheetV, y * sheetH),
+                size: new paper.Size(sheetV, sheetH),
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
             if (x % 2 == 0) {
-                sheets.lastChild.position.y -= Math.floor(sheetLength / raster.gridGapX);
+                sheets.lastChild.position.y -= Math.floor(sheetH / raster.gridGapX);
             }
             _sheetsPerRow = (y > _sheetsPerRow) ? y : _sheetsPerRow;
 
@@ -146,7 +161,7 @@ export function createSheetsVertical(sheetLength, sheetWidth, maxH, maxW) {
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
         }
 
-    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    movableSheetsTo = Math.floor((maxW + sheetH) / sheetH) + 2;
     // sheetsPerRow = Math.floor((maxW + sheetLength) / sheetLength) + 2;
     sheetsPerRow = _sheetsPerRow + 2;
     console.log(`${sheetsPerRow} sheets per row.`);
@@ -280,6 +295,8 @@ export function recreateSheets() {
             raster.roi.bounds.height, raster.roi.bounds.width
         );
     }
+
+    console.log(`sheetH: ${raster.realSheetH}, sheetV:${raster.realSheetV}`);
     calculateLeftovers();
 }
 
@@ -305,10 +322,10 @@ export function calculateLeftovers() {
                 let numAreas = raster.area.children.length;
                 for (let index = 0; index < numAreas; index++) {
                     const areaChild = raster.area.children[index].clone();
-                    console.log(raster.area.children.length);
 
                     let someObj = areaChild.intersect(child);
-                    console.log(index, `${sheetHelpers[i].label.content} intersects raster.area`);
+                    if (globalVerboseLevel > 2)
+                        console.log(index, `${sheetHelpers[i].label.content} intersects raster.area`);
 
                     // remove blocked areas:
                     someObj.fillColor = 'red';

@@ -66,19 +66,22 @@ button.view.active {
 }
 
 .tool.active {
-    border-width: 5px;
-    border-color: green;
+    border-width: 3px;
+    /* border-color: blue; */
 }
 
 .tool.inactive,
 .tool.inactive:hover {
     background-color: lightgray;
     filter: brightness(100%);
-
 }
 
 .tool {
     border-width: 2px;
+}
+
+.tooltips .title {
+    text-decoration: underline;
 }
 
 #button_ROI,

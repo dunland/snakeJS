@@ -1,4 +1,5 @@
-import { changeDrawMode, keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
+import { keyPressed, keyReleased, onMouseDown, onMouseMove } from "./UserInteraction.js";
+import { changeDrawMode } from "./Modes.js";
 import { Raster } from "./Raster.js";
 import { sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
@@ -83,8 +84,8 @@ export function loadImage() {
 
 
     // region of interest:
-    let w = Math.min(image.width, canvasElement.clientWidth);
-    let h = Math.min(image.height, canvasElement.clientHeight);
+    // let w = Math.min(image.width, canvasElement.clientWidth);
+    // let h = Math.min(image.height, canvasElement.clientHeight);
     // raster.roi = new paper.Path.Rectangle({
     //     point: new paper.Point(0, 0),
     //     size: new paper.Size(w, h),
@@ -106,5 +107,5 @@ export function updateGlobalColors(newColor) {
         sheetHelpers[i].gridDots.fillColor = newColor;
         sheetHelpers[i].label.strokeColor = newColor;
     }
-
+    console.log(`colors updated to ${globalColor}`);
 }

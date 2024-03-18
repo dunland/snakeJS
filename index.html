@@ -17,10 +17,12 @@
   <div id="top">
     <canvas id="snakeCanvas" resize="false"></canvas>
     <div id="right">
-      <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten ein-/ausblenden</button>
+      <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten
+        ein-/ausblenden</button>
       <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
-      <p id="tooltips" class="hidden">
-        <span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
+      <p class="tooltips line hidden">
+        <span class="title">Linienwerkzeug</span>
+        <br><span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
         <br><span class="key">↑↓</span> : Alle Platten im Raster verschieben
         <br><span class="key">Control + 🖰</span> : Platten von Maus nach links auswählen
         <br><span class="key">Shift + 🖰</span> : Platten von Maus nach rechts auswählen
@@ -34,12 +36,27 @@
         <br><span class="key">S</span> : &#x25E1;
         <br><span class="key">D</span> : )
         <br><span class="key">F</span> : ‒ |
-        <br>
-        <br><span class="key">F11</span> : Vollbild
-        <br><span class="key">F12</span> : Debugger
+      </p>
+      <p class="tooltips ROI">
+        <span class="title" style="color:blue;">Arbeitsbereich erstellen</span>
+        <br><span class="key">Enter</span> : Linie beenden
+        <br><span class="key">Escape</span> : Abbrechen
+      </p>
+      <p class="tooltips area hidden">
+        <span class="title" style="color:red;">Fläche aussparen</span>
+        <br><span class="key">Enter</span> : Linie beenden
+        <br><span class="key">Escape</span> : Abbrechen
+      </p>
+      <p class="tooltips area hidden">
+        <span class="title" style="color:red;">Fläche aussparen</span>
+        <br><span class="key">Enter</span> : Linie beenden
+        <br><span class="key">Escape</span> : Abbrechen
       </p>
       <p>
-        Raster- und Linienfarbe: <input type="color" id="colorPicker" value="#ffffff">
+        <span class="key">F11</span> : Vollbild
+        <br><span class="key">F12</span> : Debugger
+      </p>
+      <p>Farbe: <input type="color" id="colorPicker" value="#ffffff">
       </p>
     </div>
   </div>
@@ -49,9 +66,9 @@
       <br>Pfadlänge: <span id="pathLength" class="variable">0</span> m
       <br>Platten: <span id="sheets" class="variable">0</span> ‒ Verschnitt: <span id="leftovers"
         class="variable">0</span> m²
-        <br><u>Rasterabstände:</u>
-        <br>R<sub>horizontal</sub>≅ <span id="text_gridGapX">55</span> mm
-        <br>R<sub>vertikal</sub>≅ <span id="text_gridGapY">55</span> mm
+      <br><u>Rasterabstände:</u>
+      <br>R<sub>horizontal</sub>≅ <span id="text_gridGapX">55</span> mm
+      <br>R<sub>vertikal</sub>≅ <span id="text_gridGapY">55</span> mm
     </div>
     <div id="buttonsBelow">
       <div id="buttonsDrawTools">
@@ -61,22 +78,25 @@
         <button onkeyup="event.preventDefault()" id="buttonUndoArea">⎌</button>
         <br><button onkeyup="event.preventDefault()" id="button_ROI" class="tool active">Arbeits(b)ereich</button>
         <button onkeyup="event.preventDefault()" id="buttonUndoROI">⎌</button>
-        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="distance tool">(D)istanz messen</button><button onkeyup="event.preventDefault()" id="button_measureDiagonal" class="distance">/</button>
+        <br><button onkeyup="event.preventDefault()" id="button_measureDistance" class="distance tool">(D)istanz
+          messen</button><button onkeyup="event.preventDefault()" id="button_measureDiagonal"
+          class="distance">/</button>
       </div>
       <div id="buttonsProjectTools">
         <button onkeyup="event.preventDefault()" id="buttonExportEntirePath">⌇ Exportiere Gesamt-Pfad</button>
-        <br><button onkeyup="event.preventDefault()" id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro Platte</button>
-        <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject" class="hidden">⍗ Exportiere Gesamt-Projekt</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonExportPathPerSheet">&#x25A4; Exportiere Pfad pro
+          Platte</button>
+        <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject" class="hidden">⍗ Exportiere
+          Gesamt-Projekt</button>
         <br><button onkeyup="event.preventDefault()" id="buttonGetLeftovers">Verschnitt aktualisieren</button>
-        <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button> 
+        <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button>
       </div>
       <div class="inputFields">
         <input id="input_imageFile" type="text" name="field_imageFile" placeholder="Bilddatei" />
         <button onkeyup="event.preventDefault()" id="button_imageFile">OK</button>→
         <span class="variable" id="text_imageFile">../beispielbild.jpg</span> <i>Projects/Projekt/bild.jpg</i>
         <br>
-        <input id="input_realSheetH" type="text" name="field_realSheetH"
-          placeholder="Platte Horizontale [mm]" />
+        <input id="input_realSheetH" type="text" name="field_realSheetH" placeholder="Platte Horizontale [mm]" />
         <button onkeyup="event.preventDefault()" id="button_realSheetH">OK</button>→
         <span class="variable" id="text_realSheetH">1861</span> mm
         <br>

@@ -1,99 +1,15 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
-import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
-import { sheetsGroup, sheetHelpers, createSheetsHorizontal, createSheetsVertical, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
+import { raster, cursor, changeCursor } from "./paperSnake.js";
+import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
+import { drawMode, changeDrawMode } from "./Modes.js";
 
-export var drawMode = ""; // "line", "area", "ROI", "moveSheet", "measureDistance"
 var measureDistance;
 var measureToolState = 0;
 var ptAtSmallestDist;
-var tempArea;
 var keyInput = true;
 
 export var splitActiveSheets = 0;
-
-export function changeDrawMode(entering) {
-    var leaving = drawMode;
-    if (leaving == entering) return;
-
-    if (globalVerboseLevel > 2)
-        console.log(leaving, ">>", entering);
-
-    // ------------------ entering mode: ------------------
-    if (entering == "area")
-        cursor.strokeColor = 'red';
-    else if (entering == "line") {
-        cursor.strokeColor = globalColor;
-        document.getElementById('tooltips').classList.remove("hidden");
-    }
-    else if (entering == "ROI") {
-        if (raster.roi) raster.roi.strokeColor = null;
-        cursor.strokeColor = 'blue';
-    }
-    else if (entering == "moveSheet")
-        cursor.visible = false;
-
-    // ------------------- leaving mode: -------------------
-    if (leaving == "line")
-        document.getElementById('tooltips').classList.add("hidden");
-
-
-    if (leaving == "measureDistance") {
-        if (measureDistance)
-            measureDistance.remove();
-        measureToolState = 0;
-        document.getElementById("button_measureDistance").classList.remove("active"); // force measureTool off
-    }
-
-    if (leaving == "area")
-        if (!tempArea || tempArea.segments.length < 1)
-            console.log("no segments in child");
-        else {
-            raster.area.addChild(tempArea)
-            raster.area.fillColor = new paper.Color(1, 0, 0, 0.45);
-            raster.area.dashArray = null;
-            tempArea = new paper.Path();
-            tempArea.closed = true;
-        }
-
-    if (leaving == "ROI") {
-        // cursor.strokeColor = globalColor;
-        if (!tempArea || tempArea.segments.length < 1)
-            console.log("no segments in child");
-        else {
-            if (raster.roi) {
-                console.log(raster.roi.remove());
-            }
-            raster.roi = tempArea.clone();
-            raster.roi.strokeColor = 'blue';
-            raster.roi.dashArray = null;
-            tempArea.remove();
-            tempArea = new paper.Path();
-            tempArea.closed = true;
-            document.getElementById('button_line').classList.remove('inactive');
-
-            // platten erstellen:
-            if (raster.realSheetH > raster.realSheetV)
-                createSheetsHorizontal(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            else {
-                createSheetsVertical(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            }            // let bounds = new paper.Path.Rectangle(raster.roi.bounds);
-            // bounds.strokeColor = 'red';
-        }
-    }
-
-    if (!entering == null)
-        document.getElementById(`button_${entering}`).classList.add('active'); // activate only this
-    drawMode = entering;
-}
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
@@ -103,14 +19,13 @@ export function keyPressed(keyEvent) {
     let key = keyEvent.key;
     if (globalVerboseLevel >= 1)
         console.log(key);
-    if (key == ' ') changeDrawMode("moveSheet");
     if (key == 'b') changeDrawMode("ROI");
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
     if (key == 'd') changeDrawMode("measureDistance");
-
-
+    
     if (drawMode == "line") {
+        if (key == ' ') changeDrawMode("moveSheet");
         if (key == 'R' || key == 'r') recreateSheets();
         if (key == 'W' || key == 'w') raster.replaceLastCurve("KURVE_OBEN");
         if (key == 'A' || key == 'a') raster.replaceLastCurve("KURVE_LINKS");
@@ -263,13 +178,13 @@ export function keyPressed(keyEvent) {
         if (key == "Enter") {
             changeDrawMode('line'); // leave Mode
         }
-        if (key == "Escape"){
-            if (tempArea){
-                tempArea.remove();
-                tempArea = new paper.Path();
-                tempArea.closed = true;
+        if (key == "Escape") {
+            if (raster.tempArea) {
+                raster.tempArea.remove();
+                raster.tempArea = new paper.Path();
+                raster.tempArea.closed = true;
             }
-            if (measureDistance){
+            if (measureDistance) {
 
                 measureToolState = 0;
                 measureDistance.remove()
@@ -280,7 +195,7 @@ export function keyPressed(keyEvent) {
 
 export function keyReleased(keyEvent) {
     let key = keyEvent.key;
-    if (key == ' ') { // leave mode
+    if (key == ' ' && drawMode == 'moveSheet') { // leave mode
         calculateLeftovers();
         changeDrawMode("line");
         cursor.visible = true;
@@ -361,7 +276,8 @@ export function onMouseDown(event) {
     }
     if (event.target.nodeName == 'CANVAS') {
         keyInput = true;
-        console.log(event.target.nodeName, keyInput);
+        if (globalVerboseLevel > 3)
+            console.log("click on", event.target.nodeName, keyInput);
     }
 
     let canvasElement = document.getElementById('snakeCanvas');
@@ -435,7 +351,7 @@ export function onMouseDown(event) {
                         to: [event.x, event.y],
                         strokeColor: 'yellow',
                         strokeWidth: 2,
-                        dashArray: [4,4]
+                        dashArray: [4, 4]
                     });
 
                     measureToolState += 1;
@@ -471,21 +387,21 @@ export function onMouseDown(event) {
 }
 
 function drawArea() {
-    if (!tempArea || tempArea.segments.length < 1) {
-        tempArea = new paper.Path();
-        tempArea.strokeColor = new paper.Color(1, 0, 0, 0.45);
-        tempArea.dashArray = [4, 4];
-        tempArea.closed = true;
+    if (!raster.tempArea || raster.tempArea.segments.length < 1) {
+        raster.tempArea = new paper.Path();
+        raster.tempArea.strokeColor = new paper.Color(1, 0, 0, 0.45);
+        raster.tempArea.dashArray = [4, 4];
+        raster.tempArea.closed = true;
     }
-    tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
+    raster.tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
 }
 
 function drawROI() {
-    if (!tempArea || tempArea.segments.length < 1) {
-        tempArea = new paper.Path();
-        tempArea.strokeColor = new paper.Color(0, 0, 1);
-        tempArea.dashArray = [4, 4];
-        tempArea.closed = true;
+    if (!raster.tempArea || raster.tempArea.segments.length < 1) {
+        raster.tempArea = new paper.Path();
+        raster.tempArea.strokeColor = new paper.Color(0, 0, 1);
+        raster.tempArea.dashArray = [4, 4];
+        raster.tempArea.closed = true;
     }
-    tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
+    raster.tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
 }
