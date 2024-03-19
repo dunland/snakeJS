@@ -3,7 +3,10 @@ import { raster, cursor, globalColor } from "./paperSnake.js";
 import { createSheetsHorizontal, createSheetsVertical } from "./Platten.js";
 
 export var drawMode = ""; // "line", "area", "ROI", "moveSheet", "measureDistance"
-
+export var measureDistance;
+export var measureToolState = 0;
+export function setMeasureState(value) { measureToolState = value;}
+export function setMeasureDist(value) { measureDistance = value;}
 
 export function changeDrawMode(entering) {
     var leaving = drawMode;

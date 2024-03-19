@@ -2,10 +2,8 @@ import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, changeCursor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
-import { drawMode, changeDrawMode } from "./Modes.js";
+import { drawMode, changeDrawMode, measureDistance, measureToolState, setMeasureDist, setMeasureState } from "./Modes.js";
 
-var measureDistance;
-var measureToolState = 0;
 var ptAtSmallestDist;
 var keyInput = true;
 
@@ -44,7 +42,6 @@ export function keyPressed(keyEvent) {
             raster.line.visible = !raster.line.visible;
         }
         if (key == 'p') toggleSheetVisibility();
-        if (key == 'Escape') changeDrawMode("line");
         if (key == 'Shift') {
             splitActiveSheets = -1;
             getSheetAtCursorPos(cursor.position);
@@ -346,20 +343,20 @@ export function onMouseDown(event) {
             // first-time object initialization
             switch (measureToolState) {
                 case 0: // begin line where clicked
-                    measureDistance = new paper.Path.Line({
+                    setMeasureDist(new paper.Path.Line({
                         from: [event.x, event.y],
                         to: [event.x, event.y],
                         strokeColor: 'yellow',
                         strokeWidth: 2,
                         dashArray: [4, 4]
-                    });
+                    }));
 
-                    measureToolState += 1;
+                    setMeasureState(measureToolState + 1);
                     break;
 
                 case 1:
                     measureDistance.segments[1] = [event.x, event.y];
-                    measureToolState += 1;
+                    setMeasureState(measureToolState + 1);
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
                     raster.pxPerMM = userInput == null ? raster.pxPerMM : measureDistance.length / userInput;
                     raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
@@ -374,7 +371,7 @@ export function onMouseDown(event) {
 
                 case 2:
                     measureDistance.remove();
-                    measureToolState = 0;
+                    setMeasureState(0);
                     break;
 
                 default:
