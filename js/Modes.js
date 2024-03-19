@@ -1,6 +1,6 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, globalColor } from "./paperSnake.js";
-import { createSheetsHorizontal, createSheetsVertical } from "./Platten.js";
+import { createSheetsHorizontal, createSheetsVertical, recreateSheets } from "./Platten.js";
 
 export var drawMode = ""; // "line", "area", "ROI", "moveSheet", "measureDistance"
 export var measureDistance;
@@ -62,21 +62,7 @@ export function changeDrawMode(entering) {
             raster.tempArea.closed = true;
             document.getElementById('button_line').classList.remove('inactive');
 
-            // platten erstellen:
-            if (raster.realSheetH > raster.realSheetV)
-                createSheetsHorizontal(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            else {
-                createSheetsVertical(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            }            // let bounds = new paper.Path.Rectangle(raster.roi.bounds);
-            // bounds.strokeColor = 'red';
+            recreateSheets();
         }
     }
 
