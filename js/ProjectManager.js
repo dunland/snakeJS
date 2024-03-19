@@ -61,20 +61,7 @@ export async function importProject(projectDataFile) {
             raster.initialize(); // initialize line and area if not defined
 
             importSheets(projectData.sheetsGroup);
-            // platten erstellen:
-            if (raster.realSheetH > raster.realSheetV)
-                createSheetsHorizontal(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            else {
-                createSheetsVertical(
-                    raster.realSheetH * raster.pxPerMM,
-                    raster.realSheetV * raster.pxPerMM,
-                    raster.roi.bounds.height, raster.roi.bounds.width
-                );
-            }
+
             updateGlobalColors(projectData.globalColor);
             calculateLeftovers();
 

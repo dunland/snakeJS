@@ -41,7 +41,7 @@ class SheetHelper {
                 a = !a;
             }
         }
-        if (globalVerboseLevel > 2)
+        if (globalVerboseLevel > 3)
             console.log(this.gridDots.children.length, "gridDots erstellt.");
     }
 
@@ -78,7 +78,7 @@ export function importSheets(JSONdata) {
     // create sheet helpers:
     for (let index = 0; index < sheetsGroup.children.length; index++) {
         var sheet = sheetsGroup.children[index];
-        
+
         sheetHelpers.push(new SheetHelper(sheet));
         sheetHelpers[sheetHelpers.length - 1].createGridPoints();
         sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheet.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheet.bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
@@ -272,7 +272,14 @@ export function toggleSheetVisibility() {
 }
 
 export function recreateSheets() {
+
+    for (let index = 0; index < sheetsGroup.children.length; index++) {
+        const child = sheetsGroup.children[index];
+        child.remove();
+    }
     sheetsGroup.remove();
+    sheetsGroup = new paper.Group();
+    console.log(sheetsGroup);
     for (let index = 0; index < sheetHelpers.length; index++) {
         const sheetHelper = sheetHelpers[index];
         sheetHelper.gridDots.remove();
@@ -281,14 +288,17 @@ export function recreateSheets() {
 
     sheetHelpers = [];
 
+    console.log(`sheetH: ${raster.realSheetH} > sheetV: ${raster.realSheetV}: ${(raster.realSheetH > raster.realSheetV)}`);
     // platten erstellen:
-    if (raster.realSheetH > raster.realSheetV)
+    if (raster.realSheetH > raster.realSheetV) {
+        console.log("creating horizontal sheets");
         createSheetsHorizontal(
             raster.realSheetH * raster.pxPerMM,
             raster.realSheetV * raster.pxPerMM,
             raster.roi.bounds.height, raster.roi.bounds.width
         );
-    else {
+    }
+    else if (raster.realSheetH < raster.realSheetV) {
         createSheetsVertical(
             raster.realSheetH * raster.pxPerMM,
             raster.realSheetV * raster.pxPerMM,
@@ -296,7 +306,6 @@ export function recreateSheets() {
         );
     }
 
-    console.log(`sheetH: ${raster.realSheetH}, sheetV:${raster.realSheetV}`);
     calculateLeftovers();
 }
 
@@ -324,7 +333,7 @@ export function calculateLeftovers() {
                     const areaChild = raster.area.children[index].clone();
 
                     let someObj = areaChild.intersect(child);
-                    if (globalVerboseLevel > 2)
+                    if (globalVerboseLevel > 3)
                         console.log(index, `${sheetHelpers[i].label.content} intersects raster.area`);
 
                     // remove blocked areas:

@@ -83,6 +83,7 @@ document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(ra
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;
 
+// submit input:
 const inputVariables = ["imageFile", "realSheetH", "realSheetV", "realSheetMargin"];
 inputVariables.forEach(name => {
     document.getElementById(`button_${name}`).onclick = () => {
@@ -94,11 +95,11 @@ inputVariables.forEach(name => {
                 loadImage();
             }
             if (name == 'realSheetH') {
-                raster.realSheetH = value;
+                raster.realSheetH = parseInt(value);
                 recreateSheets();
             }
             if (name == 'realSheetV') {
-                raster.realSheetV = value;
+                raster.realSheetV = parseInt(value);
                 recreateSheets();
             }
             if (name == 'realSheetMargin') raster.realSheetMargin = value;
