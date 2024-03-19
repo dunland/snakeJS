@@ -362,10 +362,9 @@ export function onMouseDown(event) {
                     raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
 
                     changeCursor(raster.gridGapX * raster.pxPerMM / 2);
-                    scaleSheets(sheetsGroup, raster.pxPerMM);
+                    scaleSheets();
                     // recreateSheets();
 
-                    document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
                     changeDrawMode("line");
                     break;
 

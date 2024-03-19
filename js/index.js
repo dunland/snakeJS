@@ -1,6 +1,6 @@
 import { image, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./Modes.js";
-import { calculateLeftovers, recreateSheets, sheetHelpers, toggleSheetVisibility } from "./Platten.js";
+import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
 
@@ -18,6 +18,17 @@ document.getElementById("buttonUndo").onclick = function () {
     }
 }
 
+// stepwise scaling:
+document.getElementById("button_scaleStepUp").onclick = () => {
+    raster.pxPerMM += 0.001;
+    scaleSheets();
+}
+document.getElementById("button_scaleStepDown").onclick = () => {
+    raster.pxPerMM -= 0.001;
+    scaleSheets();
+}
+
+// undo area:
 document.getElementById("buttonUndoArea").onclick = function () {
     if (raster.area.children.length < 1) return;
 
@@ -42,6 +53,7 @@ buttons.forEach(button => {
     });
 });
 
+// measuring tool:
 document.getElementById('button_measureDiagonal').onclick = function (event) {
     let snakeCanvas = document.getElementById("snakeCanvas");
     let diagonalDistance = new paper.Path.Line({
@@ -56,18 +68,17 @@ document.getElementById('button_measureDiagonal').onclick = function (event) {
     document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
     console.log("diagonal distance in px:", diagonalDistance.length);
     changeCursor(raster.gridGapX * raster.pxPerMM / 2);
-    scaleSheets(sheetsGroup, raster.pxPerMM);
+    scaleSheets();
     changeDrawMode('line');
 }
 
+// toggle visibility:
 document.getElementById("buttonShowPath").onclick = function (event) {
     this.classList.toggle("active");
     raster.line.visible = !raster.line.visible;
 };
 
 document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
-
-document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
 
 document.getElementById("buttonGetLeftovers").onclick = calculateLeftovers;
 document.getElementById("buttonRecreateSheets").onclick = recreateSheets;
@@ -106,3 +117,5 @@ inputVariables.forEach(name => {
         }
     };
 });
+
+document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);

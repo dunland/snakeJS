@@ -179,7 +179,7 @@ export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
 }
 
 // scale sheets and recreate dots:
-export function scaleSheets(sheetsGroup) {
+export function scaleSheets() {
 
     let previousSheetLength = sheetsGroup.children[0].bounds.width;
     var newSheetLength = raster.realSheetH * raster.pxPerMM;
@@ -212,6 +212,8 @@ export function scaleSheets(sheetsGroup) {
 
     }
     console.log("scaled sheets. new size:", sheetsGroup.lastChild.bounds.size);
+    document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
+
 }
 
 export function rotateSheets() {
