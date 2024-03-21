@@ -1,12 +1,12 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, globalColor } from "./paperSnake.js";
-import { createSheetsHorizontal, createSheetsVertical, recreateSheets } from "./Platten.js";
+import { createSheetsHorizontal, createSheetsVertical, recreateSheets, sheetsGroup } from "./Platten.js";
 
 export var drawMode = ""; // "line", "area", "ROI", "moveSheet", "measureDistance"
 export var measureDistance;
 export var measureToolState = 0;
-export function setMeasureState(value) { measureToolState = value;}
-export function setMeasureDist(value) { measureDistance = value;}
+export function setMeasureState(value) { measureToolState = value; }
+export function setMeasureDist(value) { measureDistance = value; }
 
 export function changeDrawMode(entering) {
     var leaving = drawMode;
@@ -62,7 +62,25 @@ export function changeDrawMode(entering) {
             raster.tempArea.closed = true;
             document.getElementById('button_line').classList.remove('inactive');
 
-            recreateSheets();
+            if (sheetsGroup)
+                recreateSheets();
+            else {
+                // platten erstellen:
+                if (raster.realSheetH > raster.realSheetV)
+                    createSheetsHorizontal(
+                        raster.realSheetH * raster.pxPerMM,
+                        raster.realSheetV * raster.pxPerMM,
+                        raster.roi.bounds.height, raster.roi.bounds.width
+                    );
+                else {
+                    createSheetsVertical(
+                        raster.realSheetH * raster.pxPerMM,
+                        raster.realSheetV * raster.pxPerMM,
+                        raster.roi.bounds.height, raster.roi.bounds.width
+                    );
+                }
+            }
+
         }
     }
 
