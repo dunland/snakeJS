@@ -30,7 +30,7 @@ export function keyPressed(keyEvent) {
         if (key == 'S' || key == 's') raster.replaceLastCurve("KURVE_UNTEN");
         if (key == 'D' || key == 'd') raster.replaceLastCurve("KURVE_RECHTS");
         if (key == 'F' || key == 'f') raster.replaceLastCurve("GERADE");
-        if (key == 'Q' || key == 'q') raster.replaceLastCurve; ("KURVE_OBENLINKS_" + raster.getPathDirection());
+        if (key == 'Q' || key == 'q') raster.replaceLastCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
         if (key == 'E' || key == 'e')
             raster.replaceLastCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
         if (key == 'Y' || key == 'y')
