@@ -78,8 +78,12 @@ export function keyPressed(keyEvent) {
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
             // deselect all gridDots:
-            for (let i = 0; i < sheetHelpers.length; i++)
+            for (let i = 0; i < sheetHelpers.length; i++){
                 sheetHelpers[i].gridDots.selected = false;
+                sheetHelpers[i].hideGridPoints();
+                sheetHelpers[i].showGridPoints();
+            }
+            
         }
 
         if (keyEvent.keyCode == 39) { // right
@@ -105,8 +109,11 @@ export function keyPressed(keyEvent) {
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
-            for (let i = 0; i < sheetHelpers.length; i++)
+            for (let i = 0; i < sheetHelpers.length; i++){
                 sheetHelpers[i].gridDots.selected = false;
+                sheetHelpers[i].hideGridPoints();
+                sheetHelpers[i].showGridPoints();
+            }
 
         }
         if (keyEvent.keyCode == 38) { // up:
@@ -138,7 +145,8 @@ export function keyPressed(keyEvent) {
             for (let i = 0; i < sheetHelpers.length; i++) {
                 const sheet = sheetHelpers[i];
                 sheet.gridDots.selected = false;
-
+                sheet.hideGridPoints();
+                sheet.showGridPoints();
             }
         }
         if (keyEvent.keyCode == 40) { // down:
@@ -166,8 +174,11 @@ export function keyPressed(keyEvent) {
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
-            for (let i = 0; i < sheetHelpers.length; i++)
+            for (let i = 0; i < sheetHelpers.length; i++){
                 sheetHelpers[i].gridDots.selected = false;
+                sheetHelpers[i].hideGridPoints();
+                sheetHelpers[i].showGridPoints();
+            }
         }
     }
 
