@@ -139,11 +139,11 @@ export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
 
     let _sheetsPerRow = 0;
     var sheets = new paper.Group();
-    for (var x = -1; x < (maxW + sheetV) / sheetV; x++)
-        for (var y = -1; y < (maxH + sheetH) / sheetH; y++) {
+    for (var x = -1; x < (maxW + sheetH) / sheetH; x++)
+        for (var y = -1; y < (maxH + sheetV) / sheetV; y++) {
             sheets.addChild(new paper.Path.Rectangle({
-                point: new paper.Point(x * sheetV, y * sheetH),
-                size: new paper.Size(sheetV, sheetH),
+                point: new paper.Point(x * sheetH, y * sheetV),
+                size: new paper.Size(sheetH, sheetV),
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
@@ -300,7 +300,8 @@ export function recreateSheets() {
             raster.roi.bounds.height, raster.roi.bounds.width
         );
     }
-    else if (raster.realSheetH < raster.realSheetV) {
+    else {
+        console.log("creating vertical sheets");
         createSheetsVertical(
             raster.realSheetH * raster.pxPerMM,
             raster.realSheetV * raster.pxPerMM,
