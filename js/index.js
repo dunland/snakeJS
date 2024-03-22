@@ -3,6 +3,7 @@ import { changeDrawMode } from "./Modes.js";
 import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject } from "./ProjectManager.js";
+import { toggleSupportLines } from "./UserInteraction.js";
 
 // undo line:
 document.getElementById("buttonUndo").onclick = function () {
@@ -77,6 +78,8 @@ document.getElementById("buttonShowPath").onclick = function (event) {
     this.classList.toggle("active");
     raster.line.visible = !raster.line.visible;
 };
+
+document.getElementById("buttonShowSupportLines").onclick = toggleSupportLines;
 
 document.getElementById("buttonShowSheets").onclick = toggleSheetVisibility;
 

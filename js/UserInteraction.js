@@ -1,5 +1,5 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
-import { raster, cursor, changeCursor } from "./paperSnake.js";
+import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
 import { drawMode, changeDrawMode, measureDistance, measureToolState, setMeasureDist, setMeasureState } from "./Modes.js";
@@ -8,7 +8,12 @@ var ptAtSmallestDist;
 var keyInput = true;
 
 export var splitActiveSheets = 0;
-
+var showSupportLines = true;
+export function toggleSupportLines()
+{
+    document.getElementById("buttonShowSupportLines").classList.toggle("active");
+    showSupportLines = !showSupportLines;
+};
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
 
@@ -21,7 +26,7 @@ export function keyPressed(keyEvent) {
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
     if (key == 'd') changeDrawMode("measureDistance");
-    
+
     if (drawMode == "line") {
         if (key == ' ') changeDrawMode("moveSheet");
         if (key == 'R' || key == 'r') recreateSheets();
@@ -42,6 +47,7 @@ export function keyPressed(keyEvent) {
             raster.line.visible = !raster.line.visible;
         }
         if (key == 'p') toggleSheetVisibility();
+        if (key == 'h') toggleSupportLines();
         if (key == 'Shift') {
             splitActiveSheets = -1;
             getSheetAtCursorPos(cursor.position);
@@ -78,12 +84,12 @@ export function keyPressed(keyEvent) {
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
             // deselect all gridDots:
-            for (let i = 0; i < sheetHelpers.length; i++){
+            for (let i = 0; i < sheetHelpers.length; i++) {
                 sheetHelpers[i].gridDots.selected = false;
                 sheetHelpers[i].hideGridPoints();
                 sheetHelpers[i].showGridPoints();
             }
-            
+
         }
 
         if (keyEvent.keyCode == 39) { // right
@@ -109,7 +115,7 @@ export function keyPressed(keyEvent) {
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
-            for (let i = 0; i < sheetHelpers.length; i++){
+            for (let i = 0; i < sheetHelpers.length; i++) {
                 sheetHelpers[i].gridDots.selected = false;
                 sheetHelpers[i].hideGridPoints();
                 sheetHelpers[i].showGridPoints();
@@ -174,7 +180,7 @@ export function keyPressed(keyEvent) {
                 if (globalVerboseLevel > 1)
                     sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
             }
-            for (let i = 0; i < sheetHelpers.length; i++){
+            for (let i = 0; i < sheetHelpers.length; i++) {
                 sheetHelpers[i].gridDots.selected = false;
                 sheetHelpers[i].hideGridPoints();
                 sheetHelpers[i].showGridPoints();
@@ -233,6 +239,48 @@ export function onMouseMove(event) {
                 }
             }
             cursor.position = ptAtSmallestDist.position;
+
+            // support lines:
+            if (raster.line.segments.length && showSupportLines) {
+
+                let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
+                let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
+
+                // direct line to cursor:
+                new paper.Path.Line({
+                    from: raster.line.lastSegment.point,
+                    to: cursor.position,
+                    strokeColor: globalColor,
+                    dashArray: [4, 4]
+                }).removeOnMove();
+
+                // x line:
+                new paper.Path.Line({
+                    from: raster.line.lastSegment.point,
+                    to: [cursor.position.x, raster.line.lastSegment.point.y],
+                    strokeColor: globalColor,
+                    dashArray: [4, 4],
+                    strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 2 : 1
+                }).removeOnMove();
+
+                new paper.Path.Line({
+                    from: raster.line.lastSegment.point,
+                    to: [raster.line.lastSegment.point.x, cursor.position.y],
+                    strokeColor: globalColor,
+                    dashArray: [4, 4],
+                    strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 2 : 1
+                }).removeOnMove();
+
+                document.getElementById("cursorDistX").textContent = Math.round(distX / raster.pxPerMM);
+                document.getElementById("cursorDistY").textContent = Math.round(distY / raster.pxPerMM);
+                if (Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY)) {
+                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "bold";
+                } else {
+                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
+                }
+
+                // raster.indicateNextLine(cursor.position);
+            }
 
             break;
 

@@ -19,8 +19,9 @@
     <div id="right">
       <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten
         ein-/ausblenden</button>
-      <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
-      <p class="tooltips line hidden">
+        <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
+        <button onkeyup="event.preventDefault()" id="buttonShowSupportLines" class="view active">(H)ilfslinien ein-/ausblenden</button>
+        <p class="tooltips line hidden">
         <span class="title">Linienwerkzeug</span>
         <br><span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
         <br><span class="key">↑↓</span> : Alle Platten im Raster verschieben
@@ -110,6 +111,10 @@
         <button onkeyup="event.preventDefault()" id="button_realSheetMargin">OK</button>→
         <span class="variable" id="text_realSheetMargin">55</span> mm
         <br><button onkeyup="event.preventDefault()" id="buttonSaveProject">💾 Projekt speichern</button>
+      </div>
+      <div class="mousePos">
+        dist_x: <span id="cursorDistX">0</span> mm
+        <br>dist_y: <span id="cursorDistY">0</span> mm
       </div>
     </div>
   </div>
