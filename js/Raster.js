@@ -2,6 +2,7 @@
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
 import { Liniensegment } from "./Liniensegmente.js";
+import { showSupportLines } from "./UserInteraction.js";
 import { globalColor } from "./paperSnake.js";
 
 export class Raster {
@@ -14,6 +15,7 @@ export class Raster {
         this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
         this.gridGapX = this.realSheetH / Math.floor(this.realSheetH / this.realSheetMargin) * scaleX;
         this.line; // must be initialized after paper.setup()
+        this.nextLine; // dashed line that shows next line to be drawn
         this.area; // group of blocked, non-clickacble areas
         this.roi;  // region of interest / work area
 
@@ -34,13 +36,14 @@ export class Raster {
             this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
             this.area.closed = true;
         }
+        this.nextLine = new Liniensegment(new paper.Point(0,0), new paper.Point(0,0));
     }
 
     ////////////////// FUNCTIONS ///////////////////
 
     // add line:
     addLine(ptAtSmallestDist) {
-        console.log("create line with", ptAtSmallestDist.id);
+        console.log(`create line with point #${ptAtSmallestDist.id}`);
 
         // toggle gridPoint:
         ptAtSmallestDist.selected = !ptAtSmallestDist.selected;
@@ -53,13 +56,15 @@ export class Raster {
                 return;
             }
 
-            var ls = new Liniensegment(ptAtSmallestDist.position, this.line.lastSegment.point);
-            this.lineSegmentsTypeHistory.push(ls.type);
-            this.line.join(ls.segment);
-
-            for (let index = 0; index < this.line.segments.length; index++) {
-                let element = this.line.segments[index];
+            if (!showSupportLines){
+                var ls = new Liniensegment(ptAtSmallestDist.position, this.line.lastSegment.point);
+                this.lineSegmentsTypeHistory.push(ls.type);
+                this.line.join(ls.segment);
             }
+            else {
+                this.line.join(this.nextLine.segment);
+            }
+
         } else { // remove line
 
             if (this.line.segments.length < 1) return;
@@ -80,6 +85,26 @@ export class Raster {
         let pathLength = this.line.length / this.pxPerMM / 1000;
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
 
+    }
+
+    indicateNextLine(pt){
+        if (this.line.segments.length){
+            // remove old line:
+            this.nextLine.segment.remove();
+            
+            // set new coordinates:
+            this.nextLine.x1 = this.line.lastSegment.point.x;
+            this.nextLine.y1 = this.line.lastSegment.point.y;
+            this.nextLine.x2 = pt.x;
+            this.nextLine.y2 = pt.y;
+            
+            // create new:
+            this.nextLine.createCurveOfType(this.nextLine.type); // type of line will be set using keys
+            
+            // graphics:
+            this.nextLine.segment.dashArray = [4,8];
+            this.nextLine.segment.strokeColor = globalColor;
+        }
     }
 
     replaceLastCurve(type) {

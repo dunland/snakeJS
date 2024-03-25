@@ -1,4 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
+import { sheetHelpers } from "./Platten.js";
 import { raster } from "./paperSnake.js";
 
 export class Liniensegment {
@@ -14,6 +15,7 @@ export class Liniensegment {
         this.radius = Math.abs(this.x1 - this.x2) / raster.pxPerMM;
         this.angle = 90;
         this.length = 4 * Math.tan(degreesToRadians(this.angle / 4)) / 3 * raster.pxPerMM;
+        this.segment = null;
 
         this.type = (type == undefined) ? this.getType() : type;
         this.createCurveOfType(this.type);
@@ -23,10 +25,15 @@ export class Liniensegment {
     //////////////// Zuordnung des Kurventyps ////////////////
     getType() {
         if (Math.abs(this.y1 - this.y2) <= 1)
+        {
+            console.log("horizontal line");
             return "GERADE";
+        }
 
-        else if (Math.abs(this.x1 - this.x2) <= raster.gridGapX)
+        else if (Math.abs(this.x1 - this.x2) <= raster.gridGapX){
+            console.log("vertical line");
             return "GERADE";
+        }
 
         else if (this.x1 > this.x2 && this.y1 < this.y2)
             return "KURVE_OBENLINKS_DOWN";
@@ -55,6 +62,7 @@ export class Liniensegment {
 
     createCurveOfType(type) {
         var handleIn, handleOut;
+        this.radius = Math.abs(this.x1 - this.x2) / raster.pxPerMM;
 
         switch (type) {
 
@@ -114,8 +122,8 @@ export class Liniensegment {
                     strokeColor: 'white'
                 });
 
-                if (globalVerboseLevel > 1)
-                    console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
+                if (globalVerboseLevel > 2)
+                    console.log(`Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${this.x2}|${this.y2}`);
 
                 return;
 
@@ -199,8 +207,8 @@ export class Liniensegment {
                 break;
         }
 
-        if (globalVerboseLevel > 1)
-            console.log(`neue Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${handleIn} \t ${handleOut} \t ${this.x2}|${this.y2}`);
+        if (globalVerboseLevel > 2)
+            console.log(`Linie des Typs ${type}:\n ${this.x1}|${this.y1} \t ${handleIn} \t ${handleOut} \t ${this.x2}|${this.y2}`);
 
         var firstSegment = new paper.Segment(this.start, null, handleOut);
         var secondSegment = new paper.Segment(this.end, handleIn, null);
