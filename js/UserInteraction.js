@@ -25,7 +25,7 @@ export function keyPressed(keyEvent) {
     if (key == 'b') changeDrawMode("ROI");
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
-    if (key == 'd') changeDrawMode("measureDistance");
+    if (key == 'm') changeDrawMode("measureDistance");
 
     if (drawMode == "line") {
         if (key == ' ') changeDrawMode("moveSheet");
