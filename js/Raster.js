@@ -92,9 +92,6 @@ export class Raster {
             
             // create new:
             this.nextLine.updatePathDirection();
-            // change line type to GERADE whenever an axis is crossed:
-            if (this.nextLine.direction[0] == "" || this.nextLine.direction[1] == "")
-                this.nextLine.type = "GERADE";
             if (globalVerboseLevel > 3)
                 console.log(this.nextLine.type, this.nextLine.direction);
             this.nextLine.createCurveOfType(this.nextLine.type); // type of line will be set using keys

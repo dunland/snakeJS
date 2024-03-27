@@ -232,40 +232,43 @@ export function onMouseMove(event) {
             }
             cursor.position = ptAtSmallestDist.position;
 
-            // support lines:
-            let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
-            let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
 
-            if (raster.line.segments.length && showSupportLines) {
+            if (raster.line.segments.length) {
 
-                // x line:
-                new paper.Path.Line({
-                    from: raster.line.lastSegment.point,
-                    to: [cursor.position.x, raster.line.lastSegment.point.y],
-                    strokeColor: globalColor,
-                    dashArray: [4, 8],
-                    strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
-                }).removeOnMove();
+                // support lines:
+                let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
+                let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
 
-                new paper.Path.Line({
-                    from: raster.line.lastSegment.point,
-                    to: [raster.line.lastSegment.point.x, cursor.position.y],
-                    strokeColor: globalColor,
-                    dashArray: [4, 8],
-                    strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
-                }).removeOnMove();
+                if (showSupportLines) {
+                    // x line:
+                    new paper.Path.Line({
+                        from: raster.line.lastSegment.point,
+                        to: [cursor.position.x, raster.line.lastSegment.point.y],
+                        strokeColor: globalColor,
+                        dashArray: [4, 8],
+                        strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
+                    }).removeOnMove();
+
+                    new paper.Path.Line({
+                        from: raster.line.lastSegment.point,
+                        to: [raster.line.lastSegment.point.x, cursor.position.y],
+                        strokeColor: globalColor,
+                        dashArray: [4, 8],
+                        strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
+                    }).removeOnMove();
+                }
+
+                // display distance info:
+                document.getElementById("cursorDistX").textContent = Math.round(distX / raster.pxPerMM);
+                document.getElementById("cursorDistY").textContent = Math.round(distY / raster.pxPerMM);
+                if (Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY)) {
+                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "bold";
+                } else {
+                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
+                }
+                // predict next line:
+                raster.indicateNextLine(cursor.position);
             }
-
-            // display distance info:
-            document.getElementById("cursorDistX").textContent = Math.round(distX / raster.pxPerMM);
-            document.getElementById("cursorDistY").textContent = Math.round(distY / raster.pxPerMM);
-            if (Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY)) {
-                document.getElementsByClassName("mousePos")[0].style.fontWeight = "bold";
-            } else {
-                document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
-            }
-            // predict next line:
-            raster.indicateNextLine(cursor.position);
 
             break;
 
