@@ -72,8 +72,8 @@ export function importSheets(JSONdata) {
     let maxW = raster.roi.bounds.width;
 
     movableSheetsFrom = 0;
-    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength);
-    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) - 1;
+    movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
+    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) + 1;
 
     // create sheet helpers:
     for (let index = 0; index < sheetsGroup.children.length; index++) {
