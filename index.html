@@ -19,9 +19,10 @@
     <div id="right">
       <button onkeyup="event.preventDefault()" id="buttonShowSheets" class="view active">(P)latten
         ein-/ausblenden</button>
-        <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
-        <button onkeyup="event.preventDefault()" id="buttonShowSupportLines" class="view active">(H)ilfslinien ein-/ausblenden</button>
-        <p class="tooltips line hidden">
+      <button onkeyup="event.preventDefault()" id="buttonShowPath" class="view active">(L)inie ein-/ausblenden</button>
+      <button onkeyup="event.preventDefault()" id="buttonShowSupportLines" class="view active">(H)ilfslinien
+        ein-/ausblenden</button>
+      <p class="tooltips line hidden">
         <span class="title">Linienwerkzeug</span>
         <br><span class="key">Leertaste + 🖰</span> : Alle Platten frei verschieben
         <br><span class="key">↑↓</span> : Alle Platten im Raster verschieben
@@ -69,6 +70,7 @@
       <br>Pfadlänge: <span id="pathLength" class="variable">0</span> m
       <br>Platten: <span id="sheets" class="variable">0</span> ‒ Verschnitt: <span id="leftovers"
         class="variable">0</span> m²
+      <button onkeyup="event.preventDefault()" id="buttonGetLeftovers">🗘</button>
       <br><u>Rasterabstände:</u>
       <br>R<sub>horizontal</sub>≅ <span id="text_gridGapX">55</span> mm
       <br>R<sub>vertikal</sub>≅ <span id="text_gridGapY">55</span> mm
@@ -91,7 +93,6 @@
           Platte</button>
         <br><button onkeyup="event.preventDefault()" id="buttonExportEntireProject" class="hidden">⍗ Exportiere
           Gesamt-Projekt</button>
-        <br><button onkeyup="event.preventDefault()" id="buttonGetLeftovers">Verschnitt aktualisieren</button>
         <br><button onkeyup="event.preventDefault()" id="buttonRecreateSheets">Platten neu 🗘</button>
       </div>
       <div class="inputFields">

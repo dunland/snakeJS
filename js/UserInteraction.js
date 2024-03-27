@@ -31,44 +31,44 @@ export function keyPressed(keyEvent) {
         if (key == ' ') changeDrawMode("moveSheet");
         if (key == 'R' || key == 'r') recreateSheets();
         if (key == 'W' || key == 'w') {
-                raster.nextLine.type = "KURVE_OBEN";
-                raster.indicateNextLine(cursor.position);
+            raster.nextLine.type = "KURVE_OBEN";
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'A' || key == 'a') {
-                raster.nextLine.type = "KURVE_LINKS";
-                raster.indicateNextLine(cursor.position);
+            raster.nextLine.type = "KURVE_LINKS";
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'S' || key == 's') {
-                raster.nextLine.type = "KURVE_UNTEN";
-                raster.indicateNextLine(cursor.position);
+            raster.nextLine.type = "KURVE_UNTEN";
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'D' || key == 'd') {
-                raster.nextLine.type = "KURVE_RECHTS";
-                raster.indicateNextLine(cursor.position);
+            raster.nextLine.type = "KURVE_RECHTS";
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'F' || key == 'f') {
-                raster.nextLine.type = "GERADE";
-                raster.indicateNextLine(cursor.position);
+            raster.nextLine.type = "GERADE";
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'Q' || key == 'q') {
             raster.nextLine.type = "KURVE_OBENLINKS";
             raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'E' || key == 'e') {
             raster.nextLine.type = "KURVE_OBENRECHTS";
             raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'Y' || key == 'y') {
             raster.nextLine.type = "KURVE_UNTENLINKS";
             raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'X' || key == 'x') {
             raster.nextLine.type = "KURVE_UNTENRECHTS";
             raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+            raster.indicateNextLine(cursor.position);
         }
         if (key == 'l' || key == 'L') {
             document.getElementById("buttonShowPath").classList.toggle("active");
@@ -86,24 +86,84 @@ export function keyPressed(keyEvent) {
             getSheetAtCursorPos(cursor.position);
             selectRowBySheet(activeSheetIdx);
         }
-        if (keyEvent.keyCode == 37) { // left
 
-            // vertical layout: move all
-            if (raster.realSheetH < raster.realSheetV) {
-                for (var i = 0; i < sheetsGroup.children.length; i++) {
-                    sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+        if (keyEvent.keyCode >= 37 && keyEvent.keyCode <= 40) { // Arrow Keys
+            if (keyEvent.keyCode == 37) { // left
+
+                // vertical layout: move all
+                if (raster.realSheetH < raster.realSheetV) {
+                    for (var i = 0; i < sheetsGroup.children.length; i++) {
+                        sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+                    }
+                }
+                else { // horizontal layout: move selected
+                    for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                        sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+                    }
                 }
             }
-            else { // horizontal layout: move selected
-                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                    sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].label.position.x -= sheetHelpers[0].gridGapX;
+
+            if (keyEvent.keyCode == 39) { // right
+
+                // vertical layout: move all
+                if (raster.realSheetH < raster.realSheetV) {
+                    for (var i = 0; i < sheetsGroup.children.length; i++) {
+                        sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+                    }
+                }
+                else { // horizontal layout: move selected
+                    for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                        sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
+                        sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
+                    }
                 }
             }
+            if (keyEvent.keyCode == 38) { // up:
+                // vertical layout: move selected
+                if (raster.realSheetH < raster.realSheetV) {
 
+                    for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                        sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+                    }
+                }
+                else { // horizontal layout: move all
+                    for (var i = 0; i < sheetsGroup.children.length; i++) {
+                        sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
+                    }
+
+                }
+            }
+            if (keyEvent.keyCode == 40) { // down:
+
+                // vertical layout: move selected
+                if (raster.realSheetH < raster.realSheetV) {
+
+                    for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
+                        sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+                    }
+
+                } else {
+                    for (var i = 0; i < sheetsGroup.children.length; i++) {
+                        sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
+                        sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
+                    }
+
+                }
+            }
             // show intersections:
             for (var i = 0; i < sheetsGroup.children.length; i++) {
                 showIntersections(sheetsGroup.children[i], raster.line);
@@ -119,101 +179,6 @@ export function keyPressed(keyEvent) {
             }
 
         }
-
-        if (keyEvent.keyCode == 39) { // right
-
-            // vertical layout: move all
-            if (raster.realSheetH < raster.realSheetV) {
-                for (var i = 0; i < sheetsGroup.children.length; i++) {
-                    sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
-                }
-            }
-            else { // horizontal layout: move selected
-                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                    sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
-                    sheetHelpers[i].label.position.x += sheetHelpers[0].gridGapX;
-                }
-            }
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                showIntersections(sheetsGroup.children[i], raster.line);
-
-                if (globalVerboseLevel > 1)
-                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
-            }
-            for (let i = 0; i < sheetHelpers.length; i++) {
-                sheetHelpers[i].gridDots.selected = false;
-                sheetHelpers[i].hideGridPoints();
-                sheetHelpers[i].showGridPoints();
-            }
-
-        }
-        if (keyEvent.keyCode == 38) { // up:
-            // vertical layout: move selected
-            if (raster.realSheetH < raster.realSheetV) {
-
-                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                    sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
-                }
-            }
-            else { // horizontal layout: move all
-                for (var i = 0; i < sheetsGroup.children.length; i++) {
-                    sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].gridDots.position.y -= sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].label.position.y -= sheetHelpers[0].gridGapY;
-                }
-
-            }
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                showIntersections(sheetsGroup.children[i], raster.line);
-
-                if (globalVerboseLevel > 1)
-                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
-            }
-
-            // each sheet:
-            for (let i = 0; i < sheetHelpers.length; i++) {
-                const sheet = sheetHelpers[i];
-                sheet.gridDots.selected = false;
-                sheet.hideGridPoints();
-                sheet.showGridPoints();
-            }
-        }
-        if (keyEvent.keyCode == 40) { // down:
-
-            // vertical layout: move selected
-            if (raster.realSheetH < raster.realSheetV) {
-
-                for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
-                    sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
-                }
-
-            } else {
-                for (var i = 0; i < sheetsGroup.children.length; i++) {
-                    sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
-                    sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
-                }
-
-            }
-            for (var i = 0; i < sheetsGroup.children.length; i++) {
-                showIntersections(sheetsGroup.children[i], raster.line);
-
-                if (globalVerboseLevel > 1)
-                    sheetsGroup.children[i].fillColor = (!raster.roi.bounds.intersects(sheetsGroup.children[i].bounds)) ? 'red' : null;
-            }
-            for (let i = 0; i < sheetHelpers.length; i++) {
-                sheetHelpers[i].gridDots.selected = false;
-                sheetHelpers[i].hideGridPoints();
-                sheetHelpers[i].showGridPoints();
-            }
-        }
     }
 
     else if (drawMode == "ROI" || drawMode == "measureDistance" || drawMode == "area") {
@@ -227,7 +192,6 @@ export function keyPressed(keyEvent) {
                 raster.tempArea.closed = true;
             }
             if (measureDistance) {
-
                 measureToolState = 0;
                 measureDistance.remove()
             }
@@ -269,10 +233,10 @@ export function onMouseMove(event) {
             cursor.position = ptAtSmallestDist.position;
 
             // support lines:
-            if (raster.line.segments.length && showSupportLines) {
+            let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
+            let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
 
-                let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
-                let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
+            if (raster.line.segments.length && showSupportLines) {
 
                 // x line:
                 new paper.Path.Line({
@@ -290,17 +254,18 @@ export function onMouseMove(event) {
                     dashArray: [4, 8],
                     strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
                 }).removeOnMove();
-
-                document.getElementById("cursorDistX").textContent = Math.round(distX / raster.pxPerMM);
-                document.getElementById("cursorDistY").textContent = Math.round(distY / raster.pxPerMM);
-                if (Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY)) {
-                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "bold";
-                } else {
-                    document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
-                }
-
-                raster.indicateNextLine(cursor.position);
             }
+
+            // display distance info:
+            document.getElementById("cursorDistX").textContent = Math.round(distX / raster.pxPerMM);
+            document.getElementById("cursorDistY").textContent = Math.round(distY / raster.pxPerMM);
+            if (Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY)) {
+                document.getElementsByClassName("mousePos")[0].style.fontWeight = "bold";
+            } else {
+                document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
+            }
+            // predict next line:
+            raster.indicateNextLine(cursor.position);
 
             break;
 
@@ -393,6 +358,11 @@ export function onMouseDown(event) {
                     if (cursor.bounds.contains(seg.point))
                         console.log("match", seg);
                 }
+
+            /* HIT TEST: 
+                if hit: get segment
+                else: addLine
+             */
             raster.addLine(ptAtSmallestDist);
 
             break;
@@ -409,12 +379,7 @@ export function onMouseDown(event) {
 
         case "ROI":
 
-            var pt = new paper.Point(event.x, event.y);
-            var hitObject = paper.project.hitTest(pt, hitOptions);
-            if (globalVerboseLevel > 2)
-                console.log("you hit a", hitObject);
-            if (!hitObject)
-                drawROI();
+            drawROI();
             break;
 
         case "measureDistance":

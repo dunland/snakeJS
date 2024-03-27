@@ -1,6 +1,7 @@
 import { globalVerboseLevel } from "./Devtools.js";
 import { raster, cursor, globalColor } from "./paperSnake.js";
 import { createSheetsHorizontal, createSheetsVertical, recreateSheets, sheetsGroup } from "./Platten.js";
+import { showSupportLines } from "./UserInteraction.js";
 
 export var drawMode = ""; // "line", "area", "ROI", "moveSheet", "measureDistance"
 export var measureDistance;
@@ -22,11 +23,13 @@ export function changeDrawMode(entering) {
         cursor.strokeColor = globalColor;
     }
     else if (entering == "ROI") {
-        if (raster.roi) raster.roi.strokeColor = null;
+        if (raster.roi) raster.roi.visible = false;
         cursor.strokeColor = 'blue';
     }
-    else if (entering == "moveSheet")
+    else if (entering == "moveSheet"){
         cursor.visible = false;
+        raster.nextLine.segment.visible = false;
+    }
 
     // ------------------- leaving mode: -------------------
     if (leaving == "measureDistance") {
@@ -35,7 +38,11 @@ export function changeDrawMode(entering) {
         measureToolState = 0;
     }
 
-    if (leaving == "area")
+    else if (leaving == "moveSheet"){
+        raster.nextLine.segment.visible = showSupportLines;
+    }
+
+    else if (leaving == "area")
         if (!raster.tempArea || raster.tempArea.segments.length < 1)
             console.log("no segments in child");
         else {
@@ -46,10 +53,12 @@ export function changeDrawMode(entering) {
             raster.tempArea.closed = true;
         }
 
-    if (leaving == "ROI") {
-        // cursor.strokeColor = globalColor;
-        if (!raster.tempArea || raster.tempArea.segments.length < 1)
+    else if (leaving == "ROI") {
+        // after abort:
+        if (!raster.tempArea || raster.tempArea.segments.length < 1){
             console.log("no segments in child");
+            raster.roi.visible = true;
+        }
         else {
             if (raster.roi) {
                 console.log(raster.roi.remove());
