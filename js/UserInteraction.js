@@ -12,9 +12,9 @@ export var showSupportLines = true;
 export function toggleSupportLines() {
     document.getElementById("buttonShowSupportLines").classList.toggle("active");
     showSupportLines = !showSupportLines;
-    raster.indicateNextLine(cursor.position);
-    raster.nextLine.segment.visible = !raster.nextLine.segment.visible;
-};// Tastaturbefehle:
+};
+
+// Tastaturbefehle:
 export function keyPressed(keyEvent) {
 
     if (keyInput == false) return;
@@ -31,76 +31,44 @@ export function keyPressed(keyEvent) {
         if (key == ' ') changeDrawMode("moveSheet");
         if (key == 'R' || key == 'r') recreateSheets();
         if (key == 'W' || key == 'w') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_OBEN");
-            else {
                 raster.nextLine.type = "KURVE_OBEN";
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'A' || key == 'a') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_LINKS");
-            else {
                 raster.nextLine.type = "KURVE_LINKS";
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'S' || key == 's') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_UNTEN");
-            else {
                 raster.nextLine.type = "KURVE_UNTEN";
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'D' || key == 'd') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_RECHTS");
-            else {
                 raster.nextLine.type = "KURVE_RECHTS";
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'F' || key == 'f') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("GERADE");
-            else {
                 raster.nextLine.type = "GERADE";
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'Q' || key == 'q') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_OBENLINKS_" + raster.getPathDirection());
-            else {
-                raster.nextLine.type = "KURVE_OBENLINKS_" + raster.getPathDirection();
+            raster.nextLine.type = "KURVE_OBENLINKS";
+            raster.nextLine.updatePathDirection();
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'E' || key == 'e') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_OBENRECHTS_" + raster.getPathDirection());
-            else {
-                raster.nextLine.type = "KURVE_OBENRECHTS_" + raster.getPathDirection();
+            raster.nextLine.type = "KURVE_OBENRECHTS";
+            raster.nextLine.updatePathDirection();
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'Y' || key == 'y') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_UNTENLINKS_" + raster.getPathDirection());
-            else {
-                raster.nextLine.type = "KURVE_UNTENLINKS_" + raster.getPathDirection();
+            raster.nextLine.type = "KURVE_UNTENLINKS";
+            raster.nextLine.updatePathDirection();
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'X' || key == 'x') {
-            if (!showSupportLines)
-                raster.replaceLastCurve("KURVE_UNTENRECHTS_" + raster.getPathDirection());
-            else {
-                raster.nextLine.type = "KURVE_UNTENRECHTS_" + raster.getPathDirection();
+            raster.nextLine.type = "KURVE_UNTENRECHTS";
+            raster.nextLine.updatePathDirection();
                 raster.indicateNextLine(cursor.position);
-            }
         }
         if (key == 'l' || key == 'L') {
             document.getElementById("buttonShowPath").classList.toggle("active");

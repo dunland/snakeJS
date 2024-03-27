@@ -1,8 +1,8 @@
 //////////////////////////////////////////////////////////////////
 ////////////////////////////// RASTER ////////////////////////////
 //////////////////////////////////////////////////////////////////
+import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { showSupportLines } from "./UserInteraction.js";
 import { globalColor } from "./paperSnake.js";
 
 export class Raster {
@@ -25,18 +25,18 @@ export class Raster {
     }
 
     initialize() {
-        if (!this.line){
+        if (!this.line) {
             this.line = new paper.Path();
             this.line.strokeColor = globalColor;
             this.line.strokeWidth = 2;
         }
 
-        if (!this.area){
+        if (!this.area) {
             this.area = new paper.Group();
             this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
             this.area.closed = true;
         }
-        this.nextLine = new Liniensegment(new paper.Point(0,0), new paper.Point(0,0));
+        this.nextLine = new Liniensegment(new paper.Point(0, 0), new paper.Point(0, 0));
     }
 
     ////////////////// FUNCTIONS ///////////////////
@@ -55,15 +55,7 @@ export class Raster {
                 this.line.position = ptAtSmallestDist.position;
                 return;
             }
-
-            if (!showSupportLines){
-                var ls = new Liniensegment(ptAtSmallestDist.position, this.line.lastSegment.point);
-                this.lineSegmentsTypeHistory.push(ls.type);
-                this.line.join(ls.segment);
-            }
-            else {
                 this.line.join(this.nextLine.segment);
-            }
 
         } else { // remove line
 
@@ -87,8 +79,8 @@ export class Raster {
 
     }
 
-    indicateNextLine(pt){
-        if (this.line.segments.length){
+    indicateNextLine(pt) {
+        if (this.line.segments.length) {
             // remove old line:
             this.nextLine.segment.remove();
             
@@ -99,10 +91,16 @@ export class Raster {
             this.nextLine.y2 = pt.y;
             
             // create new:
+            this.nextLine.updatePathDirection();
+            // change line type to GERADE whenever an axis is crossed:
+            if (this.nextLine.direction[0] == "" || this.nextLine.direction[1] == "")
+                this.nextLine.type = "GERADE";
+            if (globalVerboseLevel > 3)
+                console.log(this.nextLine.type, this.nextLine.direction);
             this.nextLine.createCurveOfType(this.nextLine.type); // type of line will be set using keys
             
             // graphics:
-            this.nextLine.segment.dashArray = [4,8];
+            this.nextLine.segment.dashArray = [4, 8];
             this.nextLine.segment.strokeColor = globalColor;
         }
     }
