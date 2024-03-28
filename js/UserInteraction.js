@@ -26,50 +26,86 @@ export function keyPressed(keyEvent) {
     if (key == '+') changeGlobalVerboseLevel(key);
     if (key == '-') changeGlobalVerboseLevel(key);
     if (key == 'm') changeDrawMode("measureDistance");
+    if (key == 'R' || key == 'r') recreateSheets();
 
     if (drawMode == "line") {
         if (key == ' ') changeDrawMode("moveSheet");
-        if (key == 'R' || key == 'r') recreateSheets();
-        if (key == 'W' || key == 'w') {
-            raster.nextLine.type = "KURVE_OBEN";
-            raster.indicateNextLine(cursor.position);
+
+        if ('qweasdyx'.includes(key)) {
+            document.querySelectorAll('span.key').forEach(element => {
+                if (element.textContent.toLowerCase() === key){
+                    element.style.fontWeight = 'bold';
+                    element.style.border = '1px solid black';
+                }
+                else {
+                    element.style.fontWeight = 'normal';
+                    element.style.border = '';
+                }
+            })
         }
-        if (key == 'A' || key == 'a') {
-            raster.nextLine.type = "KURVE_LINKS";
-            raster.indicateNextLine(cursor.position);
+        switch (key) {
+            case 'w':
+                raster.nextLine.type = "KURVE_OBEN";
+                raster.indicateNextLine(cursor.position);
+                break;
+
+            case 'a':
+                raster.nextLine.type = "KURVE_LINKS";
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 's':
+                raster.nextLine.type = "KURVE_UNTEN";
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'd':
+                raster.nextLine.type = "KURVE_RECHTS";
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'f':
+                raster.nextLine.type = "GERADE";
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'q':
+                raster.nextLine.type = "KURVE_OBENLINKS";
+                raster.nextLine.updatePathDirection();
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'e':
+                raster.nextLine.type = "KURVE_OBENRECHTS";
+                raster.nextLine.updatePathDirection();
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'y':
+                raster.nextLine.type = "KURVE_UNTENLINKS";
+                raster.nextLine.updatePathDirection();
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+            case 'x':
+                raster.nextLine.type = "KURVE_UNTENRECHTS";
+                raster.nextLine.updatePathDirection();
+                raster.indicateNextLine(cursor.position);
+
+                break;
+
+
+            default:
+                break;
         }
-        if (key == 'S' || key == 's') {
-            raster.nextLine.type = "KURVE_UNTEN";
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'D' || key == 'd') {
-            raster.nextLine.type = "KURVE_RECHTS";
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'F' || key == 'f') {
-            raster.nextLine.type = "GERADE";
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'Q' || key == 'q') {
-            raster.nextLine.type = "KURVE_OBENLINKS";
-            raster.nextLine.updatePathDirection();
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'E' || key == 'e') {
-            raster.nextLine.type = "KURVE_OBENRECHTS";
-            raster.nextLine.updatePathDirection();
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'Y' || key == 'y') {
-            raster.nextLine.type = "KURVE_UNTENLINKS";
-            raster.nextLine.updatePathDirection();
-            raster.indicateNextLine(cursor.position);
-        }
-        if (key == 'X' || key == 'x') {
-            raster.nextLine.type = "KURVE_UNTENRECHTS";
-            raster.nextLine.updatePathDirection();
-            raster.indicateNextLine(cursor.position);
-        }
+
         if (key == 'l' || key == 'L') {
             document.getElementById("buttonShowPath").classList.toggle("active");
             raster.line.visible = !raster.line.visible;
@@ -154,14 +190,13 @@ export function keyPressed(keyEvent) {
                         sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
                         sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
                     }
-
+                // horizontal layout: move all
                 } else {
                     for (var i = 0; i < sheetsGroup.children.length; i++) {
                         sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
                         sheetHelpers[i].gridDots.position.y += sheetHelpers[0].gridGapY;
                         sheetHelpers[i].label.position.y += sheetHelpers[0].gridGapY;
                     }
-
                 }
             }
             // show intersections:
