@@ -2,9 +2,16 @@
 
 a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
 
+see the [Log](Log.md) file for the full programming log and annotations
+
+## installation
+
+- Windows: Doppelklick `install.bat`
+- Terminal: `npm install`
+
 ## start
 
-- `npm start` (führt `nodemon main.js` aus)
+- In Windows: Doppelklick auf `start.bat`, sonst im Terminal: `npm start` (führt `nodemon main.js` aus)
 - läuft derzeit nur in Chrome, da Firefox: *snake.js:16:46 import assertions are not currently supported*
 
 ## Projektstruktur

@@ -1,3 +1,3 @@
-cd C:\Users\Lukas\Desktop\snakeJS
+cd %~dp0
 npm start
 start chrome "http://localhost:3000"
