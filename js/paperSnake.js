@@ -15,6 +15,11 @@ export var globalColor = "white";
 // Only executed our code once the DOM is ready.
 window.onload = function () {
 
+    // Check if we are running in Google Chrome
+    if (!window.chrome) {
+        alert("Achtung! This app works best in Google Chrome!");
+    }
+
     // Get a reference to the canvas object
     var canvas = document.getElementById('snakeCanvas');
 

@@ -27,8 +27,8 @@ class SheetHelper {
         var sheetLength = this.rectangleObject.bounds.width;
 
         let a = true; // alternating each point
-        for (let x = this.rectangleObject.position.x; x < this.rectangleObject.position.x + sheetLength + this.gridGapX; x += this.gridGapX) {
-            for (let y = this.rectangleObject.position.y; y < this.rectangleObject.position.y + sheetWidth + this.gridGapY; y += this.gridGapY) {
+        for (let x = this.rectangleObject.position.x; x < (this.rectangleObject.position.x + sheetLength); x += this.gridGapX) {
+            for (let y = this.rectangleObject.position.y; y < (this.rectangleObject.position.y + sheetWidth); y += this.gridGapY) {
                 const pt = new paper.Point(x - sheetLength / 2, y - sheetWidth / 2);
                 this.gridDots.addChild(new paper.Path.Circle({
                     center: pt,
@@ -103,8 +103,10 @@ export function createSheetsHorizontal(sheetH, sheetV, maxH, maxW) {
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
+
+            // displace every other sheet:
             if (y % 2 == 0) {
-                sheets.lastChild.position.x -= Math.floor(sheetH / raster.gridGapX);
+                sheets.lastChild.position.x -= raster.gridGapX;
             }
             _sheetsPerRow = (x > _sheetsPerRow) ? x : _sheetsPerRow;
 
@@ -139,8 +141,8 @@ export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
 
     let _sheetsPerRow = 0;
     var sheets = new paper.Group();
-    for (var x = -1; x < (maxW + sheetH) / sheetH; x++)
-        for (var y = -1; y < (maxH + sheetV) / sheetV; y++) {
+    for (var x = -1; x < ((maxW + sheetH) / sheetH); x++)
+        for (var y = -1; y < ((maxH + sheetV) / sheetV); y++) {
             sheets.addChild(new paper.Path.Rectangle({
                 point: new paper.Point(x * sheetH, y * sheetV),
                 size: new paper.Size(sheetH, sheetV),
@@ -148,7 +150,7 @@ export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
                 strokeWidth: 1
             }));
             if (x % 2 == 0) {
-                sheets.lastChild.position.y -= Math.floor(sheetH / raster.gridGapX);
+                sheets.lastChild.position.y -= raster.gridGapX;
             }
             _sheetsPerRow = (y > _sheetsPerRow) ? y : _sheetsPerRow;
 
@@ -275,19 +277,22 @@ export function toggleSheetVisibility() {
 
 export function recreateSheets() {
 
+    // remove all sheets:
     for (let index = 0; index < sheetsGroup.children.length; index++) {
         const child = sheetsGroup.children[index];
         child.remove();
     }
     sheetsGroup.remove();
-    sheetsGroup = new paper.Group();
-    console.log(sheetsGroup);
+
     for (let index = 0; index < sheetHelpers.length; index++) {
         const sheetHelper = sheetHelpers[index];
         sheetHelper.gridDots.remove();
         sheetHelper.label.remove();
     }
 
+    // create new sheets:
+    sheetsGroup = new paper.Group();
+    console.log(sheetsGroup);
     sheetHelpers = [];
 
     console.log(`sheetH: ${raster.realSheetH} > sheetV: ${raster.realSheetV}: ${(raster.realSheetH > raster.realSheetV)}`);
@@ -295,9 +300,10 @@ export function recreateSheets() {
     if (raster.realSheetH > raster.realSheetV) {
         console.log("creating horizontal sheets");
         createSheetsHorizontal(
-            raster.realSheetH * raster.pxPerMM,
-            raster.realSheetV * raster.pxPerMM,
-            raster.roi.bounds.height, raster.roi.bounds.width
+            raster.realSheetH * raster.pxPerMM, // horizontal
+            raster.realSheetV * raster.pxPerMM, // vertikal 
+            raster.roi.bounds.height,           // maxH
+            raster.roi.bounds.width             // maxW
         );
     }
     else {
@@ -305,7 +311,8 @@ export function recreateSheets() {
         createSheetsVertical(
             raster.realSheetH * raster.pxPerMM,
             raster.realSheetV * raster.pxPerMM,
-            raster.roi.bounds.height, raster.roi.bounds.width
+            raster.roi.bounds.height,
+            raster.roi.bounds.width
         );
     }
 

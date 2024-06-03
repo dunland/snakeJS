@@ -11,13 +11,13 @@ export class Raster {
 
         this.lineSegmentsTypeHistory = []; // linear list of segmentTypes
         this.realSheetH = 1861; // [mm]
-        this.realSheetV = 591; // [mm]
+        this.realSheetV = 591;  // [mm]
         this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
         this.gridGapX = this.realSheetH / Math.floor(this.realSheetH / this.realSheetMargin) * scaleX;
-        this.line; // must be initialized after paper.setup()
+        this.line;     // must be initialized after paper.setup()
         this.nextLine; // dashed line that shows next line to be drawn
-        this.area; // group of blocked, non-clickacble areas
-        this.roi;  // region of interest / work area
+        this.area;     // group of blocked, non-clickacble areas
+        this.roi;      // region of interest / work area
 
         this.pxPerMM = scaleX;
 

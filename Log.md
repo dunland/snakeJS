@@ -6,9 +6,19 @@
 		- [x] Pfeiltasten hoch/runter bewegen nur Reihe wenn vertikal
 		- [x] **Platzieren** ist irgendwie komisch (Versatz entsteht, wenn ich zweiten Knopf benutze)
 		- [ ] Skalieren macht alles kaputt, wenn in vertikalmodus
-	
-	- [x] **händisch einzelne Platten** oder alle links / alle rechts **verschieben**
-		- `Shift` und `Control` auch bei Lukas so?	
+- [ ] Rastergröße ändern, wenn bereits gezeichnet wurde
+- [ ] wenn Plattenlänge und -brite vertauscht sind, ist Rastergröße (um ca. die Hälfte?) verschoben
+	- Workaround: Ein großes Raster?
+- [ ] Raster auch neu berechnen, wenn Platten-Randabstand geändert wird
+- [ ] Projektmanager: Bilddatei händisch auswählbar?
+- [ ] UI: Bilddiagonale messen: Bilddiagonale anzeigen!
+- **mehr Dialoge!**
+	- [ ] Projekt laden: Dialog öffnen, Ordner auswählen
+	- [ ] Projekt laden: Fehlermeldung, wenn keine `project.json`
+- Distanzmessung mit Komma `,` möglich?
+- [ ] Nach Laden des Projektes sind mehr Platten beweglich, als die Zeile lang ist...
+- [ ] Warum sind Rasterpunkte manchmal außerhalb der Platten?
+
 ## refactor & beautifications
 
 - [ ] Anzeige von kritischen Plattengrenzen & Gestößen
@@ -24,6 +34,9 @@
 - [ ] gestrichelte Hilfslinie automatisch nach Quadranten und Richtung?
 
 ## log
+
+- [x] **händisch einzelne Platten** oder alle links / alle rechts **verschieben**
+	- `Shift` und `Control` auch bei Lukas so?	
 
 25.03.2024
 

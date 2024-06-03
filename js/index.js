@@ -1,3 +1,5 @@
+// JavaScript for the page html setup
+
 import { image, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./Modes.js";
 import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
