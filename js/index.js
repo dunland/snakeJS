@@ -118,7 +118,11 @@ inputVariables.forEach(name => {
                 raster.realSheetV = parseInt(value);
                 recreateSheets();
             }
-            if (name == 'realSheetMargin') raster.realSheetMargin = value;
+            if (name == 'realSheetMargin'){
+                raster.realSheetMargin = value;
+                raster.gridGapX = raster.realSheetH / Math.floor(raster.realSheetH / raster.realSheetMargin) * raster.pxPerMM;
+                recreateSheets();
+            } 
         }
     };
 });
