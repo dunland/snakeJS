@@ -24,15 +24,19 @@
 - [ ] gestrichelte Hilfslinie automatisch nach Quadranten und Richtung?
 
 ## log
+
 25.03.2024
+
 - [x] gestrichelte Linie für nächsten Pfad
 
 19.03.2024
+
 - [x] **bug**: Wenn sheets von import geladen, werden die alten nicht entfernt, wenn recreate from input fields!
 	- `parseInt(inputValue)` hat gefehlt!
 - [x] plus-minus-knopf für feintuning der Skalierung
 
 13.03.2024, 14.03.2024
+
 - [x] Linienwerkzeug nur möglich wenn raster.roi existiert
 - [x] Batch Skripte zum Installieren, Starten und Beenden
 - [x] measure distance hat bei lukas nen bug
@@ -44,6 +48,7 @@
 	- [x] --> erst erstellen, wenn Arbeitsbereich definiert?
 	
 12.03.2024
+
 - [x] **Layout**
 	- [x] merge start.html -> index.html ("Rasterabstand" -> "Mindest-Randabstand")
 	- [x] Symbol für A und D
@@ -52,6 +57,7 @@
 - [x] Raster mit alternierender Helligkeit
 	- erstmal via opacity = 0.5
 - Verschnitt reparieren... hier unverwendeter, hilfreicher Code:
+
 ``` javascript
 let tempObj = new paper.Path();
 for (let index = 0; index < sheetsGroup.children.length; index++) {
@@ -71,6 +77,7 @@ for (let index = 0; index < sheetsGroup.children.length; index++) {
 ```
 
 11.03.2024
+
 - [x] **Ausschließen der Plattenelemente von Aussparungen**, berechnen der Gesamtfläche
 - [x] Buttons unterhalb von Canvas
 	- gelöst durch Abfrage, ob Maus in Canvas ist
@@ -79,6 +86,7 @@ for (let index = 0; index < sheetsGroup.children.length; index++) {
 	- [  ] 🗘 remake
 	- [x] neu hinzufügen
 - deprecated:
+
 ``` javascript
 export function selectNextRow(sheetsGroup, direction) {
 	movableSheetsFrom = (movableSheetsFrom + (sheetsPerRow * direction));
@@ -98,12 +106,13 @@ export function selectNextRow(sheetsGroup, direction) {
 ```
 
 10.03.2024
+
 - mehrere Platten via intersect verschieben: Wie kann ich gridDots verschieben?
 	- [x] gridDots mit sheetGroup in eine sheetGroup?
 	- für Verschieben der sheetHelpers.gridDots bräuchte es nämlich die movableSheetsFrom und -To... **die Dinger benutzen!**
 	- alternativ: cursorHorizontalLine
-``` javascript
 
+``` javascript
 // paperSnake.js:
 cursorVertical = new paper.Path.Line({
 from: [0, 100],
@@ -132,12 +141,13 @@ export function selectRowBySheet_() {
 		}
 	}
 }
+```
 
-	```
 - [x] **Radius immer = x_dist**
 - [x] Pfadlänge in Metern angeben
 
 05.03.2024
+
 - [x] **Projektmanager**
 	- [x] [Export und import des ganzen Projektes](https://paperjs.org/reference/project/#exportjson)
 	- [x] Startpage: neues Projekt
@@ -146,13 +156,16 @@ export function selectRowBySheet_() {
 - [x] Pfeile hoch und runter macht Pfad kaputt, da sich gridPoints verschieben! -> **sollte via `raster.line.lastSegment` als gp_previous gelöst werden!**
 
 03.03.2024
+
 - [x] kann Platten bei importiertem Projekt nicht bewegen --> überprüfe nochmal das laden von sheetsHelpers und sheetsGroup!
 - [x] **export raster.gridPoints**
 	- [x] als `[[x], [y]]` --> nicht praktikabel, da `let idx = this.gridPoints.findIndex((dot) => (dot.id == ptAtSmallestDist.id));` nicht präzise funktionieren wird..
 
 01.03.2024
+
 - **load project**: pass JSON to website while refresh: open project by url: `http://localhost:3000/?projectData=beispielbild.json`
 - download JSON:
+
 ``` javascript
   // Unfortunately, due to browser security restrictions, JavaScript running in the browser cannot directly write files to disk for security reasons:
 const blob = new Blob([projectExport], { type: 'application/json'});
@@ -164,9 +177,11 @@ link.click();
 ```
 
 26.02.2024:
- - [x] **Verschieben einzelner Reihen (Versatz um Rastermaß)**
+
+- [x] **Verschieben einzelner Reihen (Versatz um Rastermaß)**
 - **translate gridDots:** hat letztendlich nicht funktioniert wie gewollt; musste die gridDots neu erstellen.. 
   Was vllt hätte klappen können:
+
 ``` javascript
 sheetHelpers[i].gridDots.position.x = child.bounds.topLeft.x + child.bounds.width/2; // hat so nicht geklappt
 
@@ -176,6 +191,7 @@ sheetHelpers[i].gridDots.position.y = child.position.y; // scheint zu klappen!
 ```
 
 22.02.2024
+
 - Platten in ROI:
 ``` javascript
 if (!platten.children[i].isInside(canvasArea.bounds))
@@ -189,12 +205,15 @@ if (!canvasArea.bounds.contains(platten.children[i].bounds.center))
 ```
 
 21.02.2024
+
 - Manchmal werden gp beim klicken nicht erwischt, da minimal anderes Raster bei Erstellung als bei Erfassung durch mouseGridX und mouseGridY
 	- [x] → clamp() und step() auch bei erstellung verwenden??
 
 20.02.2024
+
 - toggle tools via JS:
-  ``` javascript
+
+``` javascript
 // toggle modes:
 Array.prototype.forEach.call(document.getElementsByClassName("tool"), (element) => {
 console.log(element);
@@ -204,6 +223,7 @@ this.classList.toggle("active");
 ```
 
 14.02.2024
+
 - **Markierung von Aussparungen** wie z.B. Fenster, die nicht nutzbar sind
 	- [x] Polygons malen auf neues PaperScope
 		- [ ] https://paperjs.org/reference/size/
@@ -212,6 +232,7 @@ this.classList.toggle("active");
 	- [x] [raster-compoundPath](https://paperjs.org/reference/compoundpath/)
 
 12.02.2024
+
 - **Paper.js** *offers different approaches for its integration in the browser. The simplest way is to use PaperScript, our extension of JavaScript that facilitates a few things along the way. For more advanced users or bigger projects it might be preferable to work directly with JavaScript, as described in the tutorial about [Using JavaScript Directly](https://paperjs.org/tutorials/getting-started/using-javascript-directly/).*
 	- `npm install paper` → include as module: *Cannot read properties of undefined (reading 'acorn')* → **do not include as module!**
 	- include from `js/paper/paperjs-v0.12.17/dist/paper-full.js`: *Unable to find canvas with id "null"*
