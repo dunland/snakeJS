@@ -31,7 +31,7 @@ export function keyPressed(keyEvent) {
     if (drawMode == "line") {
         if (key == ' ') changeDrawMode("moveSheet");
 
-        if ('qweasdyx'.includes(key)) {
+        if ('qfweasdyx'.includes(key)) {
             document.querySelectorAll('span.key').forEach(element => {
                 if (element.textContent.toLowerCase() === key){
                     element.style.fontWeight = 'bold';

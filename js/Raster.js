@@ -55,7 +55,7 @@ export class Raster {
                 this.line.position = ptAtSmallestDist.position;
                 return;
             }
-                this.line.join(this.nextLine.segment);
+            this.line.join(this.nextLine.segment);
 
         } else { // remove line
 
@@ -83,45 +83,45 @@ export class Raster {
         if (this.line.segments.length) {
             // remove old line:
             this.nextLine.segment.remove();
-            
+
             // set new coordinates:
             this.nextLine.x1 = this.line.lastSegment.point.x;
             this.nextLine.y1 = this.line.lastSegment.point.y;
             this.nextLine.x2 = pt.x;
             this.nextLine.y2 = pt.y;
-            
+
             // create new:
             this.nextLine.updatePathDirection();
             if (globalVerboseLevel > 3)
                 console.log(this.nextLine.type, this.nextLine.direction);
             this.nextLine.createCurveOfType(this.nextLine.type); // type of line will be set using keys
-            
+
             // graphics:
             this.nextLine.segment.dashArray = [4, 8];
             this.nextLine.segment.strokeColor = globalColor;
         }
     }
 
-    replaceLastCurve(type) {
+    // replaceLastCurve(type) {
 
-        if (this.line.segments.length < 1) {
-            console.log("no active points left to change curve")
-            return;
-        }
+    //     if (this.line.segments.length < 1) {
+    //         console.log("no active points left to change curve")
+    //         return;
+    //     }
 
-        console.log(`replace ${this.lineSegmentsTypeHistory[this.lineSegmentsTypeHistory.length - 1]} (${this.line.lastSegment}) with type ${type}`);
+    //     console.log(`replace ${this.lineSegmentsTypeHistory[this.lineSegmentsTypeHistory.length - 1]} (${this.line.lastSegment}) with type ${type}`);
 
-        this.lineSegmentsTypeHistory.pop(); // remove last linesegment helper
-        let tempPoint = new paper.Point(this.line.lastSegment.point);
-        this.line.lastSegment.remove();
+    //     this.lineSegmentsTypeHistory.pop(); // remove last linesegment helper
+    //     let tempPoint = new paper.Point(this.line.lastSegment.point);
+    //     this.line.lastSegment.remove();
 
-        const ls = new Liniensegment(
-            tempPoint,
-            this.line.segments[this.line.segments.length - 1].point,
-            type);
-        this.lineSegmentsTypeHistory.push(ls.type);
-        this.line.join(ls.segment);
-    }
+    //     const ls = new Liniensegment(
+    //         tempPoint,
+    //         this.line.segments[this.line.segments.length - 1].point,
+    //         type);
+    //     this.lineSegmentsTypeHistory.push(ls.type);
+    //     this.line.join(ls.segment);
+    // }
 
     getPathDirection() {
         if (this.line.segments.length < 2) return;

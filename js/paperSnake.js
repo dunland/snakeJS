@@ -42,7 +42,6 @@ window.onload = function () {
         initializeNewProject();
     }
 
-    // TODO: not while cursor in input fields!
     addEventListener("mousedown", onMouseDown);
     addEventListener("keydown", keyPressed);
     addEventListener("keyup", keyReleased);
