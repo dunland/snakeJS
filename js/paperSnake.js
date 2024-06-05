@@ -48,7 +48,7 @@ window.onload = function () {
     }
 
     addEventListener("mousedown", onMouseDown);
-    addEventListener("keydown", keyPressed);
+    document.addEventListener("keydown", keyPressed);
     addEventListener("keyup", keyReleased);
 
     changeDrawMode("ROI");

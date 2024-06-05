@@ -75,16 +75,16 @@ export function changeDrawMode(entering) {
                 recreateSheets();
             else {
                 // platten erstellen:
-                if (raster.realSheetH > raster.realSheetV)
+                if (raster.realSheetDimHorizontal > raster.realSheetDimVertical)
                     createSheetsHorizontal(
-                        raster.realSheetH * raster.pxPerMM,
-                        raster.realSheetV * raster.pxPerMM,
+                        raster.realSheetDimHorizontal * raster.pxPerMM,
+                        raster.realSheetDimVertical * raster.pxPerMM,
                         raster.roi.bounds.height, raster.roi.bounds.width
                     );
                 else {
                     createSheetsVertical(
-                        raster.realSheetH * raster.pxPerMM,
-                        raster.realSheetV * raster.pxPerMM,
+                        raster.realSheetDimHorizontal * raster.pxPerMM,
+                        raster.realSheetDimVertical * raster.pxPerMM,
                         raster.roi.bounds.height, raster.roi.bounds.width
                     );
                 }

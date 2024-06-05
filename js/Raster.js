@@ -7,19 +7,20 @@ import { globalColor } from "./paperSnake.js";
 
 export class Raster {
 
-    constructor(scaleX) {
+    constructor(scaleFactor) {
 
+        this.pxPerMM = scaleFactor;
         this.lineSegmentsTypeHistory = []; // linear list of segmentTypes
-        this.realSheetH = 1861; // [mm]
-        this.realSheetV = 591;  // [mm]
-        this.realSheetMargin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
-        this.gridGapX = this.realSheetH / Math.floor(this.realSheetH / this.realSheetMargin) * scaleX;
+        this.realSheetDimHorizontal = 1861; // [mm]
+        this.realSheetDimVertical = 591;  // [mm]
+        this.realSheetMarginMin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
+        this.gridGapX = this.realSheetDimHorizontal / Math.floor(this.realSheetDimHorizontal / this.realSheetMarginMin) * this.pxPerMM;
+        this.gridGapY = this.realSheetDimVertical / Math.floor(this.realSheetDimVertical / this.realSheetMarginMin) * this.pxPerMM;
         this.line;     // must be initialized after paper.setup()
         this.nextLine; // dashed line that shows next line to be drawn
         this.area;     // group of blocked, non-clickacble areas
         this.roi;      // region of interest / work area
 
-        this.pxPerMM = scaleX;
 
         console.log(`raster created with gridSize=${this.gridGapX}, pxPerMM=${this.pxPerMM}`);
     }
@@ -39,14 +40,17 @@ export class Raster {
         this.nextLine = new Liniensegment(new paper.Point(0, 0), new paper.Point(0, 0));
     }
 
-    ////////////////// FUNCTIONS ///////////////////
+    recalculateGridGap() {
+        this.gridGapX = this.realSheetDimHorizontal / Math.floor(this.realSheetDimHorizontal / this.realSheetMarginMin) * this.pxPerMM;
+        this.gridGapY = this.realSheetDimVertical / Math.floor(this.realSheetDimVertical / this.realSheetMarginMin) * this.pxPerMM;
+    }
 
     // add line:
     addLine(ptAtSmallestDist) {
         console.log(`create line with point #${ptAtSmallestDist.id}`);
 
-        // toggle gridPoint:
-        ptAtSmallestDist.selected = !ptAtSmallestDist.selected;
+        // TODO: toggle gridPoint instead of set to true:
+        ptAtSmallestDist.selected = true;
 
         // add line:
         if (ptAtSmallestDist.selected) {

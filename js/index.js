@@ -67,7 +67,7 @@ document.getElementById('button_measureDiagonal').onclick = function (event) {
     // new paper.PointText([snakeCanvas.clientHeight / 2, snakeCanvas.clientHeight / 2], diagonalDistance.length);
     let userInput = prompt(`${Math.floor(diagonalDistance.length)} pixel gemessen. Wie viel mm?`);
     raster.pxPerMM = userInput == null ? raster.pxPerMM : diagonalDistance.length / userInput;
-    raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
+    raster.recalculateGridGap();
     document.getElementById("rasterPxPerMM").textContent = raster.pxPerMM.toFixed(3);
     console.log("diagonal distance in px:", diagonalDistance.length);
     changeCursor(raster.gridGapX * raster.pxPerMM / 2);
@@ -111,19 +111,23 @@ inputVariables.forEach(name => {
                 loadImage();
             }
             if (name == 'realSheetH') {
-                raster.realSheetH = parseInt(value);
+                raster.realSheetDimHorizontal = parseInt(value);
+                raster.recalculateGridGap();
                 recreateSheets();
             }
             if (name == 'realSheetV') {
-                raster.realSheetV = parseInt(value);
+                raster.realSheetDimVertical = parseInt(value);
+                raster.recalculateGridGap();
                 recreateSheets();
             }
             if (name == 'realSheetMargin'){
-                raster.realSheetMargin = value;
-                raster.gridGapX = raster.realSheetH / Math.floor(raster.realSheetH / raster.realSheetMargin) * raster.pxPerMM;
+                raster.realSheetMarginMin = value;
+                raster.recalculateGridGap();
                 recreateSheets();
             } 
         }
+        document.querySelector('#snakeCanvas').focus();
+        console.log(document.querySelector('#snakeCanvas'));
     };
 });
 

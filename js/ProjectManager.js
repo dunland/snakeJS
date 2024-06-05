@@ -14,11 +14,12 @@ export function exportProject(event, fileName) {
         imageFile: document.getElementById("text_imageFile").textContent,
         raster: {
             roi: raster.roi.exportJSON(),
-            realSheetMargin: raster.realSheetMargin,
-            realSheetV: raster.realSheetV,
-            realSheetH: raster.realSheetH,
+            realSheetMargin: raster.realSheetMarginMin,
+            realSheetV: raster.realSheetDimVertical,
+            realSheetH: raster.realSheetDimHorizontal,
             lineSegmentsTypeHistory: raster.lineSegmentsTypeHistory,
             gridGapX: raster.gridGapX,
+            gridGapY: raster.gridGapY,
             line: raster.line.exportJSON(),
             area: raster.area.exportJSON(),
             pxPerMM: raster.pxPerMM,
@@ -46,9 +47,9 @@ export async function importProject(projectDataFile) {
         .then(projectData => {
 
             importImageFile(projectData.imageFile);
-            raster.realSheetH = projectData.raster.realSheetH;
-            raster.realSheetV = projectData.raster.realSheetV;
-            raster.realSheetMargin = projectData.raster.realSheetMargin;
+            raster.realSheetDimHorizontal = projectData.raster.realSheetH;
+            raster.realSheetDimVertical = projectData.raster.realSheetV;
+            raster.realSheetMarginMin = projectData.raster.realSheetMargin;
 
             raster.roi = new paper.Path().importJSON(projectData.raster.roi);
             raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
@@ -70,8 +71,8 @@ export async function importProject(projectDataFile) {
 
             // update input fields:
             document.getElementById("text_imageFile").textContent = imageFile;
-            document.getElementById("text_realSheetH").textContent = raster.realSheetH;
-            document.getElementById("text_realSheetV").textContent = raster.realSheetV;
+            document.getElementById("text_realSheetH").textContent = raster.realSheetDimHorizontal;
+            document.getElementById("text_realSheetV").textContent = raster.realSheetDimVertical;
 
             let pathLength = raster.line.length / raster.pxPerMM / 1000;
             document.getElementById("pathLength").textContent = pathLength.toFixed(3);
@@ -90,16 +91,16 @@ export function initializeNewProject() {
     if (raster.roi) {
 
         // platten erstellen:
-        if (raster.realSheetH > raster.realSheetV)
+        if (raster.realSheetDimHorizontal > raster.realSheetDimVertical)
             createSheetsHorizontal(
-                raster.realSheetH * raster.pxPerMM,
-                raster.realSheetV * raster.pxPerMM,
+                raster.realSheetDimHorizontal * raster.pxPerMM,
+                raster.realSheetDimVertical * raster.pxPerMM,
                 raster.roi.bounds.height, raster.roi.bounds.width
             );
         else {
             createSheetsVertical(
-                raster.realSheetH * raster.pxPerMM,
-                raster.realSheetV * raster.pxPerMM,
+                raster.realSheetDimHorizontal * raster.pxPerMM,
+                raster.realSheetDimVertical * raster.pxPerMM,
                 raster.roi.bounds.height, raster.roi.bounds.width
             );
         }

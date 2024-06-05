@@ -15,7 +15,7 @@ class SheetHelper {
 
     constructor(rectangleObject) {
         this.gridGapX = raster.gridGapX;
-        this.gridGapY = raster.realSheetV / Math.floor(raster.realSheetV / raster.realSheetMargin) * raster.pxPerMM;
+        this.gridGapY = raster.gridGapY;
         this.rectangleObject = rectangleObject;
         this.gridDots = new paper.Group();
     }
@@ -66,8 +66,8 @@ export function importSheets(JSONdata) {
     if (globalVerboseLevel > 2)
         console.log(`imported ${sheetsGroup.children.length} sheets`);
 
-    let sheetLength = raster.realSheetH * raster.pxPerMM;
-    let sheetWidth = raster.realSheetV * raster.pxPerMM
+    let sheetLength = raster.realSheetDimHorizontal * raster.pxPerMM;
+    let sheetWidth = raster.realSheetDimVertical * raster.pxPerMM
     let maxH = raster.roi.bounds.height;
     let maxW = raster.roi.bounds.width;
 
@@ -90,36 +90,38 @@ export function importSheets(JSONdata) {
 
 }
 
-export function createSheetsHorizontal(sheetH, sheetV, maxH, maxW) {
+export function createSheetsHorizontal(sheetH, sheetV, verticalExtent, horizontalExtent) {
     console.log('creating sheets:');
 
-    var sheets = new paper.Group();
     let _sheetsPerRow = 0;
-    for (var y = -1; y < (maxH + sheetV) / sheetV; y++)
-        for (var x = -1; x < (maxW + sheetH) / sheetH; x++) {
+    var sheets = new paper.Group();
+
+    // horizontal sheets:
+    for (var posY = -1; posY < (verticalExtent + sheetV) / sheetV; posY++)
+        for (var posX = -1; posX < (horizontalExtent + sheetH) / sheetH; posX++) {
             sheets.addChild(new paper.Path.Rectangle({
-                point: new paper.Point(x * sheetH, y * sheetV),
+                point: new paper.Point(posX * sheetH, posY * sheetV),
                 size: new paper.Size(sheetH, sheetV),
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
 
             // displace every other sheet:
-            if (y % 2 == 0) {
+            if (posY % 2 == 0) {
                 sheets.lastChild.position.x -= raster.gridGapX;
             }
-            _sheetsPerRow = (x > _sheetsPerRow) ? x : _sheetsPerRow;
+            _sheetsPerRow = (posX > _sheetsPerRow) ? posX : _sheetsPerRow;
 
             // create sheet helpers:
             sheetHelpers.push(new SheetHelper(sheets.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
             sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheets.lastChild.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheets.lastChild.bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
-            sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
-                }.${x + 2} `;
+            sheetHelpers[sheetHelpers.length - 1].label.content = `${posY + 2
+                }.${posX + 2} `;
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
         }
 
-    movableSheetsTo = Math.floor((maxW + sheetH) / sheetH) + 2;
+    movableSheetsTo = Math.floor((horizontalExtent + sheetH) / sheetH) + 2;
     sheetsPerRow = _sheetsPerRow + 2;
 
     console.log(`${sheetsPerRow} sheets per row.`);
@@ -136,34 +138,37 @@ export function createSheetsHorizontal(sheetH, sheetV, maxH, maxW) {
     sheetsGroup = sheets;
 }
 
-export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
+export function createSheetsVertical(sheetDimH, sheetDimV, verticalExtent, horizontalExtent) {
     console.log('creating sheets:');
 
     let _sheetsPerRow = 0;
     var sheets = new paper.Group();
-    for (var x = -1; x < ((maxW + sheetH) / sheetH); x++)
-        for (var y = -1; y < ((maxH + sheetV) / sheetV); y++) {
+    for (var posX = -1; posX < ((horizontalExtent + sheetDimH) / sheetDimH); posX++)
+        for (var posY = -1; posY < ((verticalExtent + sheetDimV) / sheetDimV); posY++) {
             sheets.addChild(new paper.Path.Rectangle({
-                point: new paper.Point(x * sheetH, y * sheetV),
-                size: new paper.Size(sheetH, sheetV),
+                point: new paper.Point(posX * sheetDimH, posY * sheetDimV),
+                size: new paper.Size(sheetDimH, sheetDimV),
                 strokeColor: globalColor,
                 strokeWidth: 1
             }));
-            if (x % 2 == 0) {
-                sheets.lastChild.position.y -= raster.gridGapX;
-            }
-            _sheetsPerRow = (y > _sheetsPerRow) ? y : _sheetsPerRow;
+            console.log(sheets.lastChild.gridGapY);
 
-            // create sheets:
+            // displace every other sheet:
+            if (posX % 2 == 0) {
+                sheets.lastChild.position.y -= raster.realSheetDimVertical / Math.floor(raster.realSheetDimVertical / raster.realSheetMarginMin) * raster.pxPerMM;
+            }
+            _sheetsPerRow = (posY > _sheetsPerRow) ? posY : _sheetsPerRow;
+
+            // create sheet helpers:
             sheetHelpers.push(new SheetHelper(sheets.lastChild));
             sheetHelpers[sheetHelpers.length - 1].createGridPoints();
             sheetHelpers[sheetHelpers.length - 1].label = new paper.PointText([sheets.lastChild.bounds.topLeft.x + sheetHelpers[sheetHelpers.length - 1].gridGapX, sheets.lastChild.bounds.topLeft.y + sheetHelpers[sheetHelpers.length - 1].gridGapY * 2]);
-            sheetHelpers[sheetHelpers.length - 1].label.content = `${y + 2
-                }.${x + 2} `;
+            sheetHelpers[sheetHelpers.length - 1].label.content = `${posY + 2
+                }.${posX + 2} `;
             sheetHelpers[sheetHelpers.length - 1].label.strokeColor = globalColor;
         }
 
-    movableSheetsTo = Math.floor((maxW + sheetH) / sheetH) + 2;
+    movableSheetsTo = Math.floor((horizontalExtent + sheetDimH) / sheetDimH) + 2;
     // sheetsPerRow = Math.floor((maxW + sheetLength) / sheetLength) + 2;
     sheetsPerRow = _sheetsPerRow + 2;
     console.log(`${sheetsPerRow} sheets per row.`);
@@ -184,7 +189,7 @@ export function createSheetsVertical(sheetH, sheetV, maxH, maxW) {
 export function scaleSheets() {
 
     let previousSheetLength = sheetsGroup.children[0].bounds.width;
-    var newSheetLength = raster.realSheetH * raster.pxPerMM;
+    var newSheetLength = raster.realSheetDimHorizontal * raster.pxPerMM;
     var scaleBy = newSheetLength / previousSheetLength;
 
     for (var i = 0; i < sheetsGroup.children.length; i++) {
@@ -204,11 +209,11 @@ export function scaleSheets() {
 
         // recreate gridDots:
         sheetHelpers[i].gridGapX = raster.gridGapX;
-        sheetHelpers[i].gridGapY = raster.realSheetV / Math.floor(raster.realSheetV / raster.realSheetMargin) * raster.pxPerMM;
+        sheetHelpers[i].gridGapY = raster.realSheetDimVertical / Math.floor(raster.realSheetDimVertical / raster.realSheetMarginMin) * raster.pxPerMM;
 
         sheetHelpers[i].gridDots.removeChildren(); // TODO: funktioniert das?
         sheetHelpers[i].gridDots = new paper.Group();
-        sheetHelpers[i].createGridPoints(raster.realSheetH * raster.pxPerMM, raster.realSheetV * raster.pxPerMM);
+        sheetHelpers[i].createGridPoints(raster.realSheetDimHorizontal * raster.pxPerMM, raster.realSheetDimVertical * raster.pxPerMM);
 
         console.log(sheetHelpers[sheetHelpers.length - 1].gridDots.children.length * sheetsGroup.children.length, "gridDots erstellt mit gridSize", sheetHelpers[sheetHelpers.length - 1].gridGapX, sheetHelpers[sheetHelpers.length - 1].gridGapY);
 
@@ -295,13 +300,13 @@ export function recreateSheets() {
     console.log(sheetsGroup);
     sheetHelpers = [];
 
-    console.log(`sheetH: ${raster.realSheetH} > sheetV: ${raster.realSheetV}: ${(raster.realSheetH > raster.realSheetV)}`);
+    console.log(`sheetH: ${raster.realSheetDimHorizontal} > sheetV: ${raster.realSheetDimVertical}: ${(raster.realSheetDimHorizontal > raster.realSheetDimVertical)}`);
     // platten erstellen:
-    if (raster.realSheetH > raster.realSheetV) {
+    if (raster.realSheetDimHorizontal > raster.realSheetDimVertical) {
         console.log("creating horizontal sheets");
         createSheetsHorizontal(
-            raster.realSheetH * raster.pxPerMM, // horizontal
-            raster.realSheetV * raster.pxPerMM, // vertikal 
+            raster.realSheetDimHorizontal * raster.pxPerMM, // horizontal
+            raster.realSheetDimVertical * raster.pxPerMM, // vertikal 
             raster.roi.bounds.height,           // maxH
             raster.roi.bounds.width             // maxW
         );
@@ -309,10 +314,10 @@ export function recreateSheets() {
     else {
         console.log("creating vertical sheets");
         createSheetsVertical(
-            raster.realSheetH * raster.pxPerMM,
-            raster.realSheetV * raster.pxPerMM,
-            raster.roi.bounds.height,
-            raster.roi.bounds.width
+            raster.realSheetDimHorizontal * raster.pxPerMM, // sheetDimH
+            raster.realSheetDimVertical * raster.pxPerMM, // sheetDimV
+            raster.roi.bounds.height,           // verticalExtent
+            raster.roi.bounds.width             // horizontalExtent
         );
     }
 

@@ -127,7 +127,7 @@ export function keyPressed(keyEvent) {
             if (keyEvent.keyCode == 37) { // left
 
                 // vertical layout: move all
-                if (raster.realSheetH < raster.realSheetV) {
+                if (raster.realSheetDimHorizontal < raster.realSheetDimVertical) {
                     for (var i = 0; i < sheetsGroup.children.length; i++) {
                         sheetsGroup.children[i].position.x -= sheetHelpers[0].gridGapX;
                         sheetHelpers[i].gridDots.position.x -= sheetHelpers[0].gridGapX;
@@ -146,7 +146,7 @@ export function keyPressed(keyEvent) {
             if (keyEvent.keyCode == 39) { // right
 
                 // vertical layout: move all
-                if (raster.realSheetH < raster.realSheetV) {
+                if (raster.realSheetDimHorizontal < raster.realSheetDimVertical) {
                     for (var i = 0; i < sheetsGroup.children.length; i++) {
                         sheetsGroup.children[i].position.x += sheetHelpers[0].gridGapX;
                         sheetHelpers[i].gridDots.position.x += sheetHelpers[0].gridGapX;
@@ -163,7 +163,7 @@ export function keyPressed(keyEvent) {
             }
             if (keyEvent.keyCode == 38) { // up:
                 // vertical layout: move selected
-                if (raster.realSheetH < raster.realSheetV) {
+                if (raster.realSheetDimHorizontal < raster.realSheetDimVertical) {
 
                     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
                         sheetsGroup.children[i].position.y -= sheetHelpers[0].gridGapY;
@@ -183,7 +183,7 @@ export function keyPressed(keyEvent) {
             if (keyEvent.keyCode == 40) { // down:
 
                 // vertical layout: move selected
-                if (raster.realSheetH < raster.realSheetV) {
+                if (raster.realSheetDimHorizontal < raster.realSheetDimVertical) {
 
                     for (var i = movableSheetsFrom; i < movableSheetsTo; i++) {
                         sheetsGroup.children[i].position.y += sheetHelpers[0].gridGapY;
@@ -441,7 +441,7 @@ export function onMouseDown(event) {
                     setMeasureState(measureToolState + 1);
                     let userInput = prompt(`${Math.floor(measureDistance.length)} pixel gemessen. Wie viel mm?`);
                     raster.pxPerMM = userInput == null ? raster.pxPerMM : measureDistance.length / userInput;
-                    raster.gridGapX = raster.realSheetMargin * raster.pxPerMM;
+                    raster.recalculateGridGap();
 
                     changeCursor(raster.gridGapX * raster.pxPerMM / 2);
                     scaleSheets();
