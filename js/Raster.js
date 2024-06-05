@@ -77,7 +77,10 @@ export class Raster {
             // }
 
         }
-        // update path length:
+        this.updatePathLength();
+
+    }
+    updatePathLength() {
         let pathLength = this.line.length / this.pxPerMM / 1000;
         document.getElementById("pathLength").textContent = pathLength.toFixed(3);
 

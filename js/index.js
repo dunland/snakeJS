@@ -19,6 +19,8 @@ document.getElementById("buttonUndo").onclick = function () {
         const sheet = sheetHelpers[index];
         sheet.gridDots.selected = false;
     }
+
+    raster.updatePathLength();
 }
 
 // stepwise scaling:
@@ -127,7 +129,6 @@ inputVariables.forEach(name => {
             } 
         }
         document.querySelector('#snakeCanvas').focus();
-        console.log(document.querySelector('#snakeCanvas'));
     };
 });
 
