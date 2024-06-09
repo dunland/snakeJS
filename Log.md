@@ -7,24 +7,21 @@
 		- [x] **Platzieren** ist irgendwie komisch (Versatz entsteht, wenn ich zweiten Knopf benutze)
 		- [ ] Skalieren macht alles kaputt, wenn in vertikalmodus
 - [ ] Rastergröße ändern, wenn bereits gezeichnet wurde
-- [ ] wenn Plattenlänge und -brite vertauscht sind, ist Rastergröße (um ca. die Hälfte?) verschoben
-	- Workaround: Ein großes Raster?
-- [ ] Raster auch neu berechnen, wenn Platten-Randabstand geändert wird
 - [ ] Projektmanager: Bilddatei händisch auswählbar?
-- [ ] UI: Bilddiagonale messen: Bilddiagonale anzeigen!
-- **mehr Dialoge!**
-	- [ ] Projekt laden: Dialog öffnen, Ordner auswählen
-	- [ ] Projekt laden: Fehlermeldung, wenn keine `project.json`
-- Distanzmessung mit Komma `,` möglich?
+
+- Distanzmessung mit Komma `,` in input möglich?
 - [ ] Nach Laden des Projektes sind mehr Platten beweglich, als die Zeile lang ist...
-- [ ] Warum sind Rasterpunkte manchmal außerhalb der Platten?
+- [ ] (Warum sind Rasterpunkte manchmal außerhalb der Platten?)
 
 ## refactor & beautifications
 
+- **mehr Dialoge!**
+	- [ ] Projekt laden: Dialog öffnen, Ordner auswählen
+	- [ ] Projekt laden: Fehlermeldung, wenn keine `project.json`
+- [ ] UI-beautification: Bilddiagonale messen: Bilddiagonale anzeigen!
+
 - [ ] Anzeige von kritischen Plattengrenzen & Gestößen
 - [ ] remove gridPoints out of bounds
-- [x] Platten hinzufügen / entfernen nach Skalierung
-- [x] **bug:** Man darf nicht auf Zwischenglieder klicken...
 - [ ] undo area: auch lastSegment rückänderbar machen (einfach wenn mode == area)
 - [ ] **bug:** Bildskalierung läuft total schief..??
 - [ ] nach Speichern link einblenden ?!
@@ -35,8 +32,12 @@
 
 ## log
 
+05.06.2024
+
 - [x] **händisch einzelne Platten** oder alle links / alle rechts **verschieben**
 	- `Shift` und `Control` auch bei Lukas so?	
+- [x] wenn Plattenlänge und -breite vertauscht sind, ist Rastergröße (um ca. die Hälfte?) verschoben
+- [x] Raster auch neu berechnen, wenn Platten-Randabstand geändert wird
 
 25.03.2024
 
