@@ -366,7 +366,8 @@ export function onMouseDown(event) {
         console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y, 2);
 
     if (event.x >= canvasElement.clientWidth || event.y >= canvasElement.clientHeight) {
-        console.log("cannot draw here! (not in canvas)");
+        if (globalVerboseLevel > 2)
+            console.log("cannot draw here! (not in canvas)");
         return;
     }
 

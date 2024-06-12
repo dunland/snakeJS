@@ -1,10 +1,10 @@
 // JavaScript for the page html setup
 
-import { image, importImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
+import { image, setImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./Modes.js";
 import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
-import { exportProject } from "./ProjectManager.js";
+import { exportProject, importProject } from "./ProjectManager.js";
 import { toggleSupportLines } from "./UserInteraction.js";
 
 // undo line:
@@ -101,17 +101,53 @@ document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(ra
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;
 
+// upload image file:
+document.querySelector("#input_imageFile").addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const fileReader = new FileReader();
+        fileReader.onload = function (e) {
+            const uploadedImage = new Image();
+            uploadedImage.onload = function () {
+                const canvasElement = document.getElementById('snakeCanvas');
+                canvasElement.style.backgroundImage = `url(${uploadedImage})`;
+                console.log(`url(${uploadedImage})`);
+            };
+            uploadedImage.src = e.target.result;
+            console.log(e.target.result);
+            setImageFile(e.target.result);
+            loadImage();
+        }
+        fileReader.readAsDataURL(file);
+    }
+});
+
+// upload project json:
+document.querySelector("#input_projectFile").addEventListener('change', (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                const jsonData = JSON.parse(e.target.result);
+                console.log(jsonData);
+                importProject(jsonData);
+            } catch (error) {
+                console.error('Error parsing JSON:', error);
+                alert('Invalid JSON file');
+            }
+        };
+        reader.readAsText(file);
+    }
+});
+
 // submit input:
-const inputVariables = ["imageFile", "realSheetH", "realSheetV", "realSheetMargin"];
+const inputVariables = ["realSheetH", "realSheetV", "realSheetMargin"];
 inputVariables.forEach(name => {
     document.getElementById(`button_${name}`).onclick = () => {
         const value = document.getElementById(`input_${name}`).value;
         if (value) {
             document.getElementById(`text_${name}`).textContent = value;
-            if (name == 'imageFile') {
-                importImageFile(value);
-                loadImage();
-            }
             if (name == 'realSheetH') {
                 raster.realSheetDimHorizontal = parseInt(value);
                 raster.recalculateGridGap();
@@ -122,11 +158,11 @@ inputVariables.forEach(name => {
                 raster.recalculateGridGap();
                 recreateSheets();
             }
-            if (name == 'realSheetMargin'){
+            if (name == 'realSheetMargin') {
                 raster.realSheetMarginMin = value;
                 raster.recalculateGridGap();
                 recreateSheets();
-            } 
+            }
         }
         document.querySelector('#snakeCanvas').focus();
     };

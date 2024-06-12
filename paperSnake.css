@@ -32,6 +32,13 @@ canvas[resize] {
     width: 10%;
 }
 
+#consoleLog {
+    color: grey;
+    font-style: italic;
+    position: absolute;
+    bottom: 0;
+}
+
 div span.variable {
     background-color: yellow;
 }

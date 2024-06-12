@@ -8,7 +8,7 @@ export var cursor, cursorLine;
 export function changeCursor(newRadius) { cursor.radius = newRadius; }
 export var imageFile = "../beispielbild.jpeg", image;
 const pxPerMM = 0.29;
-export function importImageFile(newVar) { imageFile = newVar; }
+export function setImageFile(newVar) { imageFile = newVar; } // TODO: loadImage() must be called manually after changing this
 export var raster = new Raster(pxPerMM);
 export var globalColor = "white";
 

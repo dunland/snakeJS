@@ -1,14 +1,22 @@
 ## To do
+- [ ] **wandwurm.fun website**: ProjectManager!
+	- [ ] load project from file
+	- [ ] upload images like so: https://www.delftstack.com/howto/javascript/javascript-image-upload/
+	- [ ] (workaround) adjust loading mechanism: skip loading file
+	- [ ] upload file to server and keep -> load upon startup
 
-- [ ] **Interaktion**
+- **Interaktion**
 	- [ ] (Pfadbearbeitung: Hinzufügen, Entfernen, Ändern von Pfadsegmenten)
 	- [ ] **Platten längs oder quer**: 
 		- [x] Pfeiltasten hoch/runter bewegen nur Reihe wenn vertikal
 		- [x] **Platzieren** ist irgendwie komisch (Versatz entsteht, wenn ich zweiten Knopf benutze)
 		- [ ] Skalieren macht alles kaputt, wenn in vertikalmodus
-- [ ] Rastergröße ändern, wenn bereits gezeichnet wurde
-- [ ] Projektmanager: Bilddatei händisch auswählbar?
+	- [ ] Rastergröße ändern, wenn bereits gezeichnet wurde
+	- [ ] mehrere raster.lines ermöglichen; Enter beendet Linie
 
+- **GUI**:
+    - [ ] Checkliste von notwendigen Elementen: raster.roi, raster.line, sheetsGroup, ...
+	- [ ] erst dann Projekt export verfügbar machen
 - Distanzmessung mit Komma `,` in input möglich?
 - [ ] Nach Laden des Projektes sind mehr Platten beweglich, als die Zeile lang ist...
 - [ ] (Warum sind Rasterpunkte manchmal außerhalb der Platten?)

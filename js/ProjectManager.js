@@ -1,6 +1,6 @@
 import { sheetsGroup, createSheetsHorizontal, createSheetsVertical, importSheets, calculateLeftovers } from "./Platten.js";
 import { changeDrawMode } from "./Modes.js";
-import { raster, loadImage, imageFile, importImageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
+import { raster, loadImage, imageFile, setImageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
 export function setProjectPath(newPath) { projectPath = newPath };
@@ -11,22 +11,22 @@ export function exportProject(event, fileName) {
 
     var projectExport = {
         globalColor: globalColor,
-        imageFile: document.getElementById("text_imageFile").textContent,
+        imageFile: imageFile,
         raster: {
-            roi: raster.roi.exportJSON(),
+            roi: raster.roi ? raster.roi.exportJSON() : null,
             realSheetMargin: raster.realSheetMarginMin,
             realSheetV: raster.realSheetDimVertical,
             realSheetH: raster.realSheetDimHorizontal,
             lineSegmentsTypeHistory: raster.lineSegmentsTypeHistory,
             gridGapX: raster.gridGapX,
             gridGapY: raster.gridGapY,
-            line: raster.line.exportJSON(),
-            area: raster.area.exportJSON(),
+            line: raster.line ? raster.line.exportJSON() : null,
+            area: raster.area ? raster.area.exportJSON() : null,
             pxPerMM: raster.pxPerMM,
         },
 
         // sheetHelpers are dynamically created from sheetsGroup!
-        sheetsGroup: sheetsGroup.exportJSON()
+        sheetsGroup: sheetsGroup ? sheetsGroup.exportJSON() : null
     }
 
     projectExport = JSON.stringify(projectExport);
@@ -38,49 +38,40 @@ export function exportProject(event, fileName) {
     link.click();
 }
 
-export async function importProject(projectDataFile) {
-    let newProject = false;
-    console.log(`loading project from ${projectDataFile}`);
+export async function importProject(projectData) {
+    console.log(`loading project from uploaded file`);
 
-    const response = await fetch(projectDataFile)
-        .then(response => response.json())
-        .then(projectData => {
+    // setImageFile(projectData.imageFile); // TODO: upload to server and reuse image
+    raster.realSheetDimHorizontal = projectData.raster.realSheetH;
+    raster.realSheetDimVertical = projectData.raster.realSheetV;
+    raster.realSheetMarginMin = projectData.raster.realSheetMargin;
 
-            importImageFile(projectData.imageFile);
-            raster.realSheetDimHorizontal = projectData.raster.realSheetH;
-            raster.realSheetDimVertical = projectData.raster.realSheetV;
-            raster.realSheetMarginMin = projectData.raster.realSheetMargin;
+    raster.roi = new paper.Path().importJSON(projectData.raster.roi);
+    raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
+    raster.gridGapX = projectData.raster.gridGapX;
+    raster.line = new paper.Path().importJSON(projectData.raster.line);
+    raster.area = new paper.Group().importJSON(projectData.raster.area);
+    raster.pxPerMM = projectData.raster.pxPerMM;
 
-            raster.roi = new paper.Path().importJSON(projectData.raster.roi);
-            raster.lineSegmentsTypeHistory = projectData.raster.lineSegmentsTypeHistory;
-            raster.gridGapX = projectData.raster.gridGapX;
-            raster.line = new paper.Path().importJSON(projectData.raster.line);
-            raster.area = new paper.Group().importJSON(projectData.raster.area);
-            raster.pxPerMM = projectData.raster.pxPerMM;
+    // loadImage(); // TODO: this will overwrite the roi!
+    raster.initialize(); // initialize line and area if not defined
 
-            loadImage(); // TODO: this will overwrite the roi!
-            raster.initialize(); // initialize line and area if not defined
+    importSheets(projectData.sheetsGroup);
 
-            importSheets(projectData.sheetsGroup);
+    updateGlobalColors(projectData.globalColor);
+    calculateLeftovers();
 
-            updateGlobalColors(projectData.globalColor);
-            calculateLeftovers();
+    document.getElementById("button_line").classList.remove("inactive");
+    changeDrawMode("line");
 
-            document.getElementById("button_line").classList.remove("inactive");
-            changeDrawMode("line");
+    // update input fields:
+    // document.getElementById("text_imageFile").textContent = imageFile; // TODO: upload to server and reuse image
+    document.getElementById("text_realSheetH").textContent = raster.realSheetDimHorizontal;
+    document.getElementById("text_realSheetV").textContent = raster.realSheetDimVertical;
 
-            // update input fields:
-            document.getElementById("text_imageFile").textContent = imageFile;
-            document.getElementById("text_realSheetH").textContent = raster.realSheetDimHorizontal;
-            document.getElementById("text_realSheetV").textContent = raster.realSheetDimVertical;
+    let pathLength = raster.line.length / raster.pxPerMM / 1000;
+    document.getElementById("pathLength").textContent = pathLength.toFixed(3);
 
-            let pathLength = raster.line.length / raster.pxPerMM / 1000;
-            document.getElementById("pathLength").textContent = pathLength.toFixed(3);
-
-        }).catch(error => {
-            console.error("Error fetching project data:", error);
-        })
-    return false;
 }
 
 export function initializeNewProject() {
