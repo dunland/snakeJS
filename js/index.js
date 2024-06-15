@@ -7,6 +7,8 @@ import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineEx
 import { exportProject, importProject } from "./ProjectManager.js";
 import { toggleSupportLines } from "./UserInteraction.js";
 
+document.title = 'Wandwurm.fun';
+
 // undo line:
 document.getElementById("buttonUndo").onclick = function () {
 
@@ -97,7 +99,15 @@ document.getElementById("colorPicker").onchange = () => {
 }
 
 document.getElementById("buttonSaveProject").onclick = exportProject;
-document.getElementById("buttonExportEntirePath").onclick = () => downloadSVG(raster.line);
+document.getElementById("buttonExportEntirePath").onclick = () => {
+    // FIXME: svgs haben keinen <svg> header. Für gimp muss die struktur wie folgt sein:
+    /* <svg>
+        <path d="M0 0 L50 50" stroke="black" stroke-width="1" fill="none" />
+    </svg> */
+    // Außerdem wird nie der gesamte Pfad exportiert!
+    // downloadSVG(raster.line);
+    alert("Dieser Button muss noch gefixt werden!")
+};
 document.getElementById("buttonExportEntireProject").onclick = downloadProjectSVG;
 document.getElementById("buttonExportPathPerSheet").onclick = extractPathFromSheets;
 

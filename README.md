@@ -1,6 +1,6 @@
-# snakeJS
+# Wandwurm
 
-a.k.a. "Werner"/Wärmer a.k.a. Wandheizungsauslegungsgenerator in JavaScript
+Wandheizungsauslegungsgenerator in JavaScript
 
 see the [Log](Log.md) file for the full programming log and annotations
 

@@ -5,7 +5,6 @@ var express = require('express'); // needed to serve files
 var app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-var makerjs = require('makerjs');
 
 var dir = path.join(__dirname, '.');
 

@@ -101,7 +101,7 @@ export function downloadSVG(object, fileName) {
 
     object.scale(1 / raster.pxPerMM);
     if (!fileName)
-        fileName = "snakeJS_export.svg"
+        fileName = "snakeJS_export.svg" // TODO rename to project name
 
     var url = "data:image/svg+xml;utf8," + encodeURIComponent(object.exportSVG(
         {

@@ -1,9 +1,12 @@
 ## To do
 - [ ] **wandwurm.fun website**: ProjectManager!
-	- [ ] load project from file
+	- [ ] load project from file: replace/remove current raster.roi
 	- [ ] upload images like so: https://www.delftstack.com/howto/javascript/javascript-image-upload/
 	- [ ] (workaround) adjust loading mechanism: skip loading file
 	- [ ] upload file to server and keep -> load upon startup
+	- [ ] automatically restart node when server abschmiert
+	- [ ] SSL
+	- [ ] Passwort für Lukas
 
 - **Interaktion**
 	- [ ] (Pfadbearbeitung: Hinzufügen, Entfernen, Ändern von Pfadsegmenten)
@@ -17,7 +20,7 @@
 - **GUI**:
     - [ ] Checkliste von notwendigen Elementen: raster.roi, raster.line, sheetsGroup, ...
 	- [ ] erst dann Projekt export verfügbar machen
-- Distanzmessung mit Komma `,` in input möglich?
+- Distanzmessung mit Komma `,` in input möglich? `inputString.replace(',', '.')`
 - [ ] Nach Laden des Projektes sind mehr Platten beweglich, als die Zeile lang ist...
 - [ ] (Warum sind Rasterpunkte manchmal außerhalb der Platten?)
 
