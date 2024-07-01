@@ -6,6 +6,7 @@ import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGr
 import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject, importProject } from "./ProjectManager.js";
 import { toggleSupportLines } from "./UserInteraction.js";
+import { changeCursor } from "./paperSnake.js";
 
 document.title = 'Wandwurm.fun';
 

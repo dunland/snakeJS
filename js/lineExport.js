@@ -1,4 +1,3 @@
-import imageSettings from "../settings.json" assert { type: 'json' };
 import { sheetsGroup, sheetHelpers } from "./Platten.js";
 import { raster } from "./paperSnake.js";
 
@@ -141,7 +140,7 @@ export function downloadProjectSVG(event, fileName) {
 export function downloadProjectJSON(event, fileName) {
 
     if (!fileName)
-        fileName = imageSettings.imageName.split('.')[0] + '.json';
+        fileName = 'project.json';
 
     console.log(fileName);
 
