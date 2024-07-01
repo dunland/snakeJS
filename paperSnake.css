@@ -3,11 +3,12 @@ body {
     padding: 0;
     margin: 0;
     height: 100%;
-    background-color: #eeeeee;
+    background-color: beige;
 }
 
 #top {
     height: 85%;
+    /* display: flex; */
 }
 
 canvas {
@@ -17,6 +18,8 @@ canvas {
     height: 100%;
     background-repeat: no-repeat;
     background-position: 0 0;
+    border: 1px black dashed;
+    background-color: #eeeeee;
     /* background-size: 100%; */
 }
 
@@ -24,12 +27,16 @@ canvas {
 canvas[resize] {
     width: 85%;
     height: 100%;
+    /* float: left; */
 }
 
 #right {
     display: inline-block;
     vertical-align: top;
-    width: 10%;
+    /* width: 10%; */
+    /* position: absolute;
+    right: 0px; */
+    height: 100%;
 }
 
 #consoleLog {
