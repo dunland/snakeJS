@@ -1,3 +1,4 @@
+import { Devtools } from "./Devtools.js";
 import { sheetsGroup, sheetHelpers } from "./Platten.js";
 import { raster } from "./paperSnake.js";
 
@@ -156,7 +157,8 @@ export function downloadProjectJSON(event, fileName) {
     link.click();
 }
 
-export function extractPathFromSheets() {
+export async function extractPathFromSheets() {
+    let exportElements = [];
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         if (raster.line.intersects(sheetsGroup.children[i])) {
 
@@ -168,9 +170,31 @@ export function extractPathFromSheets() {
                 ],
                 strokeColor: paper.Color.random(),
                 strokeWidth: 2
-            }).removeOnMove();
+            });
 
-            downloadSVG(joinedObj, `Platte_${sheetHelpers[i].label.content}.svg`)
+            exportElements.push(joinedObj);
+
         }
     }
+    console.log(`${exportElements.length} sheets will be exported.`);
+    Devtools.log(`${exportElements.length} sheets will be exported.`);
+
+    // Google Chrome allows only 10 downloads at a time
+    for (let count = 0; count < sheetsGroup.children.length; count += 10) {
+        for (let i = count; i < exportElements.length; i++) {
+            await downloadSVG(exportElements[i], `Platte_${sheetHelpers[i].label.content}.svg`);
+        }
+        await pause(1000);
+    }
+    for (let el = 0; el < exportElements.length; el++) {
+        exportElements[el].removeOnMove();        
+    }
+}
+
+function pause(msec) {
+    return new Promise(
+        (resolve, reject) => {
+            setTimeout(resolve, msec || 1000);
+        }
+    );
 }

@@ -33,7 +33,7 @@ canvas[resize] {
 #right {
     display: inline-block;
     vertical-align: top;
-    /* width: 10%; */
+    width: 10%;
     /* position: absolute;
     right: 0px; */
     height: 100%;

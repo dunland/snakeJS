@@ -18,7 +18,9 @@
 	- [ ] mehrere raster.lines ermöglichen; Enter beendet Linie
 
 - **GUI**:
-    - [ ] Checkliste von notwendigen Elementen: raster.roi, raster.line, sheetsGroup, ...
+    - [ ] CSS: calc width of right column
+	- [ ] save & load sheethelper.labels
+	- [ ] Checkliste von notwendigen Elementen: raster.roi, raster.line, sheetsGroup, ...
 	- [ ] erst dann Projekt export verfügbar machen
 - Distanzmessung mit Komma `,` in input möglich? `inputString.replace(',', '.')`
 - [ ] Nach Laden des Projektes sind mehr Platten beweglich, als die Zeile lang ist...
