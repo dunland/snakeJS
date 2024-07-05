@@ -61,6 +61,10 @@ class SheetHelper {
 }
 
 // load sheetsGroup from JSON
+/**
+ * load sheetsgroup from JSON and recreates sheet helpers
+ * @param {string} JSONdata string to JSON file
+ */
 export function importSheets(JSONdata) {
     sheetsGroup = new paper.Group().importJSON(JSONdata);
     if (globalVerboseLevel > 2)
@@ -73,7 +77,7 @@ export function importSheets(JSONdata) {
 
     movableSheetsFrom = 0;
     movableSheetsTo = Math.floor((maxW + sheetLength) / sheetLength) + 2;
-    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) + 1;
+    sheetsPerRow = Math.floor((maxH + sheetWidth) / sheetWidth) + 2;
 
     // create sheet helpers:
     for (let index = 0; index < sheetsGroup.children.length; index++) {
@@ -247,11 +251,12 @@ export function getSheetAtCursorPos(pt) {
 
 export function selectRowBySheet(index) {
 
-    // split row at idx?
+    // splitting from beginning:
     if (splitActiveSheets < 0) {
         movableSheetsFrom = Math.floor(index / sheetsPerRow) * sheetsPerRow;
         movableSheetsTo = activeSheetIdx + 1;
     }
+    // split until end:
     else if (splitActiveSheets > 0) {
         movableSheetsFrom = activeSheetIdx;
         movableSheetsTo = Math.floor(index / sheetsPerRow) * sheetsPerRow + sheetsPerRow;

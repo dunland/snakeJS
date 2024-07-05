@@ -1,6 +1,6 @@
 import { sheetsGroup, createSheetsHorizontal, createSheetsVertical, importSheets, calculateLeftovers } from "./Platten.js";
 import { changeDrawMode } from "./Modes.js";
-import { raster, loadImage, imageFile, setImageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
+import { raster, imageFile, updateGlobalColors, globalColor } from "./paperSnake.js";
 
 export var projectPath = "Example";
 export function setProjectPath(newPath) { projectPath = newPath };

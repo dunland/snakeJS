@@ -7,7 +7,9 @@ import { drawMode, changeDrawMode, measureDistance, measureToolState, setMeasure
 var ptAtSmallestDist;
 var keyInput = true;
 
-export var splitActiveSheets = 0;
+/** -1 or 1 if splitting row from beginning (-1) or until end (1), default: 0*/
+export var splitActiveSheets = 0; 
+
 export var showSupportLines = true;
 export function toggleSupportLines() {
     document.getElementById("buttonShowSupportLines").classList.toggle("active");

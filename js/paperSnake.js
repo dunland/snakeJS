@@ -10,7 +10,14 @@ export var imageFile = "../beispielbild.jpeg", image;
 const pxPerMM = 0.29;
 export function setImageFile(newVar) { imageFile = newVar; } // TODO: loadImage() must be called manually after changing this
 export var raster = new Raster(pxPerMM);
-export var globalColor = "white";
+export var globalColor = "#555555";
+
+// console.stdlog = console.log.bind(console);
+// console.logs = [];
+// console.log = function(){
+//     console.logs.push(Array.from(arguments));
+//     console.stdlog.apply(console, arguments);
+// }
 
 // Only executed our code once the DOM is ready.
 window.onload = function () {

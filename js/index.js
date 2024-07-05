@@ -2,8 +2,8 @@
 
 import { image, setImageFile, loadImage, raster, updateGlobalColors } from "./paperSnake.js";
 import { changeDrawMode } from "./Modes.js";
-import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, sheetsGroup, toggleSheetVisibility } from "./Platten.js";
-import { downloadSVG, downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
+import { calculateLeftovers, recreateSheets, scaleSheets, sheetHelpers, toggleSheetVisibility } from "./Platten.js";
+import { downloadProjectSVG, extractPathFromSheets } from "./lineExport.js";
 import { exportProject, importProject } from "./ProjectManager.js";
 import { toggleSupportLines } from "./UserInteraction.js";
 import { changeCursor } from "./paperSnake.js";
@@ -12,7 +12,7 @@ document.title = 'Wandwurm.fun';
 
 // undo line:
 document.getElementById("buttonUndo").onclick = function () {
-
+    console.log(raster.line.segments.length);
     if (raster.line.segments.length < 1) return;
     raster.line.selected = false;
     raster.line.lastSegment.remove();
