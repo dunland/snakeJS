@@ -6,7 +6,7 @@ var app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-var dir = path.join(__dirname, '.');
+var dir = path.join(__dirname, './public');
 
 app.use(express.static(dir)); // serve static files
 
