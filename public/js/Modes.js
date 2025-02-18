@@ -1,5 +1,5 @@
 import { globalVerboseLevel } from "./Devtools.js";
-import { raster, cursor, globalColor } from "./paperSnake.js";
+import { raster, cursorCircle, globalColor } from "./paperSnake.js";
 import { createSheetsHorizontal, createSheetsVertical, recreateSheets, sheetsGroup } from "./Platten.js";
 import { showSupportLines } from "./UserInteraction.js";
 
@@ -18,17 +18,17 @@ export function changeDrawMode(entering) {
 
     // ------------------ entering mode: ------------------
     if (entering == "area")
-        cursor.strokeColor = 'red';
+        cursorCircle.strokeColor = 'red';
     else if (entering == "line") {
-        cursor.strokeColor = globalColor;
+        cursorCircle.strokeColor = globalColor;
     }
     else if (entering == "ROI") {
         if (raster.roi) raster.roi.visible = false;
-        cursor.strokeColor = 'blue';
+        cursorCircle.strokeColor = 'blue';
     }
     else if (entering == "moveSheet"){
-        cursor.visible = false;
-        raster.nextLine.segment.visible = false;
+        cursorCircle.visible = false;
+        raster.projectedLine.segment.visible = false;
     }
 
     // ------------------- leaving mode: -------------------
@@ -39,7 +39,7 @@ export function changeDrawMode(entering) {
     }
 
     else if (leaving == "moveSheet"){
-        raster.nextLine.segment.visible = showSupportLines;
+        raster.projectedLine.segment.visible = showSupportLines;
     }
 
     else if (leaving == "area")

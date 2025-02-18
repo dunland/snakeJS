@@ -4,8 +4,8 @@ import { Raster } from "./Raster.js";
 import { sheetHelpers, sheetsGroup } from "./Platten.js";
 import { importProject, initializeNewProject, projectPath, setProjectPath } from "./ProjectManager.js";
 
-export var cursor, cursorLine;
-export function changeCursor(newRadius) { cursor.radius = newRadius; }
+export var cursorCircle, cursorLine;
+export function changeCursor(newRadius) { cursorCircle.radius = newRadius; }
 export var imageFile = "../beispielbild.jpeg", image;
 const pxPerMM = 0.29;
 export function setImageFile(newVar) { imageFile = newVar; } // TODO: loadImage() must be called manually after changing this
@@ -34,7 +34,7 @@ window.onload = function () {
     paper.setup(canvas);
 
     // mouse cursor:
-    cursor = new paper.Path.Circle({
+    cursorCircle = new paper.Path.Circle({
         center: new paper.Point(0, 0),
         radius: raster.gridGapX / 2,
         strokeColor: globalColor
@@ -113,7 +113,7 @@ export function updateGlobalColors(newColor) {
     // update colors:
     raster.line.strokeColor = newColor;
     sheetsGroup.strokeColor = newColor;
-    cursor.strokeColor = newColor;
+    cursorCircle.strokeColor = newColor;
     for (let i = 0; i < sheetHelpers.length; i++) {
         sheetHelpers[i].gridDots.fillColor = newColor;
         sheetHelpers[i].label.strokeColor = newColor;

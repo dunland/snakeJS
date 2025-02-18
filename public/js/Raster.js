@@ -3,7 +3,7 @@
 //////////////////////////////////////////////////////////////////
 import { globalVerboseLevel } from "./Devtools.js";
 import { Liniensegment } from "./Liniensegmente.js";
-import { globalColor } from "./paperSnake.js";
+import { cursorCircle, globalColor } from "./paperSnake.js";
 
 export class Raster {
 
@@ -16,11 +16,10 @@ export class Raster {
         this.realSheetMarginMin = 55; // Mindestabstand zu Rand und zwischen Pfaden [mm]
         this.gridGapX = this.realSheetDimHorizontal / Math.floor(this.realSheetDimHorizontal / this.realSheetMarginMin) * this.pxPerMM;
         this.gridGapY = this.realSheetDimVertical / Math.floor(this.realSheetDimVertical / this.realSheetMarginMin) * this.pxPerMM;
-        this.line;     // must be initialized after paper.setup()
-        this.nextLine; // dashed line that shows next line to be drawn
-        this.area;     // group of blocked, non-clickacble areas
-        this.roi;      // region of interest / work area
-
+        this.line;        // must be initialized after paper.setup()
+        this.projectedLine; // dashed line that shows next line to be drawn
+        this.area;        // group of blocked, non-clickacble areas
+        this.roi;         // region of interest / work area
 
         console.log(`raster created with gridSize=${this.gridGapX}, pxPerMM=${this.pxPerMM}`);
     }
@@ -37,7 +36,7 @@ export class Raster {
             this.area.fillColor = new paper.Color(1, 0, 0, 0.45);
             this.area.closed = true;
         }
-        this.nextLine = new Liniensegment(new paper.Point(0, 0), new paper.Point(0, 0));
+        this.projectedLine = new Liniensegment(new paper.Point(0, 0), new paper.Point(0, 0));
     }
 
     recalculateGridGap() {
@@ -59,7 +58,7 @@ export class Raster {
                 this.line.position = ptAtSmallestDist.position;
                 return;
             }
-            this.line.join(this.nextLine.segment);
+            this.line.join(this.projectedLine.segment);
 
         } else { // remove line
 
@@ -87,26 +86,29 @@ export class Raster {
     }
 
     indicateNextLine(pt) {
-        if (this.line.segments.length) {
-            // remove old line:
-            this.nextLine.segment.remove();
+        if (this.line.segments.length == 0) return;
+        
+        // remove old line:
+        this.projectedLine.segment.remove();
 
-            // set new coordinates:
-            this.nextLine.x1 = this.line.lastSegment.point.x;
-            this.nextLine.y1 = this.line.lastSegment.point.y;
-            this.nextLine.x2 = pt.x;
-            this.nextLine.y2 = pt.y;
+        if (!this.roi.contains(cursorCircle.position)) return;
 
-            // create new:
-            this.nextLine.updatePathDirection();
-            if (globalVerboseLevel > 3)
-                console.log(this.nextLine.type, this.nextLine.direction);
-            this.nextLine.createCurveOfType(this.nextLine.type); // type of line will be set using keys
+        // set new coordinates:
+        this.projectedLine.x1 = this.line.lastSegment.point.x;
+        this.projectedLine.y1 = this.line.lastSegment.point.y;
+        this.projectedLine.x2 = pt.x;
+        this.projectedLine.y2 = pt.y;
 
-            // graphics:
-            this.nextLine.segment.dashArray = [4, 8];
-            this.nextLine.segment.strokeColor = globalColor;
-        }
+        // create new:
+        this.projectedLine.updatePathDirection();
+        if (globalVerboseLevel > 3)
+            console.log(this.projectedLine.type, this.projectedLine.direction);
+        this.projectedLine.createCurveOfType(this.projectedLine.type); // type of line will be set using keys
+
+        // graphics:
+        this.projectedLine.segment.dashArray = [4, 8];
+        this.projectedLine.segment.strokeColor = globalColor;
+
     }
 
     // replaceLastCurve(type) {

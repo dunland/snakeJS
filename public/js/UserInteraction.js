@@ -1,5 +1,5 @@
 import { changeGlobalVerboseLevel, globalVerboseLevel } from "./Devtools.js";
-import { raster, cursor, changeCursor, globalColor } from "./paperSnake.js";
+import { raster, cursorCircle, changeCursor, globalColor } from "./paperSnake.js";
 import { sheetsGroup, sheetHelpers, scaleSheets, activeSheet, movableSheetsFrom, movableSheetsTo, selectRowBySheet, toggleSheetVisibility, recreateSheets, calculateLeftovers, activeSheetIdx, getSheetAtCursorPos } from "./Platten.js";
 import { showIntersections } from "./paperUtils.js";
 import { drawMode, changeDrawMode, measureDistance, measureToolState, setMeasureDist, setMeasureState } from "./Modes.js";
@@ -18,10 +18,11 @@ export function toggleSupportLines() {
 
 // Tastaturbefehle:
 export function keyPressed(keyEvent) {
-
+    
     if (keyInput == false) return;
-
+    
     let key = keyEvent.key;
+    if (key == ' ') keyEvent.preventDefault();
     if (globalVerboseLevel >= 1)
         console.log(key);
     if (key == 'b') changeDrawMode("ROI");
@@ -31,7 +32,10 @@ export function keyPressed(keyEvent) {
     if (key == 'R' || key == 'r') recreateSheets();
 
     if (drawMode == "line") {
-        if (key == ' ') changeDrawMode("moveSheet");
+        // Press SPACE -> move sheet
+        if (key == ' ') {
+            changeDrawMode("moveSheet");
+        }
 
         if ('qfweasdyx'.includes(key)) {
             document.querySelectorAll('span.key').forEach(element => {
@@ -47,59 +51,59 @@ export function keyPressed(keyEvent) {
         }
         switch (key) {
             case 'w':
-                raster.nextLine.type = "KURVE_OBEN";
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_OBEN";
+                raster.indicateNextLine(cursorCircle.position);
                 break;
 
             case 'a':
-                raster.nextLine.type = "KURVE_LINKS";
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_LINKS";
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 's':
-                raster.nextLine.type = "KURVE_UNTEN";
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_UNTEN";
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'd':
-                raster.nextLine.type = "KURVE_RECHTS";
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_RECHTS";
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'f':
-                raster.nextLine.type = "GERADE";
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "GERADE";
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'q':
-                raster.nextLine.type = "KURVE_OBENLINKS";
-                raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_OBENLINKS";
+                raster.projectedLine.updatePathDirection();
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'e':
-                raster.nextLine.type = "KURVE_OBENRECHTS";
-                raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_OBENRECHTS";
+                raster.projectedLine.updatePathDirection();
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'y':
-                raster.nextLine.type = "KURVE_UNTENLINKS";
-                raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_UNTENLINKS";
+                raster.projectedLine.updatePathDirection();
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
             case 'x':
-                raster.nextLine.type = "KURVE_UNTENRECHTS";
-                raster.nextLine.updatePathDirection();
-                raster.indicateNextLine(cursor.position);
+                raster.projectedLine.type = "KURVE_UNTENRECHTS";
+                raster.projectedLine.updatePathDirection();
+                raster.indicateNextLine(cursorCircle.position);
 
                 break;
 
@@ -116,12 +120,12 @@ export function keyPressed(keyEvent) {
         if (key == 'h') toggleSupportLines();
         if (key == 'Shift') {
             splitActiveSheets = -1;
-            getSheetAtCursorPos(cursor.position);
+            getSheetAtCursorPos(cursorCircle.position);
             selectRowBySheet(activeSheetIdx);
         }
         if (key == 'Control') {
             splitActiveSheets = 1;
-            getSheetAtCursorPos(cursor.position);
+            getSheetAtCursorPos(cursorCircle.position);
             selectRowBySheet(activeSheetIdx);
         }
 
@@ -241,7 +245,7 @@ export function keyReleased(keyEvent) {
     if (key == ' ' && drawMode == 'moveSheet') { // leave mode
         calculateLeftovers();
         changeDrawMode("line");
-        cursor.visible = true;
+        cursorCircle.visible = true;
     }
     if (key == 'Shift' || key == 'Control') {
         splitActiveSheets = 0;
@@ -250,37 +254,41 @@ export function keyReleased(keyEvent) {
 
 export function onMouseMove(event) {
 
+    let mousePos = new paper.Point(event.point.x, event.point.y);
+    window.mousePos = mousePos;
+
     switch (drawMode) {
         case "line":
 
+            if (!raster.roi.contains(mousePos)) break;
             // show/hide gridPoints:
-            getSheetAtCursorPos([event.point.x, event.point.y]);
+            getSheetAtCursorPos([mousePos.x, mousePos.y]);
             // move cursor:
             if (!activeSheet) break;
 
             // get shortest distance to active gridPoints:
             var smallestDist = Infinity;
             for (var i = 0; i < activeSheet.gridDots.children.length; i++) {
-                var distToCursor = activeSheet.gridDots.children[i].position.getDistance([event.point.x, event.point.y]);
+                var distToCursor = activeSheet.gridDots.children[i].position.getDistance([mousePos.x, mousePos.y]);
                 if (distToCursor < smallestDist) {
                     smallestDist = distToCursor;
                     ptAtSmallestDist = activeSheet.gridDots.children[i];
                 }
             }
-            cursor.position = ptAtSmallestDist.position;
+            cursorCircle.position = ptAtSmallestDist.position;
 
 
             if (raster.line.segments.length) {
 
                 // support lines:
-                let distX = Math.abs(cursor.position.x - raster.line.lastSegment.point.x);
-                let distY = Math.abs(cursor.position.y - raster.line.lastSegment.point.y);
+                let distX = Math.abs(cursorCircle.position.x - raster.line.lastSegment.point.x);
+                let distY = Math.abs(cursorCircle.position.y - raster.line.lastSegment.point.y);
 
                 if (showSupportLines) {
                     // x line:
                     new paper.Path.Line({
                         from: raster.line.lastSegment.point,
-                        to: [cursor.position.x, raster.line.lastSegment.point.y],
+                        to: [cursorCircle.position.x, raster.line.lastSegment.point.y],
                         strokeColor: globalColor,
                         dashArray: [4, 8],
                         strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
@@ -288,7 +296,7 @@ export function onMouseMove(event) {
 
                     new paper.Path.Line({
                         from: raster.line.lastSegment.point,
-                        to: [raster.line.lastSegment.point.x, cursor.position.y],
+                        to: [raster.line.lastSegment.point.x, cursorCircle.position.y],
                         strokeColor: globalColor,
                         dashArray: [4, 8],
                         strokeWidth: Math.round(distX / sheetHelpers[0].gridGapX) == Math.round(distY / sheetHelpers[0].gridGapY) ? 3 : 1
@@ -304,17 +312,17 @@ export function onMouseMove(event) {
                     document.getElementsByClassName("mousePos")[0].style.fontWeight = "normal";
                 }
                 // predict next line:
-                raster.indicateNextLine(cursor.position);
+                raster.indicateNextLine(cursorCircle.position);
             }
 
             break;
 
         case "area":
-            cursor.position = [event.point.x, event.point.y];
+            cursorCircle.position = [event.point.x, event.point.y];
             break;
 
         case "ROI":
-            cursor.position = [event.point.x, event.point.y];
+            cursorCircle.position = [event.point.x, event.point.y];
             break;
 
         case "moveSheet":
@@ -335,8 +343,8 @@ export function onMouseMove(event) {
             break;
 
         case "measureDistance":
-            cursor.position = [event.point.x, event.point.y];
-            cursor.strokeColor = 'yellow';
+            cursorCircle.position = [event.point.x, event.point.y];
+            cursorCircle.strokeColor = 'yellow';
 
             if (measureToolState == 1) {
                 measureDistance.segments[1].point = [event.point.x, event.point.y];
@@ -365,7 +373,7 @@ export function onMouseDown(event) {
 
 
     if (globalVerboseLevel > 2)
-        console.log("click!", event.x, event.y, "=>", cursor.position.x, cursor.position.y, 2);
+        console.log("click!", event.x, event.y, "=>", cursorCircle.position.x, cursorCircle.position.y, 2);
 
     if (event.x >= canvasElement.clientWidth || event.y >= canvasElement.clientHeight) {
         if (globalVerboseLevel > 2)
@@ -383,12 +391,12 @@ export function onMouseDown(event) {
     switch (drawMode) {
 
         case "line":
-            if (!raster.roi.contains(cursor.position)) {
+            if (!raster.roi.contains(cursorCircle.position)) {
                 console.log("cannot draw here! (not in roi)");
                 return;
             }
 
-            if (raster.area.contains(new paper.Point(cursor.position.x, cursor.position.y))) { // TODO: also check crossing
+            if (raster.area.contains(new paper.Point(cursorCircle.position.x, cursorCircle.position.y))) { // TODO: also check crossing
                 console.log("cannot draw here! (area blocked)");
                 break;
             }
@@ -396,7 +404,7 @@ export function onMouseDown(event) {
             if (raster.line.segments.length > 0)
                 for (let i = 0; i < raster.line.segments.length; i++) {
                     const seg = raster.line.segments[i];
-                    if (cursor.bounds.contains(seg.point))
+                    if (cursorCircle.bounds.contains(seg.point))
                         console.log("match", seg);
                 }
 
@@ -474,7 +482,7 @@ function drawArea() {
         raster.tempArea.dashArray = [4, 4];
         raster.tempArea.closed = true;
     }
-    raster.tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
+    raster.tempArea.add(new paper.Point(cursorCircle.position.x, cursorCircle.position.y));
 }
 
 function drawROI() {
@@ -484,5 +492,5 @@ function drawROI() {
         raster.tempArea.dashArray = [4, 4];
         raster.tempArea.closed = true;
     }
-    raster.tempArea.add(new paper.Point(cursor.position.x, cursor.position.y));
+    raster.tempArea.add(new paper.Point(cursorCircle.position.x, cursorCircle.position.y));
 }
