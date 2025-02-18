@@ -158,7 +158,7 @@ export function downloadProjectJSON(event, fileName) {
 }
 
 export async function extractPathFromSheets() {
-    let exportElements = [];
+    let exportElements = {};
     for (var i = 0; i < sheetsGroup.children.length; i++) {
         if (raster.line.intersects(sheetsGroup.children[i])) {
 
@@ -172,17 +172,18 @@ export async function extractPathFromSheets() {
                 strokeWidth: 2
             });
 
-            exportElements.push(joinedObj);
-
+            exportElements[sheetHelpers[i].label.content] = joinedObj;
+            window.exportElements = exportElements;
         }
     }
-    console.log(`${exportElements.length} sheets will be exported.`);
-    Devtools.log(`${exportElements.length} sheets will be exported.`);
+    console.log(`${Object.keys(exportElements).length} sheets will be exported.`);
+    Devtools.log(`${Object.keys(exportElements).length} sheets will be exported.`);
 
     // Google Chrome allows only 10 downloads at a time
     for (let count = 0; count < sheetsGroup.children.length; count += 10) {
-        for (let i = count; i < exportElements.length; i++) {
-            await downloadSVG(exportElements[i], `Platte_${sheetHelpers[i].label.content}.svg`);
+        for (let i = count; i < Object.keys(exportElements).length; i++) {
+            let key = Object.keys(exportElements)[i];
+            await downloadSVG(exportElements[key], `Platte_${key}.svg`);
         }
         await pause(1000);
     }
